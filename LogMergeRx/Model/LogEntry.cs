@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
-namespace LogMergeRx
+namespace LogMergeRx.Model
 {
+    [DebuggerDisplay("{Date}:{Level}:{Message}")]
     public class LogEntry
     {
         public string FileName { get; }

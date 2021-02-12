@@ -6,6 +6,14 @@
         xmlns:local="clr-namespace:LogMergeRx"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:LevelToForegroundConverter x:Key="LevelToForegroundConverter"
+            Error="Red"
+            Warning="Orange"
+            Info="Black"
+            Notice="Black"
+            />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -13,33 +21,45 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3,0,3,3">
+        <ToolBar Grid.Row="0" Margin="3,0,3,3">
             <CheckBox Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
             <CheckBox Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />
-            <CheckBox Content="Infos" IsChecked="{Binding ShowNotices.Value}" />
-            <CheckBox Content="Notices" IsChecked="{Binding ShowInfos.Value}" />
-        </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="3,0,3,3">
+            <CheckBox Content="Notices" IsChecked="{Binding ShowNotices.Value}" />
+            <CheckBox Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
+            <Separator />
             <Label Content="Include only matching"/>
             <TextBox Text="{Binding IncludeRegex.Value}" Width="200" />
             <Separator />
             <Label Content="Exclude matching"/>
             <TextBox Text="{Binding ExcludeRegex.Value}" Width="200" />
-            <Separator />
-        </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="3,0,3,3" />
-        <ItemsControl Grid.Row="3" ItemsSource="{Binding ItemsSource.View}" VirtualizingPanel.ScrollUnit="Pixel">
+        </ToolBar>
+        <ToolBar Grid.Row="1" Margin="3,0,3,3">
+            <Label Content="Search"/>
+            <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" Width="200" />
+            <Button Content="Prev" Command="{Binding PrevIndex}" />
+            <Button Content="Next" Command="{Binding NextIndex}" />
+            <TextBlock Text="{Binding ScrollToIndex.Value}" />
+        </ToolBar>
+        <ItemsControl Grid.Row="3" ItemsSource="{Binding ItemsSource}"
+                      VirtualizingPanel.ScrollUnit="Pixel" 
+                      VirtualizingPanel.VirtualizationMode="Standard">
             <ItemsControl.Template>
                 <ControlTemplate>
                     <Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition SharedSizeGroup="First" Width="Auto" />
-                                <ColumnDefinition SharedSizeGroup="Second" Width="Auto" />
-                                <ColumnDefinition SharedSizeGroup="Third" />
-                            </Grid.ColumnDefinitions>
-                        </Grid>
-                        <ScrollViewer CanContentScroll="True" Focusable="False">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="First" Width="200" />
+                            <ColumnDefinition SharedSizeGroup="Second" Width="200" />
+                            <ColumnDefinition SharedSizeGroup="Third" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Text="Date" />
+                        <TextBlock Grid.Column="1" Text="Level" />
+                        <TextBlock Grid.Column="2" Text="Message" />
+                        
+                        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" CanContentScroll="True" Focusable="False">
                             <ItemsPresenter />
                         </ScrollViewer>
                     </Grid>
@@ -47,20 +67,25 @@
             </ItemsControl.Template>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
+                    <VirtualizingStackPanel local:ScrollHelper.ScrollToIndex="{Binding ScrollToIndex.Value}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition SharedSizeGroup="First" Width="Auto" />
-                            <ColumnDefinition SharedSizeGroup="Second" Width="Auto" />
+                            <ColumnDefinition SharedSizeGroup="First" Width="200" />
+                            <ColumnDefinition SharedSizeGroup="Second" Width="200" />
                             <ColumnDefinition SharedSizeGroup="Third" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
-                        <TextBlock Grid.Column="1" Text="{Binding Level}" Foreground="Red" FontWeight="Bold" Margin="3" />
-                        <TextBlock Grid.Column="2" Text="{Binding Message}" Margin="3" />
+                        <TextBlock Grid.Column="1" FontWeight="Bold" Margin="3"
+                                   Text="{Binding Level}" 
+                                   Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}" />
+                        <!--<TextBlock Grid.Column="2" Margin="3" Text="{Binding Message}" />-->
+                        <TextBlock Grid.Column="2" Margin="3"
+                                   local:HighlightHelper.Text="{Binding Message}"
+                                   local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
