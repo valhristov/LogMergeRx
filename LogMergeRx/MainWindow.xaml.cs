@@ -47,9 +47,9 @@ namespace LogMergeRx
                         yield return new LogEntry(
                             fileName,
                             DateTime.ParseExact(fields[0], "yyyy-MM-dd HH:mm:ss,fff", null),
-                            fields[2].Trim(),
-                            fields[3].Trim(),
-                            fields[4]);
+                            level: fields[2].Trim(),
+                            source: fields[3].Trim(),
+                            message: fields[4]);
                     }
                 }
             }

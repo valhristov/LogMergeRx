@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive.Subjects;
 
 namespace LogMergeRx
 {
-    public class ObservableProperty<T> : ObservableBase<T>, INotifyPropertyChanged
+    public class ObservableProperty<T> : IObservable<T>, INotifyPropertyChanged
     {
         private T _value;
         private readonly IEqualityComparer<T> _comparer;
+        private readonly Subject<T> _subject = new Subject<T>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -27,8 +30,11 @@ namespace LogMergeRx
                 }
                 _value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
-                NotifyObservers(value);
+                _subject.OnNext(value);
             }
         }
+
+        public IDisposable Subscribe(IObserver<T> observer) =>
+            _subject.Subscribe(observer);
     }
 }
