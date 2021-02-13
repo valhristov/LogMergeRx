@@ -11,7 +11,9 @@ namespace LogMergeRx
 {
     public class MainWindowViewModel
     {
-        public ObservableCollection<LogEntry> ItemsSource { get; }
+        public ObservableCollection<LogEntry> ItemsSource { get; } =
+            new ObservableCollection<LogEntry>();
+
         public ObservableProperty<bool> ShowErrors { get; }
         public ObservableProperty<bool> ShowWarnings { get; }
         public ObservableProperty<bool> ShowNotices { get; }
@@ -29,10 +31,8 @@ namespace LogMergeRx
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public MainWindowViewModel(IEnumerable<LogEntry> items)
+        public MainWindowViewModel()
         {
-            ItemsSource = new ObservableCollection<LogEntry>(items);
-
             ShowErrors = new ObservableProperty<bool>(true);
             ShowWarnings = new ObservableProperty<bool>(true);
             ShowNotices = new ObservableProperty<bool>(true);
@@ -42,20 +42,30 @@ namespace LogMergeRx
             SearchRegex = new ObservableProperty<string>(string.Empty);
             ScrollToIndex = new ObservableProperty<int>(0);
 
-            NextIndex = new ActionCommand(_ => ScrollIntoView(ScrollToIndex.Value, ListSortDirection.Ascending));
-            PrevIndex = new ActionCommand(_ => ScrollIntoView(ScrollToIndex.Value, ListSortDirection.Descending));
+            NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
+            PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
             ItemsSourceView.Filter = Filter;
 
-            Observable.Merge(ShowErrors, ShowWarnings, ShowNotices, ShowInfos).Subscribe(_ => ItemsSourceView.Refresh());
-            Observable.Merge(IncludeRegex, ExcludeRegex).Subscribe(_ => ItemsSourceView.Refresh());
+            Observable
+                .Merge(ShowErrors, ShowWarnings, ShowNotices, ShowInfos)
+                .Subscribe(_ => ItemsSourceView.Refresh());
+            Observable
+                .Merge(IncludeRegex, ExcludeRegex)
+                .Subscribe(_ => ItemsSourceView.Refresh());
 
-            SearchRegex.Subscribe(_ => ScrollIntoView(-1, ListSortDirection.Ascending));
+            SearchRegex.Subscribe(pattern => FindNext(pattern, -1));
         }
 
-        private void ScrollIntoView(int startIndex, ListSortDirection direction)
+        private void FindNext(string pattern, int startIndex) =>
+            ScrollIntoView(pattern, startIndex, ListSortDirection.Ascending);
+
+        private void FindPrev(string pattern, int startIndex) =>
+            ScrollIntoView(pattern, startIndex, ListSortDirection.Descending);
+
+        private void ScrollIntoView(string pattern, int startIndex, ListSortDirection direction)
         {
-            var regex = RegexCache.GetRegex(SearchRegex.Value);
+            var regex = RegexCache.GetRegex(pattern);
 
             var result = direction == ListSortDirection.Ascending
                 ? ItemsAndIndexes.Skip(startIndex + 1).FirstOrDefault(x => regex.IsMatch(x.Item.Message))
@@ -72,10 +82,10 @@ namespace LogMergeRx
             return o is LogEntry log && FilterByLevel(log) && FilterByInclude(log) && FilterByExclude(log);
 
             bool FilterByLevel(LogEntry log) =>
-                ShowErrors.Value && string.Equals(log.Level, "ERROR", StringComparison.OrdinalIgnoreCase) ||
-                ShowWarnings.Value && string.Equals(log.Level, "WARN", StringComparison.OrdinalIgnoreCase) ||
-                ShowInfos.Value && string.Equals(log.Level, "INFO", StringComparison.OrdinalIgnoreCase) ||
-                ShowNotices.Value && string.Equals(log.Level, "NOTICE", StringComparison.OrdinalIgnoreCase);
+                ShowErrors.Value && "ERROR".Equals(log.Level, StringComparison.OrdinalIgnoreCase) ||
+                ShowWarnings.Value && "WARN".Equals(log.Level, StringComparison.OrdinalIgnoreCase) ||
+                ShowInfos.Value && "INFO".Equals(log.Level, StringComparison.OrdinalIgnoreCase) ||
+                ShowNotices.Value && "NOTICE".Equals(log.Level, StringComparison.OrdinalIgnoreCase);
 
             bool FilterByInclude(LogEntry log) =>
                 string.IsNullOrWhiteSpace(IncludeRegex.Value) || RegexCache.GetRegex(IncludeRegex.Value).IsMatch(log.Message);

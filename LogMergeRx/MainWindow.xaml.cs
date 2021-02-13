@@ -1,59 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using LogMergeRx.Model;
-using Microsoft.VisualBasic.FileIO;
+using LogMergeRx.Rx;
 using Microsoft.Win32;
+using Reactive.Bindings.Extensions;
 
 namespace LogMergeRx
 {
     public partial class MainWindow : Window
     {
-        private MainWindowViewModel CreateViewModel()
-        {
-            var dialog = new OpenFileDialog { Multiselect = true, };
-
-            if (dialog.ShowDialog() == true &&
-                dialog.FileNames.Length > 0)
-            {
-                var viewModel = new MainWindowViewModel(ParseFiles(dialog.FileNames).OrderBy(x => x.Date));
-                return viewModel;
-            }
-
-            return null;
-        }
+        private readonly ObservableFileSystemWatcher _watcher;
+        private readonly FileMonitor _monitor = new FileMonitor();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            DataContext = CreateViewModel();
-        }
+            var viewModel = new MainWindowViewModel();
 
-        private static IEnumerable<LogEntry> ParseFiles(string[] paths)
-        {
-            foreach (var file in paths)
+            DataContext = viewModel;
+
+            var dialog = new OpenFileDialog { Multiselect = false, };
+
+            if (dialog.ShowDialog() == true &&
+                dialog.FileNames.Length > 0)
             {
-                var fileName = System.IO.Path.GetFileName(file);
-                using (var parser = new TextFieldParser(file) { TextFieldType = FieldType.Delimited })
-                {
-                    parser.SetDelimiters(";");
-                    _ = parser.ReadFields(); // read the headers
-                    while (!parser.EndOfData)
-                    {
-                        var fields = parser.ReadFields();
+                _watcher = new ObservableFileSystemWatcher(
+                    Path.GetDirectoryName(dialog.FileName),
+                    Path.GetFileName(dialog.FileName));
 
-                        yield return new LogEntry(
-                            fileName,
-                            DateTime.ParseExact(fields[0], "yyyy-MM-dd HH:mm:ss,fff", null),
-                            level: fields[2].Trim(),
-                            source: fields[3].Trim(),
-                            message: fields[4]);
-                    }
-                }
+                Observable.Merge(_watcher.Changed, _watcher.Created)
+                    .SelectMany(args => _monitor.Read(args.FullPath))
+                    .ObserveOnUIDispatcher()
+                    .Subscribe(viewModel.ItemsSource.Add);
+
+                _watcher.Start();
+                _watcher.NotifyForExistingFiles();
             }
         }
-
     }
 }

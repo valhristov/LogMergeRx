@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogMergeRx", "LogMergeRx\LogMergeRx.csproj", "{2B4510B6-4A62-4BA1-93DB-C74237DCFD8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogMergeRxTests", "LogMergeRxTests\LogMergeRxTests.csproj", "{24770006-F73E-4150-9405-50EFFADAE407}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogMergeRxTests", "LogMergeRxTests\LogMergeRxTests.csproj", "{A67379D2-A6E5-482C-93AC-EC695F1F66BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{2B4510B6-4A62-4BA1-93DB-C74237DCFD8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B4510B6-4A62-4BA1-93DB-C74237DCFD8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B4510B6-4A62-4BA1-93DB-C74237DCFD8A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24770006-F73E-4150-9405-50EFFADAE407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24770006-F73E-4150-9405-50EFFADAE407}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24770006-F73E-4150-9405-50EFFADAE407}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24770006-F73E-4150-9405-50EFFADAE407}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A67379D2-A6E5-482C-93AC-EC695F1F66BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A67379D2-A6E5-482C-93AC-EC695F1F66BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A67379D2-A6E5-482C-93AC-EC695F1F66BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A67379D2-A6E5-482C-93AC-EC695F1F66BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

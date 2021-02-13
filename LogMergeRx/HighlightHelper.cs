@@ -60,6 +60,5 @@ namespace LogMergeRx
             IEnumerable<string> Split() =>
                 RegexCache.GetRegex($@"({Regex.Escape(highlight)})").Split(text).Where(p => p != string.Empty);
         }
-
     }
 }
