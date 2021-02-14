@@ -46,8 +46,6 @@ namespace LogMergeRx
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
             ItemsSourceView.Filter = Filter;
-            ItemsSourceView.SortDescriptions.Add(
-                new SortDescription("Date", ListSortDirection.Descending));
 
             Observable
                 .Merge(ShowErrors, ShowWarnings, ShowNotices, ShowInfos)

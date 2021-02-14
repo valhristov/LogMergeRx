@@ -29,7 +29,7 @@ namespace LogMergeRx
                 _viewModel.ItemsSource.Add);
 
             LogEntry CreateLogEntry(string level, string message) =>
-                new LogEntry("file", DateTime.Now, level, "source", message);
+                new LogEntry("", "", level, "source", message);
         }
 
         private IEnumerable<LogEntry> View =>

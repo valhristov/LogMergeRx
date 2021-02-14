@@ -23,7 +23,7 @@ namespace LogMergeRx
             return result;
         }
 
-        private static IEnumerable<LogEntry> ReadToEnd(Stream stream)
+        private IEnumerable<LogEntry> ReadToEnd(Stream stream)
         {
             using var parser = new TextFieldParser(stream, Encoding.UTF8, true, true);
 
@@ -38,14 +38,11 @@ namespace LogMergeRx
             static LogEntry CreateLogEntry(string[] fields) =>
                 new LogEntry(
                     FileName: string.Empty, // TODO
-                    Date: ParseDate(fields[0]),
+                    Date: fields[0],
                     Level: fields[2].Trim(),
                     Source: fields[3].Trim(),
                     Message: fields[4]
                 );
-
-            static DateTime ParseDate(string date) =>
-                DateTime.ParseExact(date, "yyyy-MM-dd HH:mm:ss,fff", null);
         }
     }
 }
