@@ -12,7 +12,8 @@ namespace LogMergeRx
 
         public MainWindowViewModel_Search_tests()
         {
-            _viewModel = new MainWindowViewModel(
+            _viewModel = new MainWindowViewModel();
+            Array.ForEach(
                 new[]
                 {
                     // only errors are enabled by default
@@ -27,7 +28,8 @@ namespace LogMergeRx
                     CreateLogEntry("WARN", "2"), //  index:8  // index:4 with removed errors
                     CreateLogEntry("WARN", "2"), //  index:9  // index:5 with removed errors
                     CreateLogEntry("WARN", "1"), //  index:10 // index:6 with removed errors
-                });
+                },
+                _viewModel.ItemsSource.Add);
 
             LogEntry CreateLogEntry(string level, string message) =>
                 new LogEntry("file", DateTime.Now, level, "source", message);

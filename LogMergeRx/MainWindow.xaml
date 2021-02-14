@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogMergeRx"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
@@ -41,7 +42,7 @@
             <TextBlock Text="{Binding ScrollToIndex.Value}" />
         </ToolBar>
         <ItemsControl Grid.Row="3" ItemsSource="{Binding ItemsSource}"
-                      VirtualizingPanel.ScrollUnit="Pixel" 
+                      VirtualizingPanel.ScrollUnit="Pixel"
                       VirtualizingPanel.VirtualizationMode="Standard">
             <ItemsControl.Template>
                 <ControlTemplate>
@@ -58,7 +59,7 @@
                         <TextBlock Grid.Column="0" Text="Date" />
                         <TextBlock Grid.Column="1" Text="Level" />
                         <TextBlock Grid.Column="2" Text="Message" />
-                        
+
                         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" CanContentScroll="True" Focusable="False">
                             <ItemsPresenter />
                         </ScrollViewer>
@@ -67,7 +68,8 @@
             </ItemsControl.Template>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel local:ScrollHelper.ScrollToIndex="{Binding ScrollToIndex.Value}" />
+                    <VirtualizingStackPanel
+                        local:ScrollHelper.ScrollToIndex="{Binding ScrollToIndex.Value}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -80,12 +82,11 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
                         <TextBlock Grid.Column="1" FontWeight="Bold" Margin="3"
-                                   Text="{Binding Level}" 
+                                   Text="{Binding Level}"
                                    Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}" />
-                        <!--<TextBlock Grid.Column="2" Margin="3" Text="{Binding Message}" />-->
                         <TextBlock Grid.Column="2" Margin="3"
                                    local:HighlightHelper.Text="{Binding Message}"
-                                   local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, UpdateSourceTrigger=PropertyChanged}"/>
+                                   local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

@@ -30,9 +30,9 @@ namespace LogMergeRx
             d.SetValue(HighlightProperty, value);
 
         private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-            SetTextBlockTextAndHighlightTerm((TextBlock)d, GetText(d), GetHighlight(d));
+            SetHighlightedText((TextBlock)d, GetText(d), GetHighlight(d));
 
-        private static void SetTextBlockTextAndHighlightTerm(TextBlock textBlock, string text, string highlight)
+        private static void SetHighlightedText(TextBlock textBlock, string text, string highlight)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -48,9 +48,8 @@ namespace LogMergeRx
                 return;
             }
 
-            var inlines = Split().Select(GetRun);
-
-            textBlock.Inlines.AddRange(inlines);
+            textBlock.Inlines.AddRange(
+                Split().Select(GetRun));
 
             Run GetRun(string textPart) =>
                 string.Equals(textPart, highlight, StringComparison.OrdinalIgnoreCase)
@@ -58,7 +57,10 @@ namespace LogMergeRx
                     : new Run { Text = textPart };
 
             IEnumerable<string> Split() =>
-                RegexCache.GetRegex($@"({Regex.Escape(highlight)})").Split(text).Where(p => p != string.Empty);
+                RegexCache
+                    .GetRegex($@"({Regex.Escape(highlight)})")
+                    .Split(text)
+                    .Where(p => p != string.Empty);
         }
     }
 }

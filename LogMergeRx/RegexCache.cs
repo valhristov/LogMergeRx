@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace LogMergeRx
 {
     public static class RegexCache
     {
-        private static ConcurrentDictionary<string, Lazy<Regex>> _regexCache =
-            new ConcurrentDictionary<string, Lazy<Regex>>();
+        private static readonly Cache<string, Regex> _regexCache =
+            new Cache<string, Regex>(CreateRegex);
 
         public static Regex GetRegex(string pattern) =>
-            _regexCache.GetOrAdd(pattern, CreateLazyRegex).Value;
+            _regexCache.Get(pattern);
 
-        private static Lazy<Regex> CreateLazyRegex(string pattern) =>
-            new Lazy<Regex>(() => new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled));
+        private static Regex CreateRegex(string pattern) =>
+            new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
     }
 }

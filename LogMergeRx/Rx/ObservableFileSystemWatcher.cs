@@ -32,23 +32,23 @@ namespace LogMergeRx.Rx
 
             Created = Observable
                 .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => _fsw.Created += h, h => _fsw.Created -= h)
-                    .Select(x => x.EventArgs)
-                    .Merge(_existing);
+                .Select(x => x.EventArgs)
+                .Merge(_existing);
         }
 
-        public void Start() =>
+        public void Start(bool notifyForExistingFiles)
+        {
             _fsw.EnableRaisingEvents = true;
+            if (notifyForExistingFiles)
+            {
+                Array.ForEach(
+                    Directory.GetFiles(_fsw.Path, _fsw.Filter),
+                    path => _existing.OnNext(ArgsFromPath(path)));
+            }
+        }
 
         public void Stop() =>
             _fsw.EnableRaisingEvents = false;
-
-        public void NotifyForExistingFiles()
-        {
-            foreach (var args in Directory.GetFiles(_fsw.Path, _fsw.Filter).Select(ArgsFromPath))
-            {
-                _existing.OnNext(args);
-            }
-        }
 
         private FileSystemEventArgs ArgsFromPath(string fullPath) =>
             new FileSystemEventArgs(

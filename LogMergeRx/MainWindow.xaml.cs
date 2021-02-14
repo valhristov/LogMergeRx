@@ -1,19 +1,22 @@
-﻿using System;
+﻿using LogMergeRx.Model;
+using LogMergeRx.Rx;
+using Microsoft.Win32;
+using Reactive.Bindings.Extensions;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-using LogMergeRx.Model;
-using LogMergeRx.Rx;
-using Microsoft.Win32;
-using Reactive.Bindings.Extensions;
 
 namespace LogMergeRx
 {
     public partial class MainWindow : Window
     {
         private readonly ObservableFileSystemWatcher _watcher;
-        private readonly FileMonitor _monitor = new FileMonitor();
+
+        private readonly Cache<string, CsvReader> _readers =
+            new Cache<string, CsvReader>(_ => new CsvReader());
 
         public MainWindow()
         {
@@ -33,13 +36,18 @@ namespace LogMergeRx
                     Path.GetFileName(dialog.FileName));
 
                 Observable.Merge(_watcher.Changed, _watcher.Created)
-                    .SelectMany(args => _monitor.Read(args.FullPath))
+                    .SelectMany(ReadToEnd)
                     .ObserveOnUIDispatcher()
                     .Subscribe(viewModel.ItemsSource.Add);
 
-                _watcher.Start();
-                _watcher.NotifyForExistingFiles();
+                _watcher.Start(notifyForExistingFiles: true);
             }
+        }
+
+        private IEnumerable<LogEntry> ReadToEnd(FileSystemEventArgs args)
+        {
+            using var stream = File.Open(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return _readers.Get(args.FullPath).Read(stream);
         }
     }
 }

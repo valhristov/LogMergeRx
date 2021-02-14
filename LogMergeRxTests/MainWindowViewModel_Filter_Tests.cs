@@ -15,7 +15,8 @@ namespace LogMergeRx
 
         public MainWindowViewModel_Filter_Tests()
         {
-            _viewModel = new MainWindowViewModel(
+            _viewModel = new MainWindowViewModel();
+            Array.ForEach(
                 new[]
                 {
                     CreateLogEntry("ERROR", "message error 1"),
@@ -24,7 +25,8 @@ namespace LogMergeRx
                     CreateLogEntry("warn", "message warning 2"),
                     CreateLogEntry("NOTice", "message notice 1"),
                     CreateLogEntry("INFO", "message info 1"),
-                });
+                },
+                _viewModel.ItemsSource.Add);
 
             LogEntry CreateLogEntry(string level, string message) =>
                 new LogEntry("file", DateTime.Now, level, "source", message);
