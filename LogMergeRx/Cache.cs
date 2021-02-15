@@ -17,5 +17,10 @@ namespace LogMergeRx
 
         public TValue Get(TKey key) =>
             _items.GetOrAdd(key, x => new Lazy<TValue>(_factory(x))).Value;
+
+        public TValue Remove(TKey key) =>
+            _items.TryRemove(key, out var lazy) && lazy.IsValueCreated
+                ? lazy.Value
+                : default;
     }
 }

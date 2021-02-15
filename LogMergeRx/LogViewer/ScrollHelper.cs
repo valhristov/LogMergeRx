@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace LogMergeRx
+namespace LogMergeRx.LogViewer
 {
     public static class ScrollHelper
     {

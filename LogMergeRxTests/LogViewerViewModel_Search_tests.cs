@@ -1,18 +1,19 @@
 ﻿using System;
 using FluentAssertions;
+using LogMergeRx.LogViewer;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LogMergeRx
 {
     [TestClass]
-    public class MainWindowViewModel_Search_tests
+    public class LogViewerViewModel_Search_tests
     {
-        private readonly MainWindowViewModel _viewModel;
+        private readonly LogViewerViewModel _viewModel;
 
-        public MainWindowViewModel_Search_tests()
+        public LogViewerViewModel_Search_tests()
         {
-            _viewModel = new MainWindowViewModel();
+            _viewModel = new LogViewerViewModel();
             Array.ForEach(
                 new[]
                 {

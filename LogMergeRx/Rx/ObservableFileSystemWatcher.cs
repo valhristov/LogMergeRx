@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 
 namespace LogMergeRx.Rx
 {
-    public class ObservableFileSystemWatcher
+    public class ObservableFileSystemWatcher : IDisposable
     {
         private readonly FileSystemWatcher _fsw;
 
@@ -55,5 +55,11 @@ namespace LogMergeRx.Rx
                 WatcherChangeTypes.Created,
                 Path.GetDirectoryName(fullPath),
                 Path.GetFileName(fullPath));
+
+        public void Dispose()
+        {
+            _fsw.EnableRaisingEvents = false;
+            _fsw.Dispose();
+        }
     }
 }

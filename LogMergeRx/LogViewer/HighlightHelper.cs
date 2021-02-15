@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
-namespace LogMergeRx
+namespace LogMergeRx.LogViewer
 {
     public static class HighlightHelper
     {
@@ -48,6 +48,7 @@ namespace LogMergeRx
                 return;
             }
 
+            textBlock.Text = string.Empty; // reset
             textBlock.Inlines.AddRange(
                 Split().Select(GetRun));
 

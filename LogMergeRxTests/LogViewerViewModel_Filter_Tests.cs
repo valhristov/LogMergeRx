@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
 using FluentAssertions;
+using LogMergeRx.LogViewer;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LogMergeRx
 {
     [TestClass]
-    public class MainWindowViewModel_Filter_Tests
+    public class LogViewerViewModel_Filter_Tests
     {
-        private readonly MainWindowViewModel _viewModel;
+        private readonly LogViewerViewModel _viewModel;
 
-        public MainWindowViewModel_Filter_Tests()
+        public LogViewerViewModel_Filter_Tests()
         {
-            _viewModel = new MainWindowViewModel();
+            _viewModel = new LogViewerViewModel();
             Array.ForEach(
                 new[]
                 {
