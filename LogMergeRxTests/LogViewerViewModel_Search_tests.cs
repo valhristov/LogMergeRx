@@ -13,7 +13,7 @@ namespace LogMergeRx
 
         public LogViewerViewModel_Search_tests()
         {
-            _viewModel = new LogViewerViewModel();
+            _viewModel = new LogViewerViewModel("test");
             Array.ForEach(
                 new[]
                 {

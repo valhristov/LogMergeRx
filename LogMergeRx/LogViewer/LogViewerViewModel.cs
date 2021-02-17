@@ -13,7 +13,7 @@ namespace LogMergeRx.LogViewer
     {
         public ObservableCollection<LogEntry> ItemsSource { get; } =
             new ObservableCollection<LogEntry>();
-
+        public string FileName { get; }
         public ObservableProperty<bool> ShowErrors { get; }
         public ObservableProperty<bool> ShowWarnings { get; }
         public ObservableProperty<bool> ShowNotices { get; }
@@ -31,8 +31,10 @@ namespace LogMergeRx.LogViewer
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public LogViewerViewModel()
+        public LogViewerViewModel(string fileName)
         {
+            FileName = fileName;
+
             ShowErrors = new ObservableProperty<bool>(true);
             ShowWarnings = new ObservableProperty<bool>(true);
             ShowNotices = new ObservableProperty<bool>(true);

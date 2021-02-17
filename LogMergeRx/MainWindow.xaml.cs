@@ -52,7 +52,7 @@ namespace LogMergeRx
             if (dialog.ShowDialog() == true &&
                 dialog.FileNames.Length > 0)
             {
-                var viewModel = new LogViewerViewModel();
+                var viewModel = new LogViewerViewModel(Path.GetFileName(dialog.FileName));
 
                 var stopwatch = new Stopwatch();
 

@@ -16,7 +16,7 @@
         <StackPanel Orientation="Horizontal">
             <Button Click="Button_Click" Content="+" />
         </StackPanel>
-        <TabControl Grid.Row="1" ItemsSource="{Binding LogViewers}">
+        <TabControl Grid.Row="1" ItemsSource="{Binding LogViewers}" SelectedIndex="{Binding SelectedViewerIndex.Value}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding FileName}" />

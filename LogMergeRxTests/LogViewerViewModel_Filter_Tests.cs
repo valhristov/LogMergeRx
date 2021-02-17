@@ -16,7 +16,7 @@ namespace LogMergeRx
 
         public LogViewerViewModel_Filter_Tests()
         {
-            _viewModel = new LogViewerViewModel();
+            _viewModel = new LogViewerViewModel("test");
             Array.ForEach(
                 new[]
                 {
