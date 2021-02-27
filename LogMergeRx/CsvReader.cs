@@ -23,7 +23,7 @@ namespace LogMergeRx
             return result;
         }
 
-        private IEnumerable<LogEntry> ReadToEnd(Stream stream)
+        private static IEnumerable<LogEntry> ReadToEnd(Stream stream)
         {
             using var parser = new TextFieldParser(stream, Encoding.UTF8, true, true);
 

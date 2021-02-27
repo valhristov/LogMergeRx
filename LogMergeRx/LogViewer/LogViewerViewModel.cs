@@ -1,18 +1,18 @@
-﻿using System;
+﻿using LogMergeRx.Model;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Data;
-using LogMergeRx.Model;
 
 namespace LogMergeRx.LogViewer
 {
     public class LogViewerViewModel
     {
-        public ObservableCollection<LogEntry> ItemsSource { get; } =
-            new ObservableCollection<LogEntry>();
+        public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
+            new WpfObservableRangeCollection<LogEntry>();
+
         public string FileName { get; }
         public ObservableProperty<bool> ShowErrors { get; }
         public ObservableProperty<bool> ShowWarnings { get; }

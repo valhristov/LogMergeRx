@@ -50,7 +50,7 @@ namespace LogMergeRx.Rx
         public void Stop() =>
             _fsw.EnableRaisingEvents = false;
 
-        private FileSystemEventArgs ArgsFromPath(string fullPath) =>
+        private static FileSystemEventArgs ArgsFromPath(string fullPath) =>
             new FileSystemEventArgs(
                 WatcherChangeTypes.Created,
                 Path.GetDirectoryName(fullPath),
