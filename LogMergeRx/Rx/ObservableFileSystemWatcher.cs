@@ -22,8 +22,9 @@ namespace LogMergeRx.Rx
             _fsw = new FileSystemWatcher
             {
                 Path = directoryPath,
-                Filter = filter,
+                Filter = filter.StartsWith("*") ? filter : $"*{filter}",
                 NotifyFilter = NotifyFilters.LastWrite,
+                IncludeSubdirectories = true,
             };
 
             Changed = Observable

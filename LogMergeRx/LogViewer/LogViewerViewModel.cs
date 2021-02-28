@@ -13,7 +13,6 @@ namespace LogMergeRx.LogViewer
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
 
-        public string FileName { get; }
         public ObservableProperty<bool> ShowErrors { get; }
         public ObservableProperty<bool> ShowWarnings { get; }
         public ObservableProperty<bool> ShowNotices { get; }
@@ -31,10 +30,8 @@ namespace LogMergeRx.LogViewer
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public LogViewerViewModel(string fileName)
+        public LogViewerViewModel()
         {
-            FileName = fileName;
-
             ShowErrors = new ObservableProperty<bool>(true);
             ShowWarnings = new ObservableProperty<bool>(true);
             ShowNotices = new ObservableProperty<bool>(true);
@@ -48,6 +45,7 @@ namespace LogMergeRx.LogViewer
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
             ItemsSourceView.Filter = Filter;
+            //ItemsSourceView.SortDescriptions.Add(new SortDescription("Date", ListSortDirection.Ascending));
 
             Observable
                 .Merge(ShowErrors, ShowWarnings, ShowNotices, ShowInfos)

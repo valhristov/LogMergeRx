@@ -9,24 +9,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <Button Click="Button_Click" Content="+" />
-        </StackPanel>
-        <TabControl Grid.Row="1" ItemsSource="{Binding LogViewers}" SelectedIndex="{Binding SelectedViewerIndex.Value}">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding FileName}" />
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <logViewer:LogViewerView />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+        <logViewer:LogViewerView />
     </Grid>
 </Window>

@@ -1,16 +1,28 @@
-﻿using LogMergeRx.Model;
-using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
+using CsvHelper.Configuration;
+using LogMergeRx.Model;
 
 namespace LogMergeRx
 {
     public class CsvReader
     {
+        private static readonly CsvConfiguration _configuration =
+            new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = ";",
+            };
+
         private long _lastOffset;
+        private readonly string _fileName;
+
+        public CsvReader(string fileName)
+        {
+            _fileName = fileName;
+        }
 
         public List<LogEntry> Read(Stream stream)
         {
@@ -23,26 +35,21 @@ namespace LogMergeRx
             return result;
         }
 
-        private static IEnumerable<LogEntry> ReadToEnd(Stream stream)
+        private IEnumerable<LogEntry> ReadToEnd(Stream stream)
         {
-            using var parser = new TextFieldParser(stream, Encoding.UTF8, true, true);
+            using var textReader = new StreamReader(stream, leaveOpen: true);
+            using var csv = new CsvHelper.CsvReader(textReader, _configuration);
 
-            parser.TextFieldType = FieldType.Delimited;
-            parser.SetDelimiters(";");
-
-            while (!parser.EndOfData)
+            csv.Read();
+            while (csv.Read())
             {
-                yield return CreateLogEntry(parser.ReadFields());
+                yield return new LogEntry(
+                    FileName: _fileName,
+                    Date: csv.GetField<string>(0),
+                    Level: csv.GetField<string>(2),
+                    Source: csv.GetField<string>(3),
+                    Message: csv.GetField<string>(4));
             }
-
-            static LogEntry CreateLogEntry(string[] fields) =>
-                new LogEntry(
-                    FileName: string.Empty, // TODO
-                    Date: fields[0],
-                    Level: fields[2].Trim(),
-                    Source: fields[3].Trim(),
-                    Message: fields[4]
-                );
         }
     }
 }
