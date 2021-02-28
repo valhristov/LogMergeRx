@@ -1,6 +1,7 @@
 ﻿using LogMergeRx.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -21,6 +22,7 @@ namespace LogMergeRx.LogViewer
         public ObservableProperty<string> ExcludeRegex { get; }
         public ObservableProperty<string> SearchRegex { get; }
         public ObservableProperty<int> ScrollToIndex { get; }
+        public ObservableProperty<LogEntry> ScrollToItem { get; }
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
 
@@ -29,6 +31,12 @@ namespace LogMergeRx.LogViewer
 
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
+
+        public WpfObservableRangeCollection<string> AllFiles { get; } =
+            new WpfObservableRangeCollection<string>();
+
+        public WpfObservableRangeCollection<string> SelectedFiles { get; } =
+            new WpfObservableRangeCollection<string>();
 
         public LogViewerViewModel()
         {
@@ -40,6 +48,7 @@ namespace LogMergeRx.LogViewer
             ExcludeRegex = new ObservableProperty<string>(string.Empty);
             SearchRegex = new ObservableProperty<string>(string.Empty);
             ScrollToIndex = new ObservableProperty<int>(0);
+            ScrollToItem = new ObservableProperty<LogEntry>(null);
 
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
@@ -54,7 +63,23 @@ namespace LogMergeRx.LogViewer
                 .Merge(IncludeRegex, ExcludeRegex)
                 .Subscribe(_ => ItemsSourceView.Refresh());
 
+            Observable
+                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                    h => SelectedFiles.CollectionChanged += h,
+                    h => SelectedFiles.CollectionChanged -= h)
+                .Select(x => x.EventArgs)
+                .Subscribe(_ => ItemsSourceView.Refresh());
+
             SearchRegex.Subscribe(pattern => FindNext(pattern, -1));
+        }
+
+        public void AddFileToFilter(string fileName)
+        {
+            if (!AllFiles.Contains(fileName))
+            {
+                AllFiles.Add(fileName);
+                SelectedFiles.Add(fileName);
+            }
         }
 
         private void FindNext(string pattern, int startIndex) =>
@@ -73,13 +98,14 @@ namespace LogMergeRx.LogViewer
 
             if (result.Item != null) // match found
             {
+                ScrollToItem.Value = result.Item;
                 ScrollToIndex.Value = result.Index;
             }
         }
 
         private bool Filter(object o)
         {
-            return o is LogEntry log && FilterByLevel(log) && FilterByInclude(log) && FilterByExclude(log);
+            return o is LogEntry log && FilterByLevel(log) && FilterByInclude(log) && FilterByExclude(log) && FilterByFile(log);
 
             bool FilterByLevel(LogEntry log) =>
                 ShowErrors.Value && "ERROR".Equals(log.Level, StringComparison.OrdinalIgnoreCase) ||
@@ -92,6 +118,9 @@ namespace LogMergeRx.LogViewer
 
             bool FilterByExclude(LogEntry log) =>
                 string.IsNullOrWhiteSpace(ExcludeRegex.Value) || !RegexCache.GetRegex(ExcludeRegex.Value).IsMatch(log.Message);
+
+            bool FilterByFile(LogEntry log) =>
+                SelectedFiles.Contains(log.FileName);
         }
     }
 }

@@ -43,12 +43,14 @@ namespace LogMergeRx
             csv.Read();
             while (csv.Read())
             {
-                yield return new LogEntry(
+                var entry = new LogEntry(
                     FileName: _fileName,
                     Date: csv.GetField<string>(0),
-                    Level: csv.GetField<string>(2),
-                    Source: csv.GetField<string>(3),
+                    Level: csv.GetField<string>(2).Trim(),
+                    Source: csv.GetField<string>(3).Trim(),
                     Message: csv.GetField<string>(4));
+
+                yield return entry;
             }
         }
     }

@@ -20,8 +20,12 @@ namespace LogMergeRx
         private readonly Cache<string, CsvReader> _readers =
             new Cache<string, CsvReader>(fullPath => new CsvReader(Path.GetFileName(fullPath)));
 
+        private DateTime _appStart;
+
         public MainWindow()
         {
+            _appStart = DateTime.UtcNow;
+
             InitializeComponent();
 
             var dialog = new OpenFileDialog { Multiselect = false, };
@@ -30,24 +34,29 @@ namespace LogMergeRx
                 dialog.FileNames.Length > 0)
             {
                 var viewModel = new LogViewerViewModel();
+                DataContext = viewModel;
 
                 var watcher = _watchers.Get(dialog.FileName);
 
                 Observable.Merge(watcher.Changed, watcher.Created)
-                    .Where(FromToday)
+                    .Where(FromAppStart)
+                    .Select(args => args.Name)
+                    .ObserveOnDispatcher()
+                    .Subscribe(viewModel.AddFileToFilter);
+
+                Observable.Merge(watcher.Changed, watcher.Created)
+                    .Where(FromAppStart)
                     .Select(ReadToEnd)
                     .ObserveOnDispatcher()
                     .Subscribe(viewModel.ItemsSource.AddRange);
 
                 watcher.Start(notifyForExistingFiles: true);
-
-                DataContext = viewModel;
             }
         }
 
-        private bool FromToday(FileSystemEventArgs args) =>
+        private bool FromAppStart(FileSystemEventArgs args) =>
             true;
-//            File.GetLastWriteTime(args.FullPath) >= DateTime.Now.Date;
+            //File.GetLastWriteTimeUtc(args.FullPath) >= _appStart;
 
         private IEnumerable<LogEntry> ReadToEnd(FileSystemEventArgs args)
         {

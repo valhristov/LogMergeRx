@@ -16,5 +16,17 @@ namespace LogMergeRx.LogViewer
 
         private static void OnScrollToIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
             (d as VirtualizingStackPanel)?.BringIndexIntoViewPublic((int)e.NewValue);
+
+        public static readonly DependencyProperty ScrollToItemProperty =
+            DependencyProperty.RegisterAttached("ScrollToItem", typeof(object), typeof(ScrollHelper), new PropertyMetadata(0, OnScrollToItemChanged));
+
+        public static object GetScrollToItem(DependencyObject d) =>
+            (int)d.GetValue(ScrollToIndexProperty);
+
+        public static void SetScrollToItem(DependencyObject d, object value) =>
+            d.SetValue(ScrollToIndexProperty, value);
+
+        private static void OnScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+            (d as DataGrid)?.ScrollIntoView(e.NewValue);
     }
 }
