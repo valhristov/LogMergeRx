@@ -1,8 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.IO;
+using FluentAssertions;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
 
 namespace LogMergeRx
 {
@@ -15,7 +15,7 @@ namespace LogMergeRx
             using var stream = new MemoryStream();
             using var writer = new StreamWriter(stream) { AutoFlush = true };
 
-            var csv = new CsvReader();
+            var csv = new CsvReader("");
 
             var entries = new[] { CreateLogEntry("1"), CreateLogEntry("2") };
             Append(stream, entries);
@@ -44,7 +44,7 @@ namespace LogMergeRx
             stream.Seek(0, SeekOrigin.End);
 
             Array.ForEach(entries, entry =>
-                writer.WriteLine($"\"{entry.Date}\"; \"\"; \"{entry.Level}\"; \"{entry.Source}\"; \"{entry.Message}\""));
+                writer.WriteLine($"\"{entry.Date}\";\"\";\"{entry.Level}\";\"{entry.Source}\";\"{entry.Message}\";"));
         }
     }
 }

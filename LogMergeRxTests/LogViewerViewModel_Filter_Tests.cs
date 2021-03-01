@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
 using FluentAssertions;
-using LogMergeRx.LogViewer;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,8 +15,8 @@ namespace LogMergeRx
 
         public LogViewerViewModel_Filter_Tests()
         {
-            _viewModel = new LogViewerViewModel("test");
-            Array.ForEach(
+            _viewModel = new LogViewerViewModel();
+            _viewModel.ItemsSource.AddRange(
                 new[]
                 {
                     CreateLogEntry("ERROR", "message error 1"),
@@ -26,8 +25,7 @@ namespace LogMergeRx
                     CreateLogEntry("warn", "message warning 2"),
                     CreateLogEntry("NOTice", "message notice 1"),
                     CreateLogEntry("INFO", "message info 1"),
-                },
-                _viewModel.ItemsSource.Add);
+                });
 
             LogEntry CreateLogEntry(string level, string message) =>
                 new LogEntry("", "", level, "source", message);

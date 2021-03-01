@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Data;
 
-namespace LogMergeRx.LogViewer
+namespace LogMergeRx
 {
     public class LogViewerViewModel
     {
@@ -120,7 +120,7 @@ namespace LogMergeRx.LogViewer
                 string.IsNullOrWhiteSpace(ExcludeRegex.Value) || !RegexCache.GetRegex(ExcludeRegex.Value).IsMatch(log.Message);
 
             bool FilterByFile(LogEntry log) =>
-                SelectedFiles.Contains(log.FileName);
+                AllFiles.Count == 0 || SelectedFiles.Contains(log.FileName);
         }
     }
 }

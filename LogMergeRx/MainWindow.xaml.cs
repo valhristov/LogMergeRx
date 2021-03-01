@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-using LogMergeRx.LogViewer;
+using System.Windows.Controls;
 using LogMergeRx.Model;
 using LogMergeRx.Rx;
 using Microsoft.Win32;
@@ -22,6 +22,12 @@ namespace LogMergeRx
 
         private DateTime _appStart;
 
+        private LogViewerViewModel ViewModel
+        {
+            get => (LogViewerViewModel)DataContext;
+            set => DataContext = value;
+        }
+
         public MainWindow()
         {
             _appStart = DateTime.UtcNow;
@@ -29,29 +35,33 @@ namespace LogMergeRx
             InitializeComponent();
 
             var dialog = new OpenFileDialog { Multiselect = false, };
+            ViewModel = new LogViewerViewModel();
 
             if (dialog.ShowDialog() == true &&
                 dialog.FileNames.Length > 0)
             {
-                var viewModel = new LogViewerViewModel();
-                DataContext = viewModel;
-
                 var watcher = _watchers.Get(dialog.FileName);
 
                 Observable.Merge(watcher.Changed, watcher.Created)
                     .Where(FromAppStart)
                     .Select(args => args.Name)
                     .ObserveOnDispatcher()
-                    .Subscribe(viewModel.AddFileToFilter);
+                    .Subscribe(ViewModel.AddFileToFilter);
 
                 Observable.Merge(watcher.Changed, watcher.Created)
                     .Where(FromAppStart)
                     .Select(ReadToEnd)
                     .ObserveOnDispatcher()
-                    .Subscribe(viewModel.ItemsSource.AddRange);
+                    .Subscribe(ViewModel.ItemsSource.AddRange);
 
                 watcher.Start(notifyForExistingFiles: true);
             }
+        }
+
+        private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewModel.SelectedFiles.RemoveAll(file => e.RemovedItems.Contains(file));
+            ViewModel.SelectedFiles.AddRange(e.AddedItems.OfType<string>());
         }
 
         private bool FromAppStart(FileSystemEventArgs args) =>

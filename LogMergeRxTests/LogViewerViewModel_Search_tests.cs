@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using LogMergeRx.LogViewer;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,7 +12,7 @@ namespace LogMergeRx
 
         public LogViewerViewModel_Search_tests()
         {
-            _viewModel = new LogViewerViewModel("test");
+            _viewModel = new LogViewerViewModel();
             Array.ForEach(
                 new[]
                 {

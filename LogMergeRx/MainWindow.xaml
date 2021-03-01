@@ -4,11 +4,70 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogMergeRx"
-        xmlns:logViewer="clr-namespace:LogMergeRx.LogViewer"
-        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
+        d:DataContext="{d:DesignInstance Type=local:LogViewerViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <logViewer:LogViewerView />
+    <Window.Resources>
+        <local:LevelToForegroundConverter x:Key="LevelToForegroundConverter"
+            Error="Red"
+            Warning="Orange"
+            Info="Black"
+            Notice="Black"
+            />
+    </Window.Resources>
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="5">
+            <Label Content="Level"/>
+            <UniformGrid Rows="1" Columns="4">
+                <ToggleButton Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
+                <ToggleButton Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />
+                <ToggleButton Content="Notices" IsChecked="{Binding ShowNotices.Value}" />
+                <ToggleButton Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
+            </UniformGrid>
+            <Label Content="Include only matching"/>
+            <TextBox Text="{Binding IncludeRegex.Value}" />
+            <Label Content="Exclude matching"/>
+            <TextBox Text="{Binding ExcludeRegex.Value}" />
+            <Label Content="Search"/>
+            <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+            <UniformGrid Rows="1" Columns="2">
+                <Button Content="Prev" Command="{Binding PrevIndex}" />
+                <Button Content="Next" Command="{Binding NextIndex}" />
+            </UniformGrid>
+            <ListBox ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
+                     SelectionChanged="AllFiles_SelectionChanged" />
+        </StackPanel>
+
+        <DataGrid x:Name="DataGrid" Grid.Column="1" SelectionMode="Single" ItemsSource="{Binding ItemsSource}"
+                  VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling"
+                  AutoGenerateColumns="False" local:ScrollHelper.ScrollToItem="{Binding ScrollToItem}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Width="150" Binding="{Binding Date}" />
+                <DataGridTemplateColumn Header="Level" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Level}"
+                                       Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="File Name" Binding="{Binding FileName}"/>
+                <DataGridTemplateColumn Header="Message">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Grid.Column="4" Margin="3"
+                                       local:HighlightHelper.Text="{Binding Message}"
+                                       local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
