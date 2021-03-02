@@ -9,11 +9,12 @@ using System.Windows.Data;
 
 namespace LogMergeRx
 {
-    public class LogViewerViewModel
+    public class MainWindowViewModel
     {
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
 
+        public ObservableProperty<bool> FollowTail { get; }
         public ObservableProperty<bool> ShowErrors { get; }
         public ObservableProperty<bool> ShowWarnings { get; }
         public ObservableProperty<bool> ShowNotices { get; }
@@ -38,8 +39,9 @@ namespace LogMergeRx
         public WpfObservableRangeCollection<string> SelectedFiles { get; } =
             new WpfObservableRangeCollection<string>();
 
-        public LogViewerViewModel()
+        public MainWindowViewModel()
         {
+            FollowTail = new ObservableProperty<bool>(true);
             ShowErrors = new ObservableProperty<bool>(true);
             ShowWarnings = new ObservableProperty<bool>(true);
             ShowNotices = new ObservableProperty<bool>(true);
@@ -54,7 +56,7 @@ namespace LogMergeRx
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
             ItemsSourceView.Filter = Filter;
-            //ItemsSourceView.SortDescriptions.Add(new SortDescription("Date", ListSortDirection.Ascending));
+            ItemsSourceView.SortDescriptions.Add(new SortDescription(nameof(LogEntry.Date), ListSortDirection.Ascending));
 
             Observable
                 .Merge(ShowErrors, ShowWarnings, ShowNotices, ShowInfos)
@@ -62,6 +64,15 @@ namespace LogMergeRx
             Observable
                 .Merge(IncludeRegex, ExcludeRegex)
                 .Subscribe(_ => ItemsSourceView.Refresh());
+
+            FollowTail.Subscribe(_ => ScrollToEnd());
+
+            Observable
+                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                    h => ItemsSourceView.CollectionChanged += h,
+                    h => ItemsSourceView.CollectionChanged -= h)
+                .Select(x => x.EventArgs)
+                .Subscribe(_ => ScrollToEnd());
 
             Observable
                 .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
@@ -71,6 +82,15 @@ namespace LogMergeRx
                 .Subscribe(_ => ItemsSourceView.Refresh());
 
             SearchRegex.Subscribe(pattern => FindNext(pattern, -1));
+        }
+
+        private void ScrollToEnd()
+        {
+            if (FollowTail.Value &&
+                ItemsSourceView.MoveCurrentToLast())
+            {
+                ScrollToItem.Value = (LogEntry)ItemsSourceView.CurrentItem;
+            }
         }
 
         public void AddFileToFilter(string fileName)
@@ -90,6 +110,8 @@ namespace LogMergeRx
 
         private void ScrollIntoView(string pattern, int startIndex, ListSortDirection direction)
         {
+            FollowTail.Value = false;
+
             var regex = RegexCache.GetRegex(pattern);
 
             var result = direction == ListSortDirection.Ascending

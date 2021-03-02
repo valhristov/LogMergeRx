@@ -14,6 +14,7 @@ namespace LogMergeRx
             new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
+                BadDataFound = null,
             };
 
         private long _lastOffset;

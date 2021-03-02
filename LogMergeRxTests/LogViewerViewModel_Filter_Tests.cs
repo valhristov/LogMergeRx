@@ -11,11 +11,11 @@ namespace LogMergeRx
     [TestClass]
     public class LogViewerViewModel_Filter_Tests
     {
-        private readonly LogViewerViewModel _viewModel;
+        private readonly MainWindowViewModel _viewModel;
 
         public LogViewerViewModel_Filter_Tests()
         {
-            _viewModel = new LogViewerViewModel();
+            _viewModel = new MainWindowViewModel();
             _viewModel.ItemsSource.AddRange(
                 new[]
                 {

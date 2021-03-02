@@ -8,11 +8,11 @@ namespace LogMergeRx
     [TestClass]
     public class LogViewerViewModel_Search_tests
     {
-        private readonly LogViewerViewModel _viewModel;
+        private readonly MainWindowViewModel _viewModel;
 
         public LogViewerViewModel_Search_tests()
         {
-            _viewModel = new LogViewerViewModel();
+            _viewModel = new MainWindowViewModel();
             Array.ForEach(
                 new[]
                 {

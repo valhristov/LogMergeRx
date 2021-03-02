@@ -26,7 +26,12 @@ namespace LogMergeRx
         public static void SetScrollToItem(DependencyObject d, object value) =>
             d.SetValue(ScrollToIndexProperty, value);
 
-        private static void OnScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-            (d as DataGrid)?.ScrollIntoView(e.NewValue);
+        private static void OnScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != null)
+            {
+                (d as DataGrid)?.ScrollIntoView(e.NewValue);
+            }
+        }
     }
 }

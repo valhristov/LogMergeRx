@@ -22,20 +22,20 @@ namespace LogMergeRx
 
         private DateTime _appStart;
 
-        private LogViewerViewModel ViewModel
+        private MainWindowViewModel ViewModel
         {
-            get => (LogViewerViewModel)DataContext;
+            get => (MainWindowViewModel)DataContext;
             set => DataContext = value;
         }
 
         public MainWindow()
         {
-            _appStart = DateTime.UtcNow;
-
             InitializeComponent();
 
+            _appStart = DateTime.UtcNow;
+
             var dialog = new OpenFileDialog { Multiselect = false, };
-            ViewModel = new LogViewerViewModel();
+            ViewModel = new MainWindowViewModel();
 
             if (dialog.ShowDialog() == true &&
                 dialog.FileNames.Length > 0)

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogMergeRx"
-        d:DataContext="{d:DesignInstance Type=local:LogViewerViewModel}"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
@@ -21,6 +21,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <StackPanel Margin="5">
+            <ToggleButton Content="Follow Tail" IsChecked="{Binding FollowTail.Value}" />
             <Label Content="Level"/>
             <UniformGrid Rows="1" Columns="4">
                 <ToggleButton Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
@@ -44,7 +45,7 @@
 
         <DataGrid x:Name="DataGrid" Grid.Column="1" SelectionMode="Single" ItemsSource="{Binding ItemsSource}"
                   VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling"
-                  AutoGenerateColumns="False" local:ScrollHelper.ScrollToItem="{Binding ScrollToItem}">
+                  AutoGenerateColumns="False" local:ScrollHelper.ScrollToItem="{Binding ScrollToItem.Value}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" Width="150" Binding="{Binding Date}" />
                 <DataGridTemplateColumn Header="Level" Width="100">
