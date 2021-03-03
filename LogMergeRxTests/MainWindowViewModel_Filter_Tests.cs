@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
 using FluentAssertions;
@@ -9,11 +8,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LogMergeRx
 {
     [TestClass]
-    public class LogViewerViewModel_Filter_Tests
+    public class MainWindowViewModel_Filter_Tests
     {
         private readonly MainWindowViewModel _viewModel;
 
-        public LogViewerViewModel_Filter_Tests()
+        public MainWindowViewModel_Filter_Tests()
         {
             _viewModel = new MainWindowViewModel();
             _viewModel.ItemsSource.AddRange(

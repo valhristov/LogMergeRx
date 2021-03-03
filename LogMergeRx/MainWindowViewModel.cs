@@ -90,6 +90,7 @@ namespace LogMergeRx
                 ItemsSourceView.MoveCurrentToLast())
             {
                 ScrollToItem.Value = (LogEntry)ItemsSourceView.CurrentItem;
+                ScrollToIndex.Value = ItemsSourceView.CurrentPosition;
             }
         }
 

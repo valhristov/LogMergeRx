@@ -6,13 +6,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LogMergeRx
 {
     [TestClass]
-    public class LogViewerViewModel_Search_tests
+    public class MainWindowViewModel_Search_tests
     {
         private readonly MainWindowViewModel _viewModel;
 
-        public LogViewerViewModel_Search_tests()
+        public MainWindowViewModel_Search_tests()
         {
             _viewModel = new MainWindowViewModel();
+            _viewModel.FollowTail.Value = false;
             Array.ForEach(
                 new[]
                 {
@@ -30,10 +31,13 @@ namespace LogMergeRx
                     CreateLogEntry("WARN", "1"), //  index:10 // index:6 with removed errors
                 },
                 _viewModel.ItemsSource.Add);
-
-            LogEntry CreateLogEntry(string level, string message) =>
-                new LogEntry("", "", level, "source", message);
         }
+
+        static int counter = 0;
+        LogEntry CreateLogEntry(string level, string message) =>
+            // it is important to format the counter with leading zero because 10 comes between 1 and 2
+            // when compared as string.
+            new LogEntry("", counter++.ToString("00"), level, "source", message);
 
         [TestMethod]
         public void SearchRegex_always_searches_from_start()

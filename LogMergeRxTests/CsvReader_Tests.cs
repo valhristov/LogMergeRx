@@ -30,8 +30,9 @@ namespace LogMergeRx
             csv.Read(stream).Should().Equal(entries);
         }
 
+        private static int counter;
         private static LogEntry CreateLogEntry(string message) =>
-            new LogEntry("", "", "error", "source", message);
+            new LogEntry("", counter++.ToString("00"), "error", "source", message);
 
         private static void Append(Stream stream, LogEntry[] entries)
         {
