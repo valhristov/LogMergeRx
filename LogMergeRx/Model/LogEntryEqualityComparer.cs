@@ -6,12 +6,12 @@ namespace LogMergeRx.Model
     /// <summary>
     /// Equality comparer for testing purposes
     /// </summary>
-    public sealed class LogEntryComparer : IEqualityComparer<LogEntry>
+    public sealed class LogEntryEqualityComparer : IEqualityComparer<LogEntry>
     {
         public static IEqualityComparer<LogEntry> Default { get; } =
-            new LogEntryComparer();
+            new LogEntryEqualityComparer();
 
-        private LogEntryComparer() { }
+        private LogEntryEqualityComparer() { }
 
         public bool Equals(LogEntry x, LogEntry y) =>
             ReferenceEquals(x, y) ||

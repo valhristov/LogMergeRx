@@ -46,7 +46,8 @@
 
         <DataGrid x:Name="DataGrid" Grid.Column="1" SelectionMode="Single" ItemsSource="{Binding ItemsSource}"
                   VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling"
-                  AutoGenerateColumns="False" local:ScrollHelper.ScrollToItem="{Binding ScrollToItem.Value}">
+                  AutoGenerateColumns="False" local:ScrollHelper.ScrollToItem="{Binding ScrollToItem.Value}"
+                  BorderThickness="0" GridLinesVisibility="None" AlternatingRowBackground="#EEEEEE">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" Width="150" Binding="{Binding Date}" />
                 <DataGridTemplateColumn Header="Level" Width="100">

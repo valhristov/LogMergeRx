@@ -8,6 +8,27 @@ namespace LogMergeRx
 {
     public static class ListExtensions
     {
+        public static void Sync<T>(this ISet<T> list, NotifyCollectionChangedEventArgs args)
+        {
+            if (args.OldItems != null)
+            {
+                foreach (T item in args.OldItems)
+                {
+                    list.Remove(item);
+                }
+            }
+            if (args.NewItems != null)
+            {
+                foreach (T item in args.NewItems)
+                {
+                    if (!list.Contains(item))
+                    {
+                        list.Add(item);
+                    }
+                }
+            }
+        }
+
         public static void Sync<T>(this IList<T> list, SelectionChangedEventArgs args)
         {
             foreach (var item in args.RemovedItems.OfType<T>())

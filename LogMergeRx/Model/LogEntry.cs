@@ -9,15 +9,30 @@ namespace LogMergeRx.Model
         {
             this.FileName = FileName;
             this.Date = Date;
-            this.Level = Level;
+            this.Level = Level switch
+            {
+                "ERROR" => LogLevel.ERROR,
+                "WARN" => LogLevel.WARN,
+                "INFO" => LogLevel.INFO,
+                "NOTICE" => LogLevel.NOTICE,
+                _ => LogLevel.ERROR
+            };
             this.Source = Source;
             this.Message = Message;
         }
 
         public string FileName { get; }
         public string Date { get; }
-        public string Level { get; }
+        public LogLevel Level { get; }
         public string Source { get; }
         public string Message { get; }
+    }
+
+    public enum LogLevel
+    {
+        ERROR,
+        WARN,
+        INFO,
+        NOTICE
     }
 }

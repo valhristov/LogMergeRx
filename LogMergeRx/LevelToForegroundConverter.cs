@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
+using LogMergeRx.Model;
 
 namespace LogMergeRx
 {
@@ -13,13 +14,13 @@ namespace LogMergeRx
         public Brush Info { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-            value is string level
+            value is LogLevel level
                 ? level switch
                     {
-                        "ERROR" => Error,
-                        "WARN" => Warning,
-                        "NOTICE" => Notice,
-                        "INFO" => Info,
+                        LogLevel.ERROR => Error,
+                        LogLevel.WARN => Warning,
+                        LogLevel.NOTICE => Notice,
+                        LogLevel.INFO => Info,
                         _ => Info,
                     }
                 : Info;

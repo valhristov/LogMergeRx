@@ -19,15 +19,15 @@ namespace LogMergeRx
 
             var entries = new[] { CreateLogEntry("1"), CreateLogEntry("2") };
             Append(stream, entries);
-            csv.Read(stream).Should().Equal(entries, LogEntryComparer.Default.Equals);
+            csv.Read(stream).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
 
             entries = new[] { CreateLogEntry("3") };
             Append(stream, entries);
-            csv.Read(stream).Should().Equal(entries, LogEntryComparer.Default.Equals);
+            csv.Read(stream).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
 
             entries = new[] { CreateLogEntry("4") };
             Append(stream, entries);
-            csv.Read(stream).Should().Equal(entries, LogEntryComparer.Default.Equals);
+            csv.Read(stream).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
         }
 
         private static int counter;
