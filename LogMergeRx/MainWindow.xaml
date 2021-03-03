@@ -17,30 +17,31 @@
     </Window.Resources>
     <Grid >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="220" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <StackPanel Margin="5">
-            <ToggleButton Content="Follow Tail" IsChecked="{Binding FollowTail.Value}" />
-            <Label Content="Level"/>
+            <ToggleButton Content="Follow Tail" IsChecked="{Binding FollowTail.Value}" Margin="20,0,20,0" />
+            <Label Content="Level" FontSize="14" FontWeight="Bold"/>
             <UniformGrid Rows="1" Columns="4">
                 <ToggleButton Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
-                <ToggleButton Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />
-                <ToggleButton Content="Notices" IsChecked="{Binding ShowNotices.Value}" />
-                <ToggleButton Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
+                <ToggleButton Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" Margin="3,0,0,0" />
+                <ToggleButton Content="Notices" IsChecked="{Binding ShowNotices.Value}" Margin="3,0,0,0" />
+                <ToggleButton Content="Infos" IsChecked="{Binding ShowInfos.Value}" Margin="3,0,0,0" />
             </UniformGrid>
-            <Label Content="Include only matching"/>
+            <Label Content="Include only matching" FontSize="14" FontWeight="Bold"/>
             <TextBox Text="{Binding IncludeRegex.Value}" />
-            <Label Content="Exclude matching"/>
+            <Label Content="Exclude matching" FontSize="14" FontWeight="Bold"/>
             <TextBox Text="{Binding ExcludeRegex.Value}" />
-            <Label Content="Search"/>
+            <Label Content="Search" FontSize="14" FontWeight="Bold"/>
             <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
             <UniformGrid Rows="1" Columns="2">
-                <Button Content="Prev" Command="{Binding PrevIndex}" />
-                <Button Content="Next" Command="{Binding NextIndex}" />
+                <Button Content="Prev" Command="{Binding PrevIndex}" Margin="0,5,3,0" />
+                <Button Content="Next" Command="{Binding NextIndex}" Margin="0,5,0,0" />
             </UniformGrid>
-            <ListBox ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
-                     SelectionChanged="AllFiles_SelectionChanged" />
+            <Label Content="Loaded files" FontSize="14" FontWeight="Bold"/>
+            <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
+                     SelectionChanged="AllFiles_SelectionChanged" Margin="0,5,0,0" />
         </StackPanel>
 
         <DataGrid x:Name="DataGrid" Grid.Column="1" SelectionMode="Single" ItemsSource="{Binding ItemsSource}"

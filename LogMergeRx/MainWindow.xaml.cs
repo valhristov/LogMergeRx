@@ -54,15 +54,16 @@ namespace LogMergeRx
                     .ObserveOnDispatcher()
                     .Subscribe(ViewModel.ItemsSource.AddRange);
 
+                ViewModel.SelectedFiles
+                    .ToObservable()
+                    .Subscribe(args => AllFiles.SelectedItems.Sync(args));
+
                 watcher.Start(notifyForExistingFiles: true);
             }
         }
 
-        private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ViewModel.SelectedFiles.RemoveAll(file => e.RemovedItems.Contains(file));
-            ViewModel.SelectedFiles.AddRange(e.AddedItems.OfType<string>());
-        }
+        private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            ViewModel.SelectedFiles.Sync(e);
 
         private bool FromAppStart(FileSystemEventArgs args) =>
             true;

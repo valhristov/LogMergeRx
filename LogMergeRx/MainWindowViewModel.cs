@@ -1,11 +1,10 @@
-﻿using LogMergeRx.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Data;
+using LogMergeRx.Model;
 
 namespace LogMergeRx
 {
@@ -67,18 +66,12 @@ namespace LogMergeRx
 
             FollowTail.Subscribe(_ => ScrollToEnd());
 
-            Observable
-                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                    h => ItemsSourceView.CollectionChanged += h,
-                    h => ItemsSourceView.CollectionChanged -= h)
-                .Select(x => x.EventArgs)
+            ItemsSourceView
+                .ToObservable()
                 .Subscribe(_ => ScrollToEnd());
 
-            Observable
-                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                    h => SelectedFiles.CollectionChanged += h,
-                    h => SelectedFiles.CollectionChanged -= h)
-                .Select(x => x.EventArgs)
+            SelectedFiles
+                .ToObservable()
                 .Subscribe(_ => ItemsSourceView.Refresh());
 
             SearchRegex.Subscribe(pattern => FindNext(pattern, -1));
