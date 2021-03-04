@@ -15,6 +15,8 @@ namespace LogMergeRx
             using var stream = new MemoryStream();
             using var writer = new StreamWriter(stream) { AutoFlush = true };
 
+            Append(stream, new LogEntry("FileName", "Date", "Level", "Source", "Message")); // headers
+
             var csv = new CsvReader("");
 
             var entries = new[] { CreateLogEntry("1"), CreateLogEntry("2") };
@@ -30,11 +32,24 @@ namespace LogMergeRx
             csv.Read(stream).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
         }
 
+        [TestMethod]
+        public void Read_Empty_File()
+        {
+            using var stream = new MemoryStream();
+
+            var csv = new CsvReader("");
+
+            // The following should not throw exceptions
+            csv.Read(stream);
+            csv.Read(stream);
+            csv.Read(stream);
+        }
+
         private static int counter;
         private static LogEntry CreateLogEntry(string message) =>
             new LogEntry("", counter++.ToString("00"), "error", "source", message);
 
-        private static void Append(Stream stream, LogEntry[] entries)
+        private static void Append(Stream stream, params LogEntry[] entries)
         {
             using var writer =
                 new StreamWriter(stream, leaveOpen: true)

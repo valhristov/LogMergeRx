@@ -9,7 +9,7 @@ namespace LogMergeRx.Model
         {
             this.FileName = FileName;
             this.Date = Date;
-            this.Level = Level switch
+            this.Level = Level.ToUpperInvariant() switch
             {
                 "ERROR" => LogLevel.ERROR,
                 "WARN" => LogLevel.WARN,
