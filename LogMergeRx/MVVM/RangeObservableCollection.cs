@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using LogMergeRx;
 
 namespace System.Collections.ObjectModel
 {
@@ -74,6 +75,7 @@ namespace System.Collections.ObjectModel
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
         public void AddRange(IEnumerable<T> collection)
         {
+            using var x = Meter.MeasureBegin();
             InsertRange(Count, collection);
         }
 

@@ -27,12 +27,4 @@ namespace LogMergeRx.Model
         public string Source { get; }
         public string Message { get; }
     }
-
-    public enum LogLevel
-    {
-        ERROR,
-        WARN,
-        INFO,
-        NOTICE
-    }
 }
