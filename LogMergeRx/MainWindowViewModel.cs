@@ -15,16 +15,17 @@ namespace LogMergeRx
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
 
-        public ObservableProperty<bool> FollowTail { get; }
-        public ObservableProperty<bool> ShowErrors { get; }
-        public ObservableProperty<bool> ShowWarnings { get; }
-        public ObservableProperty<bool> ShowNotices { get; }
-        public ObservableProperty<bool> ShowInfos { get; }
-        public ObservableProperty<string> IncludeRegex { get; }
-        public ObservableProperty<string> ExcludeRegex { get; }
-        public ObservableProperty<string> SearchRegex { get; }
-        public ObservableProperty<int> ScrollToIndex { get; }
-        public ObservableProperty<LogEntry> ScrollToItem { get; }
+        public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
+        public ObservableProperty<bool> ShowErrors { get; } = new ObservableProperty<bool>(true);
+        public ObservableProperty<bool> ShowWarnings { get; } = new ObservableProperty<bool>(true);
+        public ObservableProperty<bool> ShowNotices { get; } = new ObservableProperty<bool>(true);
+        public ObservableProperty<bool> ShowInfos { get; } = new ObservableProperty<bool>(true);
+        public ObservableProperty<string> IncludeRegex { get; } = new ObservableProperty<string>(string.Empty);
+        public ObservableProperty<string> ExcludeRegex { get; } = new ObservableProperty<string>(string.Empty);
+        public ObservableProperty<string> SearchRegex { get; } = new ObservableProperty<string>(string.Empty);
+        public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
+        public ObservableProperty<LogEntry> ScrollToItem { get; } = new ObservableProperty<LogEntry>(null);
+
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
 
@@ -42,17 +43,6 @@ namespace LogMergeRx
 
         public MainWindowViewModel()
         {
-            FollowTail = new ObservableProperty<bool>(true);
-            ShowErrors = new ObservableProperty<bool>(true);
-            ShowWarnings = new ObservableProperty<bool>(true);
-            ShowNotices = new ObservableProperty<bool>(true);
-            ShowInfos = new ObservableProperty<bool>(true);
-            IncludeRegex = new ObservableProperty<string>(string.Empty);
-            ExcludeRegex = new ObservableProperty<string>(string.Empty);
-            SearchRegex = new ObservableProperty<string>(string.Empty);
-            ScrollToIndex = new ObservableProperty<int>(0);
-            ScrollToItem = new ObservableProperty<LogEntry>(null);
-
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
@@ -66,12 +56,12 @@ namespace LogMergeRx
                 .Merge(IncludeRegex, ExcludeRegex)
                 .Subscribe(_ => ItemsSourceView.Refresh());
 
-            FollowTail
+            FollowTail // When this changes we scroll to end (if enabled)
                 .Subscribe(_ => ScrollToEnd());
 
-            ItemsSourceView
+            ItemsSourceView // We scroll to end when new items arrive (if FollowTail is enabled)
                 .ToObservable()
-                .ObserveOnDispatcher()
+                .ObserveOnDispatcher() // not nice, but without this the initiall scroll to end does not work
                 .Subscribe(_ => ScrollToEnd());
 
             SelectedFiles
