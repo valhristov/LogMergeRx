@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace LogMergeRx
             {
                 Delimiter = ";",
                 BadDataFound = null,
+                MissingFieldFound = null,
             };
 
         private long _lastOffset;
@@ -31,7 +33,9 @@ namespace LogMergeRx
 
             var result = ReadToEnd(stream).ToList();
 
-            _lastOffset = stream.Position - Environment.NewLine.Length;
+            _lastOffset = stream.Position == 0 ? 0 : stream.Position - Environment.NewLine.Length;
+
+            Debug.Assert(_lastOffset >= 0);
 
             return result;
         }
@@ -41,13 +45,19 @@ namespace LogMergeRx
             using var textReader = new StreamReader(stream, leaveOpen: true);
             using var csv = new CsvHelper.CsvReader(textReader, _configuration);
 
+            // Read headers if we are at the beginning of the file
+            if (stream.Position == 0 && csv.Read())
+            {
+                csv.ReadHeader();
+            }
+
             while (csv.Read())
             {
                 var entry = new LogEntry(
                     FileName: _fileName,
                     Date: csv.GetField<string>(0),
-                    Level: csv.GetField<string>(2).Trim(),
-                    Source: csv.GetField<string>(3).Trim(),
+                    Level: csv.GetField<string>(2)?.Trim(),
+                    Source: csv.GetField<string>(3)?.Trim(),
                     Message: csv.GetField<string>(4));
 
                 yield return entry;
