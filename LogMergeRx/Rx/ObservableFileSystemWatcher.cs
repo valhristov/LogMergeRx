@@ -43,7 +43,7 @@ namespace LogMergeRx.Rx
             if (notifyForExistingFiles)
             {
                 Array.ForEach(
-                    Directory.GetFiles(_fsw.Path, _fsw.Filter),
+                    Directory.GetFiles(_fsw.Path, _fsw.Filter, SearchOption.AllDirectories),
                     path => _existing.OnNext(ArgsFromPath(path)));
             }
         }
