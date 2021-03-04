@@ -71,6 +71,7 @@ namespace LogMergeRx
 
             ItemsSourceView
                 .ToObservable()
+                .ObserveOnDispatcher()
                 .Subscribe(_ => ScrollToEnd());
 
             SelectedFiles

@@ -43,35 +43,60 @@
             <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
                      SelectionChanged="AllFiles_SelectionChanged" Margin="0,5,0,0" />
         </StackPanel>
+        <ItemsControl Grid.Column="1" ItemsSource="{Binding ItemsSource}"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Text="Date" />
+                        <TextBlock Grid.Column="1" Text="Level" />
+                        <TextBlock Grid.Column="2" Text="Message" />
+                        <TextBlock Grid.Column="3" Text="File Name" />
 
-        <DataGrid x:Name="DataGrid" Grid.Column="1" SelectionMode="Single" ItemsSource="{Binding ItemsSource}"
-                  VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling"
-                  AutoGenerateColumns="False" local:ScrollHelper.ScrollToItem="{Binding ScrollToItem.Value}"
-                  BorderThickness="0" GridLinesVisibility="None" AlternatingRowBackground="#EEEEEE"
-                  SelectionUnit="FullRow">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Date" Width="150" Binding="{Binding Date}" />
-                <DataGridTemplateColumn Header="Level" Width="100">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Level}"
-                                       Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}"
-                                       />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="File Name" Binding="{Binding FileName}"/>
-                <DataGridTemplateColumn Header="Message">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Grid.Column="4" Margin="3"
-                                       local:HighlightHelper.Text="{Binding Message}"
-                                       local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                       />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+                        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="4" CanContentScroll="True" Focusable="False"
+                                      HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </Grid>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel 
+                        local:ScrollHelper.ScrollToIndex="{Binding ScrollToIndex.Value}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
+                        <TextBlock Grid.Column="1" FontWeight="Bold" Margin="3"
+                                   Text="{Binding Level}"
+                                   Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}" />
+                        <TextBlock Grid.Column="2" Margin="3"
+                                   local:HighlightHelper.Text="{Binding Message}"
+                                   local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                        <TextBlock Grid.Column="3" Text="{Binding FileName}" Margin="3" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Window>
