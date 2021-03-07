@@ -15,7 +15,7 @@
             Notice="Black"
             />
     </Window.Resources>
-    <Grid >
+    <Grid x:Name="Root">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition />
@@ -30,9 +30,9 @@
                 <ToggleButton Content="Infos" IsChecked="{Binding ShowInfos.Value}" Margin="3,0,0,0" />
             </UniformGrid>
             <Label Content="Include only matching" FontSize="14" FontWeight="Bold"/>
-            <TextBox Text="{Binding IncludeRegex.Value}" />
+            <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
             <Label Content="Exclude matching" FontSize="14" FontWeight="Bold"/>
-            <TextBox Text="{Binding ExcludeRegex.Value}" />
+            <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
             <Label Content="Search" FontSize="14" FontWeight="Bold"/>
             <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
             <UniformGrid Rows="1" Columns="2">
@@ -64,9 +64,8 @@
                         <TextBlock Grid.Column="1" Text="Level" />
                         <TextBlock Grid.Column="2" Text="Message" />
                         <TextBlock Grid.Column="3" Text="File Name" />
-
                         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="4" CanContentScroll="True" Focusable="False"
-                                      HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+                                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                             <ItemsPresenter />
                         </ScrollViewer>
                     </Grid>
@@ -93,7 +92,8 @@
                                    Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}" />
                         <TextBlock Grid.Column="2" Margin="3"
                                    local:HighlightHelper.Text="{Binding Message}"
-                                   local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                   local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, ElementName=Root}"
+                                   TextWrapping="Wrap"/>
                         <TextBlock Grid.Column="3" Text="{Binding FileName}" Margin="3" />
                     </Grid>
                 </DataTemplate>
