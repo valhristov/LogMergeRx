@@ -5,20 +5,13 @@ namespace LogMergeRx.Model
     [DebuggerDisplay("{Date}:{Level}:{Message}")]
     public class LogEntry
     {
-        public LogEntry(string FileName, string Date, string Level, string Source, string Message)
+        public LogEntry(string fileName, string date, LogLevel level, string source, string message)
         {
-            this.FileName = FileName;
-            this.Date = Date;
-            this.Level = Level.ToUpperInvariant() switch
-            {
-                "ERROR" => LogLevel.ERROR,
-                "WARN" => LogLevel.WARN,
-                "INFO" => LogLevel.INFO,
-                "NOTICE" => LogLevel.NOTICE,
-                _ => LogLevel.ERROR
-            };
-            this.Source = Source;
-            this.Message = Message;
+            FileName = fileName;
+            Date = date;
+            Level = level;
+            Source = source;
+            Message = message;
         }
 
         public string FileName { get; }

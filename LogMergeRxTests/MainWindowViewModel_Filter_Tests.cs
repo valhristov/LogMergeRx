@@ -15,19 +15,12 @@ namespace LogMergeRx
         public MainWindowViewModel_Filter_Tests()
         {
             _viewModel = new MainWindowViewModel();
-            _viewModel.ItemsSource.AddRange(
-                new[]
-                {
-                    CreateLogEntry("ERROR", "message error 1"),
-                    CreateLogEntry("error", "message error 2"),
-                    CreateLogEntry("WARN", "message warning 1"),
-                    CreateLogEntry("warn", "message warning 2"),
-                    CreateLogEntry("NOTice", "message notice 1"),
-                    CreateLogEntry("INFO", "message info 1"),
-                });
-
-            LogEntry CreateLogEntry(string level, string message) =>
-                new LogEntry("", "", level, "source", message);
+            _viewModel.ItemsSource.Add(LogHelper.Create("message error 1", LogLevel.ERROR));
+            _viewModel.ItemsSource.Add(LogHelper.Create("message error 2", LogLevel.ERROR));
+            _viewModel.ItemsSource.Add(LogHelper.Create("message warning 1", LogLevel.WARN));
+            _viewModel.ItemsSource.Add(LogHelper.Create("message warning 2", LogLevel.WARN));
+            _viewModel.ItemsSource.Add(LogHelper.Create("message notice 1", LogLevel.NOTICE));
+            _viewModel.ItemsSource.Add(LogHelper.Create("message info 1", LogLevel.INFO));
         }
 
         private IEnumerable<LogEntry> View =>

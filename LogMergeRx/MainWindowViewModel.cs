@@ -10,7 +10,7 @@ namespace LogMergeRx
 {
     public class MainWindowViewModel
     {
-        private HashSet<string> _selection = new HashSet<string>();
+        private readonly HashSet<string> _selection = new HashSet<string>();
 
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
@@ -61,7 +61,7 @@ namespace LogMergeRx
 
             ItemsSourceView // We scroll to end when new items arrive (if FollowTail is enabled)
                 .ToObservable()
-                .ObserveOnDispatcher() // not nice, but without this the initiall scroll to end does not work
+                .ObserveOnDispatcher() // not nice, but without this the initial scroll to end does not work
                 .Subscribe(_ => ScrollToEnd());
 
             SelectedFiles
@@ -72,8 +72,10 @@ namespace LogMergeRx
                     ItemsSourceView.Refresh();
                 });
 
-            SearchRegex.Subscribe(pattern => FindNext(pattern, -1));
+            SearchRegex
+                .Subscribe(pattern => FindNext(pattern, -1));
         }
+
 
         private void ScrollToEnd()
         {
@@ -85,12 +87,12 @@ namespace LogMergeRx
             }
         }
 
-        public void AddFileToFilter(string fileName)
+        public void AddFileToFilter(FilePath path)
         {
-            if (!AllFiles.Contains(fileName))
+            if (!AllFiles.Contains(path.FullPath))
             {
-                AllFiles.Add(fileName);
-                SelectedFiles.Add(fileName);
+                AllFiles.Add(path.FullPath);
+                SelectedFiles.Add(path.FullPath);
             }
         }
 

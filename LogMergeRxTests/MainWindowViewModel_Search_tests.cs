@@ -18,26 +18,20 @@ namespace LogMergeRx
                 new[]
                 {
                     // only errors are enabled by default
-                    CreateLogEntry("ERROR", "1"), // index:0
-                    CreateLogEntry("ERROR", "1"), // index:1
-                    CreateLogEntry("ERROR", "1"), // index:2
-                    CreateLogEntry("WARN", "2"), //  index:3  // index:0 with removed errors
-                    CreateLogEntry("ERROR", "3"), // index:4
-                    CreateLogEntry("WARN", "2"), //  index:5  // index:1 with removed errors
-                    CreateLogEntry("WARN", "2"), //  index:6  // index:2 with removed errors
-                    CreateLogEntry("WARN", "3"), //  index:7  // index:3 with removed errors
-                    CreateLogEntry("WARN", "2"), //  index:8  // index:4 with removed errors
-                    CreateLogEntry("WARN", "2"), //  index:9  // index:5 with removed errors
-                    CreateLogEntry("WARN", "1"), //  index:10 // index:6 with removed errors
+                    LogHelper.Create("1", LogLevel.ERROR), // index:0
+                    LogHelper.Create("1", LogLevel.ERROR), // index:1
+                    LogHelper.Create("1", LogLevel.ERROR), // index:2
+                    LogHelper.Create("2", LogLevel.WARN), //  index:3  // index:0 with removed errors
+                    LogHelper.Create("3", LogLevel.ERROR), // index:4
+                    LogHelper.Create("2", LogLevel.WARN), //  index:5  // index:1 with removed errors
+                    LogHelper.Create("2", LogLevel.WARN), //  index:6  // index:2 with removed errors
+                    LogHelper.Create("3", LogLevel.WARN), //  index:7  // index:3 with removed errors
+                    LogHelper.Create("2", LogLevel.WARN), //  index:8  // index:4 with removed errors
+                    LogHelper.Create("2", LogLevel.WARN), //  index:9  // index:5 with removed errors
+                    LogHelper.Create("1", LogLevel.WARN), //  index:10 // index:6 with removed errors
                 },
                 _viewModel.ItemsSource.Add);
         }
-
-        static int counter = 0;
-        LogEntry CreateLogEntry(string level, string message) =>
-            // it is important to format the counter with leading zero because 10 comes between 1 and 2
-            // when compared as string.
-            new LogEntry("", counter++.ToString("00"), level, "source", message);
 
         [TestMethod]
         public void SearchRegex_always_searches_from_start()
