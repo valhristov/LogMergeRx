@@ -20,9 +20,11 @@ namespace LogMergeRx
         public ObservableProperty<bool> ShowWarnings { get; } = new ObservableProperty<bool>(true);
         public ObservableProperty<bool> ShowNotices { get; } = new ObservableProperty<bool>(true);
         public ObservableProperty<bool> ShowInfos { get; } = new ObservableProperty<bool>(true);
+
         public ObservableProperty<string> IncludeRegex { get; } = new ObservableProperty<string>(string.Empty);
         public ObservableProperty<string> ExcludeRegex { get; } = new ObservableProperty<string>(string.Empty);
         public ObservableProperty<string> SearchRegex { get; } = new ObservableProperty<string>(string.Empty);
+
         public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
         public ObservableProperty<LogEntry> ScrollToItem { get; } = new ObservableProperty<LogEntry>(null);
 
@@ -56,11 +58,13 @@ namespace LogMergeRx
                 .Merge(IncludeRegex, ExcludeRegex)
                 .Subscribe(_ => ItemsSourceView.Refresh());
 
-            FollowTail // When this changes we scroll to end (if enabled)
+            FollowTail
+                .Where(value => value) // only when enabled
                 .Subscribe(_ => ScrollToEnd());
 
-            ItemsSourceView // We scroll to end when new items arrive (if FollowTail is enabled)
+            ItemsSourceView // We scroll to end when new items arrive
                 .ToObservable()
+                .Where(_ => FollowTail.Value) // only when FollowTail is enabled
                 .ObserveOnDispatcher() // not nice, but without this the initial scroll to end does not work
                 .Subscribe(_ => ScrollToEnd());
 
@@ -76,11 +80,9 @@ namespace LogMergeRx
                 .Subscribe(pattern => FindNext(pattern, -1));
         }
 
-
         private void ScrollToEnd()
         {
-            if (FollowTail.Value &&
-                ItemsSourceView.MoveCurrentToLast())
+            if (ItemsSourceView.MoveCurrentToLast())
             {
                 ScrollToItem.Value = (LogEntry)ItemsSourceView.CurrentItem;
                 ScrollToIndex.Value = ItemsSourceView.CurrentPosition;

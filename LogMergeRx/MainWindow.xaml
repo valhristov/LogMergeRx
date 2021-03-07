@@ -43,8 +43,9 @@
             <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
                      SelectionChanged="AllFiles_SelectionChanged" Margin="0,5,0,0" />
         </StackPanel>
+        <!--NOTE: Since not all items are the same height, setting VirtualizingPanel.ScrollUnit="Pixel"
+        greatly reduces the scroll performance -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding ItemsSource}"
-                      VirtualizingPanel.ScrollUnit="Pixel"
                       VirtualizingPanel.VirtualizationMode="Recycling">
             <ItemsControl.Template>
                 <ControlTemplate>
@@ -73,7 +74,7 @@
             </ItemsControl.Template>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel 
+                    <VirtualizingStackPanel
                         local:ScrollHelper.ScrollToIndex="{Binding ScrollToIndex.Value}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>

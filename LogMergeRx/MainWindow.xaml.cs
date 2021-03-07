@@ -19,22 +19,25 @@ namespace LogMergeRx
         {
             InitializeComponent();
 
+            if (!TryGetDirectoryToRead(out var path))
+            {
+                Close();
+                return;
+            }
+
             ViewModel = new MainWindowViewModel();
 
-            if (TryGetDirectoryToRead(out var path))
-            {
-                var monitor = new LogMonitor(path);
+            var monitor = new LogMonitor(path);
 
-                monitor.ChangedFiles
-                    .ObserveOnDispatcher()
-                    .Subscribe(ViewModel.AddFileToFilter); // add changed files to the filter
+            monitor.ChangedFiles
+                .ObserveOnDispatcher()
+                .Subscribe(ViewModel.AddFileToFilter); // add changed files to the filter
 
-                monitor.ReadEntries
-                    .ObserveOnDispatcher()
-                    .Subscribe(ViewModel.ItemsSource.AddRange); // read all content of created or changed files
+            monitor.ReadEntries
+                .ObserveOnDispatcher()
+                .Subscribe(ViewModel.ItemsSource.AddRange); // read all content of created or changed files
 
-                monitor.Start();
-            }
+            monitor.Start();
 
             ViewModel.SelectedFiles
                 .ToObservable()
