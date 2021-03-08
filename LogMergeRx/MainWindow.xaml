@@ -14,6 +14,23 @@
             Info="Black"
             Notice="Black"
             />
+        <Style x:Key="Explanation" TargetType="Label">
+            <Setter Property="FontSize" Value="10"/>
+        </Style>
+        <Style x:Key="ExplanationText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10"/>
+        </Style>
+        <Style x:Key="H1" TargetType="GroupBox">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="14" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,0,0,10" />
+        </Style>
     </Window.Resources>
     <Grid x:Name="Root">
         <Grid.ColumnDefinitions>
@@ -21,27 +38,46 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <StackPanel Margin="5">
-            <ToggleButton Content="Follow Tail" IsChecked="{Binding FollowTail.Value}" Margin="20,0,20,0" />
-            <Label Content="Level" FontSize="14" FontWeight="Bold"/>
-            <UniformGrid Rows="1" Columns="4">
-                <ToggleButton Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
-                <ToggleButton Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" Margin="3,0,0,0" />
-                <ToggleButton Content="Notices" IsChecked="{Binding ShowNotices.Value}" Margin="3,0,0,0" />
-                <ToggleButton Content="Infos" IsChecked="{Binding ShowInfos.Value}" Margin="3,0,0,0" />
-            </UniformGrid>
-            <Label Content="Include only matching" FontSize="14" FontWeight="Bold"/>
-            <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
-            <Label Content="Exclude matching" FontSize="14" FontWeight="Bold"/>
-            <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
-            <Label Content="Search" FontSize="14" FontWeight="Bold"/>
-            <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
-            <UniformGrid Rows="1" Columns="2">
-                <Button Content="Prev" Command="{Binding PrevIndex}" Margin="0,5,3,0" />
-                <Button Content="Next" Command="{Binding NextIndex}" Margin="0,5,0,0" />
-            </UniformGrid>
-            <Label Content="Loaded files" FontSize="14" FontWeight="Bold"/>
-            <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
-                     SelectionChanged="AllFiles_SelectionChanged" Margin="0,5,0,0" />
+            <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
+                <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
+            </GroupBox>
+            <GroupBox Header="Level" Style="{StaticResource H1}">
+                <StackPanel>
+                    <CheckBox Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
+                    <CheckBox Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />
+                    <CheckBox Content="Notices" IsChecked="{Binding ShowNotices.Value}" />
+                    <CheckBox Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Include only matching" Style="{StaticResource H1}">
+                <StackPanel>
+                    <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Exclude matching" Style="{StaticResource H1}">
+                <StackPanel>
+                    <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Search" Style="{StaticResource H1}">
+                <StackPanel>
+                    <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <UniformGrid Rows="1" Columns="2">
+                        <Button Content="Prev" Command="{Binding PrevIndex}" />
+                        <Button Content="Next" Command="{Binding NextIndex}" />
+                    </UniformGrid>
+                    <TextBlock Text="Contains text, case insensitive" Style="{StaticResource ExplanationText}" />
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Loaded files" Style="{StaticResource H1}">
+                <StackPanel>
+                    <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
+                         SelectionChanged="AllFiles_SelectionChanged" />
+                    <TextBlock Text="Ctrl+Click to select multiple files" Style="{StaticResource ExplanationText}" />
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
         <!--NOTE: Since not all items are the same height, setting VirtualizingPanel.ScrollUnit="Pixel"
         greatly reduces the scroll performance -->
