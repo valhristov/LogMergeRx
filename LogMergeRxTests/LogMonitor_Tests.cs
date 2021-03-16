@@ -39,16 +39,19 @@ namespace LogMergeRxTests
         [TestMethod]
         public async Task Read_Modified_Files()
         {
+            LogHelper.AppendHeaders(GetPath("log1.csv"));
+            LogHelper.AppendHeaders(GetPath("log2.csv"));
+
             LogMonitor.Start();
 
-            Write("log1.csv", LogHelper.Create("1"));
-            Write("log1.csv", LogHelper.Create("2"));
-            Write("log2.csv", LogHelper.Create("3"));
-            Write("log2.csv", LogHelper.Create("4"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("1"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("2"));
+            LogHelper.Append(GetPath("log2.csv"), LogHelper.Create("3"));
+            LogHelper.Append(GetPath("log2.csv"), LogHelper.Create("4"));
 
             await Task.Delay(100);
 
-            Files.Count.Should().Be(4);
+            Files.Count.Should().Be(6); //2 headers and 4 entries
             Files.Select(x => x.Name).Distinct().Should().Equal("log1.csv", "log2.csv");
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
@@ -57,10 +60,12 @@ namespace LogMergeRxTests
         [TestMethod]
         public async Task Read_Existing_Files()
         {
-            Write("log1.csv", LogHelper.Create("1"));
-            Write("log1.csv", LogHelper.Create("2"));
-            Write("log2.csv", LogHelper.Create("3"));
-            Write("log2.csv", LogHelper.Create("4"));
+            LogHelper.AppendHeaders(GetPath("log1.csv"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("1"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("2"));
+            LogHelper.AppendHeaders(GetPath("log2.csv"));
+            LogHelper.Append(GetPath("log2.csv"), LogHelper.Create("3"));
+            LogHelper.Append(GetPath("log2.csv"), LogHelper.Create("4"));
 
             LogMonitor.Start();
 
@@ -68,11 +73,12 @@ namespace LogMergeRxTests
 
             Files.Count.Should().Be(2); // We start after the file was last modified
             Files.Select(x => x.Name).Distinct().Should().Equal("log1.csv", "log2.csv");
+
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
 
-        private void Write(string fileName, params LogEntry[] entries) =>
-            LogHelper.Append(FilePath.FromFullPath(Path.Combine(LogsPath, fileName)), entries);
+        private FilePath GetPath(string fileName) =>
+            FilePath.FromFullPath(Path.Combine(LogsPath, fileName));
     }
 }

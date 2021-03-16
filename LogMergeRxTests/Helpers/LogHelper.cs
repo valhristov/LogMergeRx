@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using LogMergeRx.Model;
@@ -15,18 +16,21 @@ namespace LogMergeRx
         public static void Append(FilePath path, params LogEntry[] entries) =>
             File.AppendAllLines(path, entries.Select(ToCsv));
 
-        public static void AppendHeaders(Stream stream)
+        public static void AppendHeaders(FilePath path) =>
+            File.AppendAllLines(path, Headers());
+
+        private static IEnumerable<string> Headers()
         {
-            using var writer = new StreamWriter(stream, leaveOpen: true);
-
-            stream.Seek(0, SeekOrigin.End);
-
-            writer.WriteLine($"\"Date\";\"\";\"Level\";\"Source\";\"Message\"");
-
-            writer.Flush();
+            yield return $"\"Date\";\"\";\"Level\";\"Source\";\"Message\"";
         }
 
-        public static void Append(Stream stream, params LogEntry[] entries)
+        public static void AppendHeaders(Stream stream) =>
+            Append(stream, Headers());
+
+        public static void Append(Stream stream, params LogEntry[] entries) =>
+            Append(stream, entries.Select(ToCsv));
+
+        private static void Append(Stream stream, IEnumerable<string> entries)
         {
             using var writer = new StreamWriter(stream, leaveOpen: true);
 
@@ -34,7 +38,10 @@ namespace LogMergeRx
 
             var position = stream.Position;
 
-            Array.ForEach(entries, entry => writer.WriteLine(ToCsv(entry)));
+            foreach (var entry in entries)
+            {
+                writer.WriteLine(entry);
+            }
 
             writer.Flush();
 

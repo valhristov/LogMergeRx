@@ -27,6 +27,11 @@ namespace LogMergeRx
             using var textReader = new StreamReader(stream, leaveOpen: true);
             using var csv = new CsvHelper.CsvReader(textReader, _configuration);
 
+            if (stream.Position == 0 && csv.Read())
+            {
+                csv.ReadHeader();
+            }
+
             while (csv.Read())
             {
                 var entry = new LogEntry(
