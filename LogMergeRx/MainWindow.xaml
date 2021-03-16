@@ -38,7 +38,7 @@
             <ColumnDefinition Width="220" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <StackPanel Margin="5">
+        <StackPanel Background="#343434">
             <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
                 <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
             </GroupBox>
@@ -84,25 +84,28 @@
         greatly reduces the scroll performance -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding ItemsSource}"
                       VirtualizingPanel.VirtualizationMode="Recycling"
-                      VirtualizingPanel.ScrollUnit="Pixel">
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      Background="#111111">
             <ItemsControl.Template>
                 <ControlTemplate>
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150" />
-                            <ColumnDefinition Width="70" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="100" />
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Column="0" Text="Date" />
-                        <TextBlock Grid.Column="1" Text="Level" />
-                        <TextBlock Grid.Column="2" Text="Message" />
-                        <TextBlock Grid.Column="3" Text="File Name" />
-                        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="4" CanContentScroll="True" Focusable="False"
+                        <Grid Background="#343434">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Date" Margin="5,2" />
+                            <TextBlock Grid.Column="1" Text="Level" Margin="5,2"/>
+                            <TextBlock Grid.Column="2" Text="Message" Margin="5,2"/>
+                            <TextBlock Grid.Column="3" Text="File Name" Margin="5,2"/>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" CanContentScroll="True" Focusable="False"
                                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                             <ItemsPresenter />
                         </ScrollViewer>
