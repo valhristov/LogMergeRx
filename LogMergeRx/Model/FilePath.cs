@@ -16,7 +16,7 @@ namespace LogMergeRx.Model
         public static implicit operator string(FilePath filePath) =>
             filePath.FullPath;
 
-        public static explicit operator FilePath(string fullPath) =>
+        public static FilePath FromFullPath(string fullPath) =>
             new FilePath(fullPath);
 
         public bool Equals(FilePath? other) =>

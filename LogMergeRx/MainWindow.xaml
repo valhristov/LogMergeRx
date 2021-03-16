@@ -12,8 +12,8 @@
         <local:LevelToForegroundConverter x:Key="LevelToForegroundConverter"
             Error="Red"
             Warning="Orange"
-            Info="Black"
-            Notice="Black"
+            Info="White"
+            Notice="White"
             />
         <Style x:Key="Explanation" TargetType="Label">
             <Setter Property="FontSize" Value="10"/>
@@ -66,8 +66,8 @@
                 <StackPanel>
                     <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
                     <UniformGrid Rows="1" Columns="2">
-                        <Button Content="Prev" Command="{Binding PrevIndex}" />
-                        <Button Content="Next" Command="{Binding NextIndex}" />
+                        <Button Content="Prev" Command="{Binding PrevIndex}" Margin="10,0" />
+                        <Button Content="Next" Command="{Binding NextIndex}" Margin="0,0,10,0" />
                     </UniformGrid>
                     <TextBlock Text="Contains text, case insensitive" Style="{StaticResource ExplanationText}" />
                 </StackPanel>
@@ -83,7 +83,8 @@
         <!--NOTE: Since not all items are the same height, setting VirtualizingPanel.ScrollUnit="Pixel"
         greatly reduces the scroll performance -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding ItemsSource}"
-                      VirtualizingPanel.VirtualizationMode="Recycling">
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.ScrollUnit="Pixel">
             <ItemsControl.Template>
                 <ControlTemplate>
                     <Grid>

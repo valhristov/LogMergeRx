@@ -27,11 +27,15 @@ namespace LogMergeRx.Rx
 
             var changed = Observable
                 .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => _fsw.Changed += h, h => _fsw.Changed -= h)
-                .Select(x => new FilePath(x.EventArgs.FullPath));
+                .Select(x => x.EventArgs.FullPath)
+                .Select(Logger.Log<string>("File changed '{0}'"))
+                .Select(FilePath.FromFullPath);
 
             var created = Observable
                 .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => _fsw.Created += h, h => _fsw.Created -= h)
-                .Select(x => new FilePath(x.EventArgs.FullPath));
+                .Select(x => x.EventArgs.FullPath)
+                .Select(Logger.Log<string>("File created '{0}'"))
+                .Select(FilePath.FromFullPath);
 
             Changed = Observable.Merge(_existing, changed, created);
         }
@@ -41,9 +45,12 @@ namespace LogMergeRx.Rx
             _fsw.EnableRaisingEvents = true;
             if (notifyForExistingFiles)
             {
-                Array.ForEach(
-                    Directory.GetFiles(_fsw.Path, _fsw.Filter, SearchOption.AllDirectories),
-                    path => _existing.OnNext(new FilePath(path)));
+                var filePaths = Directory
+                    .GetFiles(_fsw.Path, _fsw.Filter, SearchOption.AllDirectories)
+                    .Select(Logger.Log<string>("Existing file '{0}'"))
+                    .Select(FilePath.FromFullPath)
+                    .ToList();
+                filePaths.ForEach(_existing.OnNext);
             }
         }
 

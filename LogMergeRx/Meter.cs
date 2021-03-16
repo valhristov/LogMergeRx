@@ -6,7 +6,7 @@ namespace LogMergeRx
 {
     public static class Meter
     {
-        public static IDisposable MeasureBegin([CallerMemberName] string callerMemberName = null) =>
+        public static IDisposable Start([CallerMemberName] string callerMemberName = null) =>
             new MeterResult(callerMemberName);
 
         private class MeterResult : IDisposable

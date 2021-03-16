@@ -18,7 +18,7 @@ namespace LogMergeRx
 
         public IObservable<FilePath> ChangedFiles { get; }
 
-        public IObservable<IEnumerable<LogEntry>> ReadEntries { get; }
+        public IObservable<List<LogEntry>> ReadEntries { get; }
 
         public LogMonitor(string path, string filter = "*.csv")
         {
@@ -35,9 +35,9 @@ namespace LogMergeRx
             _watcher.Start(notifyForExistingFiles: true);
         }
 
-        private IEnumerable<LogEntry> ReadToEnd(FilePath path)
+        private List<LogEntry> ReadToEnd(FilePath path)
         {
-            IEnumerable<LogEntry> entries = null;
+            List<LogEntry> entries = null;
 
             using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
@@ -47,7 +47,7 @@ namespace LogMergeRx
 
             return entries;
 
-            static long ReadAndGetNewOffset(Stream stream, long offset, string fullName, out IEnumerable<LogEntry> entries)
+            static long ReadAndGetNewOffset(Stream stream, long offset, string fullName, out List<LogEntry> entries)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
                 entries = CsvParser.Parse(stream, fullName);

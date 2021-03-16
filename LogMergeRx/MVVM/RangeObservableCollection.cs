@@ -75,7 +75,6 @@ namespace System.Collections.ObjectModel
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
         public void AddRange(IEnumerable<T> collection)
         {
-            using var x = Meter.MeasureBegin();
             InsertRange(Count, collection);
         }
 

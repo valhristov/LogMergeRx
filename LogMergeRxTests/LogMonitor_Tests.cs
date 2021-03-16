@@ -73,6 +73,6 @@ namespace LogMergeRxTests
         }
 
         private void Write(string fileName, params LogEntry[] entries) =>
-            LogHelper.Append((FilePath)Path.Combine(LogsPath, fileName), entries);
+            LogHelper.Append(FilePath.FromFullPath(Path.Combine(LogsPath, fileName)), entries);
     }
 }
