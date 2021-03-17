@@ -37,11 +37,11 @@ namespace LogMergeRx
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public WpfObservableRangeCollection<string> AllFiles { get; } =
-            new WpfObservableRangeCollection<string>();
+        public WpfObservableRangeCollection<RelativePath> AllFiles { get; } =
+            new WpfObservableRangeCollection<RelativePath>();
 
-        public WpfObservableRangeCollection<string> SelectedFiles { get; } =
-            new WpfObservableRangeCollection<string>();
+        public WpfObservableRangeCollection<RelativePath> SelectedFiles { get; } =
+            new WpfObservableRangeCollection<RelativePath>();
 
         public MainWindowViewModel()
         {
@@ -72,7 +72,8 @@ namespace LogMergeRx
                 .ToObservable()
                 .Subscribe(e =>
                 {
-                    _selection.Sync(e);
+                    _selection.Clear();
+                    _selection.UnionWith(SelectedFiles.Select(p => p.Value));
                     ItemsSourceView.Refresh();
                 });
 
@@ -89,12 +90,12 @@ namespace LogMergeRx
             }
         }
 
-        public void AddFileToFilter(FilePath path)
+        public void AddFileToFilter(RelativePath path)
         {
-            if (!AllFiles.Contains(path.FullPath))
+            if (!AllFiles.Contains(path))
             {
-                AllFiles.Add(path.FullPath);
-                SelectedFiles.Add(path.FullPath);
+                AllFiles.Add(path);
+                SelectedFiles.Add(path);
             }
         }
 
@@ -138,7 +139,7 @@ namespace LogMergeRx
                 string.IsNullOrWhiteSpace(ExcludeRegex.Value) || !RegexCache.GetRegex(ExcludeRegex.Value).IsMatch(log.Message);
 
             bool FilterByFile(LogEntry log) =>
-                AllFiles.Count == 0 || _selection.Contains(log.FileName);
+                AllFiles.Count == 0 || _selection.Contains(log.RelativePath);
         }
     }
 }

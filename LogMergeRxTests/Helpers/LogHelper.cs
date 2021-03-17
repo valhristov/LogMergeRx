@@ -10,13 +10,13 @@ namespace LogMergeRx
     {
         private static int counter;
 
-        public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string date = null, string source = "source", string fileName = "") =>
-            new LogEntry(fileName, date ?? counter++.ToString("00"), level, source, message);
+        public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string date = null, string source = "source", string fileName = default) =>
+            new LogEntry(RelativePath.FromPath(fileName), date ?? counter++.ToString("00"), level, source, message);
 
-        public static void Append(FilePath path, params LogEntry[] entries) =>
+        public static void Append(AbsolutePath path, params LogEntry[] entries) =>
             File.AppendAllLines(path, entries.Select(ToCsv));
 
-        public static void AppendHeaders(FilePath path) =>
+        public static void AppendHeaders(AbsolutePath path) =>
             File.AppendAllLines(path, Headers());
 
         private static IEnumerable<string> Headers()

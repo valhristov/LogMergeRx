@@ -16,19 +16,19 @@ namespace LogMergeRxTests
     {
         public TestContext TestContext { get; set; }
 
-        private List<FilePath> Files { get; set; }
+        private List<RelativePath> Files { get; set; }
         private List<LogEntry> Entries { get; set; }
         private LogMonitor LogMonitor { get; set; }
-        private string LogsPath { get; set; }
+        private AbsolutePath LogsPath { get; set; }
 
         [TestInitialize]
         public void TestInitialize()
         {
-            LogsPath = Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName);
+            LogsPath = AbsolutePath.FromFullPath(Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName));
 
             Directory.CreateDirectory(LogsPath);
 
-            Files = new List<FilePath>();
+            Files = new List<RelativePath>();
             Entries = new List<LogEntry>();
 
             LogMonitor = new LogMonitor(LogsPath);
@@ -52,7 +52,7 @@ namespace LogMergeRxTests
             await Task.Delay(100);
 
             Files.Count.Should().Be(6); //2 headers and 4 entries
-            Files.Select(x => x.Name).Distinct().Should().Equal("log1.csv", "log2.csv");
+            Files.Select(x => x.Value).Distinct().Should().Equal("log1.csv", "log2.csv");
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
@@ -72,13 +72,13 @@ namespace LogMergeRxTests
             await Task.Delay(500);
 
             Files.Count.Should().Be(2); // We start after the file was last modified
-            Files.Select(x => x.Name).Distinct().Should().Equal("log1.csv", "log2.csv");
+            Files.Select(x => x.Value).Distinct().Should().Equal("log1.csv", "log2.csv");
 
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
 
-        private FilePath GetPath(string fileName) =>
-            FilePath.FromFullPath(Path.Combine(LogsPath, fileName));
+        private AbsolutePath GetPath(string fileName) =>
+            AbsolutePath.FromFullPath(Path.Combine(LogsPath, fileName));
     }
 }

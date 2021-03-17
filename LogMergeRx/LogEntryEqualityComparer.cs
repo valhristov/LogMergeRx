@@ -15,7 +15,7 @@ namespace LogMergeRx.Model
 
         public bool Equals(LogEntry x, LogEntry y) =>
             ReferenceEquals(x, y) ||
-            x.FileName == y.FileName &&
+            x.RelativePath == y.RelativePath &&
             x.Date == y.Date &&
             x.Level == y.Level &&
             x.Source == y.Source &&
@@ -24,7 +24,7 @@ namespace LogMergeRx.Model
         public int GetHashCode([DisallowNull] LogEntry obj)
         {
             var h = 17;
-            h = h * 31 + obj.FileName.GetHashCode();
+            h = h * 31 + obj.RelativePath.GetHashCode();
             h = h * 31 + obj.Date.GetHashCode();
             h = h * 31 + obj.Level.GetHashCode();
             h = h * 31 + obj.Source.GetHashCode();

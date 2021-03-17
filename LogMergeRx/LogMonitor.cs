@@ -13,16 +13,16 @@ namespace LogMergeRx
     {
         private readonly ObservableFileSystemWatcher _watcher;
 
-        private readonly ConcurrentDictionary<FilePath, long> _offsets =
-            new ConcurrentDictionary<FilePath, long>();
+        private readonly ConcurrentDictionary<RelativePath, long> _offsets =
+            new ConcurrentDictionary<RelativePath, long>();
 
-        public IObservable<FilePath> ChangedFiles { get; }
+        public IObservable<RelativePath> ChangedFiles { get; }
 
         public IObservable<List<LogEntry>> ReadEntries { get; }
 
-        public LogMonitor(string path, string filter = "*.csv")
+        public LogMonitor(AbsolutePath root, string filter = "*.csv")
         {
-            _watcher = new ObservableFileSystemWatcher(path, filter);
+            _watcher = new ObservableFileSystemWatcher(root, filter);
 
             ChangedFiles = _watcher.Changed;
 
@@ -35,11 +35,11 @@ namespace LogMergeRx
             _watcher.Start(notifyForExistingFiles: true);
         }
 
-        private List<LogEntry> ReadToEnd(FilePath path)
+        private List<LogEntry> ReadToEnd(RelativePath path)
         {
             List<LogEntry> entries = null;
 
-            using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var stream = File.Open(Path.Combine(_watcher.Root, path), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
             _offsets.AddOrUpdate(path,
                 fullName => ReadAndGetNewOffset(stream, 0, fullName, out entries),
@@ -47,10 +47,10 @@ namespace LogMergeRx
 
             return entries;
 
-            static long ReadAndGetNewOffset(Stream stream, long offset, string fullName, out List<LogEntry> entries)
+            static long ReadAndGetNewOffset(Stream stream, long offset, RelativePath path, out List<LogEntry> entries)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
-                entries = CsvParser.Parse(stream, fullName);
+                entries = CsvParser.Parse(stream, path);
                 return stream.Position == 0 ? 0 : stream.Position - Environment.NewLine.Length;
             }
         }

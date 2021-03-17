@@ -3,6 +3,7 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using LogMergeRx.Model;
 using Microsoft.Win32;
 
 namespace LogMergeRx
@@ -27,7 +28,7 @@ namespace LogMergeRx
 
             ViewModel = new MainWindowViewModel();
 
-            var monitor = new LogMonitor(path);
+            var monitor = new LogMonitor(AbsolutePath.FromFullPath(path));
 
             monitor.ChangedFiles
                 .ObserveOnDispatcher()
