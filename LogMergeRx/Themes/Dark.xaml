@@ -13,24 +13,38 @@
     <SolidColorBrush x:Key="ContainerBorder"                     Color="#FF2B2B2B"/>
     <SolidColorBrush x:Key="ControlDefaultForeground"            Color="#FFEBEBEB" />
 
+    <!-- easy way to see which color is applied on which element
+    <SolidColorBrush x:Key="ControlDarkerBackground"             Color="Red" />
+    <SolidColorBrush x:Key="ControlDarkerBorderBrush"            Color="#FF2F2F2F" />
+    <SolidColorBrush x:Key="ControlDefaultBackground"            Color="Green" />
+    <SolidColorBrush x:Key="ControlDefaultBorderBrush"           Color="#FF323232" />
+    <SolidColorBrush x:Key="ControlBrightDefaultBackground"      Color="Yellow" />
+    <SolidColorBrush x:Key="ControlBrightDefaultBorderBrush"     Color="#FF3C3C3C" />
+    <SolidColorBrush x:Key="ControlDisabledBackground"           Color="Cyan" />
+    <SolidColorBrush x:Key="ControlDisabledBorderBrush"          Color="#FF464646" />
+    <SolidColorBrush x:Key="ControlMouseOverBackground"          Color="Magenta" />
+    <SolidColorBrush x:Key="ControlMouseOverBorderBrush"         Color="#FF414141"/>
+    <SolidColorBrush x:Key="ControlSelectedBackground"           Color="Blue"/>
+    <SolidColorBrush x:Key="ControlSelectedBorderBrush"          Color="#FF373737"/>
+    <SolidColorBrush x:Key="ControlSelectedMouseOverBackground"  Color="DarkGreen"/>-->
     <SolidColorBrush x:Key="ControlDarkerBackground"             Color="#FF2A2A2A" />
     <SolidColorBrush x:Key="ControlDarkerBorderBrush"            Color="#FF2F2F2F" />
     <SolidColorBrush x:Key="ControlDefaultBackground"            Color="#FF2D2D2D" />
     <SolidColorBrush x:Key="ControlDefaultBorderBrush"           Color="#FF323232" />
-    <SolidColorBrush x:Key="ControlBrightDefaultBackground"      Color="#FF343434" />
+    <SolidColorBrush x:Key="ControlBrightDefaultBackground"      Color="#FF545454" />
     <SolidColorBrush x:Key="ControlBrightDefaultBorderBrush"     Color="#FF3C3C3C" />
     <SolidColorBrush x:Key="ControlDisabledBackground"           Color="#FF424242" />
     <SolidColorBrush x:Key="ControlDisabledBorderBrush"          Color="#FF464646" />
-    <SolidColorBrush x:Key="ControlMouseOverBackground"          Color="#FF3F3F3F" />
+    <SolidColorBrush x:Key="ControlMouseOverBackground"          Color="#FF6F6F6F" />
     <SolidColorBrush x:Key="ControlMouseOverBorderBrush"         Color="#FF414141"/>
     <SolidColorBrush x:Key="ControlSelectedBackground"           Color="#FF323232"/>
     <SolidColorBrush x:Key="ControlSelectedBorderBrush"          Color="#FF373737"/>
     <SolidColorBrush x:Key="ControlSelectedMouseOverBackground"  Color="#FF3F3F3F"/>
     <SolidColorBrush x:Key="ControlSelectedMouseOverBorderBrush" Color="#FF424242"/>
-    <SolidColorBrush x:Key="ControlGlythColour"                  Color="#FFEBEBEB" />
-    <SolidColorBrush x:Key="ControlMouseOverGlythColour"         Color="#FFD7D7D7" />
-    <SolidColorBrush x:Key="ControlSelectedGlythColour"          Color="#FFC8C8C8" />
-    <SolidColorBrush x:Key="ControlDisabledGlythColour"          Color="#FFA0A0A0" />
+    <SolidColorBrush x:Key="ControlGlyphColour"                  Color="#FFEBEBEB" />
+    <SolidColorBrush x:Key="ControlMouseOverGlyphColour"         Color="#FFD7D7D7" />
+    <SolidColorBrush x:Key="ControlSelectedGlyphColour"          Color="#FFC8C8C8" />
+    <SolidColorBrush x:Key="ControlDisabledGlyphColour"          Color="#FFA0A0A0" />
 
     <!-- Colourful theme  Colours -->
 
@@ -50,11 +64,11 @@
     <SolidColorBrush x:Key="ControlPrimarySelectedMouseOverBorderBrush" Color="#FF1491E8"/>
     <SolidColorBrush x:Key="ControlPrimaryCaretSelectionBackground"     Color="#FF3297E8"/>
     <SolidColorBrush x:Key="ControlPrimaryCaretBackground"              Color="#FF1992F1"/>
-    <SolidColorBrush x:Key="ControlPrimaryGlythColour"                  Color="#FF1E88E5"/>
-    <SolidColorBrush x:Key="ControlPrimaryMouseOverGlythColour"         Color="#FF2196F3"/>
-    <SolidColorBrush x:Key="ControlPrimarySelectedGlythColour"          Color="#FF42A5F5"/>
-    <SolidColorBrush x:Key="ControlPrimarySelectedMouseOverGlythColour" Color="#FF339AF7"/>
-    <SolidColorBrush x:Key="ControlPrimaryDisabledGlythColour"          Color="#FF081E3C"/>
+    <SolidColorBrush x:Key="ControlPrimaryGlyphColour"                  Color="#FF1E88E5"/>
+    <SolidColorBrush x:Key="ControlPrimaryMouseOverGlyphColour"         Color="#FF2196F3"/>
+    <SolidColorBrush x:Key="ControlPrimarySelectedGlyphColour"          Color="#FF42A5F5"/>
+    <SolidColorBrush x:Key="ControlPrimarySelectedMouseOverGlyphColour" Color="#FF339AF7"/>
+    <SolidColorBrush x:Key="ControlPrimaryDisabledGlyphColour"          Color="#FF081E3C"/>
 
     <!-- Setup Stuff -->
 
@@ -140,7 +154,7 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" TargetName="border" Value="{StaticResource ControlBrightDefaultBackground}"/>
                             <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ControlBrightDefaultBorderBrush}"/>
-                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -191,7 +205,7 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" TargetName="border" Value="{StaticResource ControlBrightDefaultBackground}"/>
                             <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ControlBrightDefaultBorderBrush}"/>
-                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -357,9 +371,9 @@
                                 </Grid>
                             </Border>
                         </Border>
-                        <Rectangle x:Name="PART_DisabledVisual" Fill="{StaticResource ControlDisabledGlythColour}" 
+                        <Rectangle x:Name="PART_DisabledVisual" Fill="{StaticResource ControlDisabledGlyphColour}" 
                                    Opacity="0" RadiusY="2" RadiusX="2" Stretch="Fill" 
-                                   Stroke="{StaticResource ControlDisabledGlythColour}" StrokeThickness="1" Visibility="Collapsed"/>
+                                   Stroke="{StaticResource ControlDisabledGlyphColour}" StrokeThickness="1" Visibility="Collapsed"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
@@ -419,7 +433,7 @@
                             <Grid x:Name="markGrid">
                                 <Path x:Name="optionMark" 
                                               Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " 
-                                              Fill="{StaticResource ControlPrimaryGlythColour}" Margin="1" Opacity="0" Stretch="None"
+                                              Fill="{StaticResource ControlPrimaryGlyphColour}" Margin="1" Opacity="0" Stretch="None"
                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 <Rectangle x:Name="indeterminateMark" Fill="{StaticResource ControlPrimaryDarkerBackground}" Margin="0" Opacity="0"/>
                             </Grid>
@@ -438,28 +452,28 @@
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource ControlMouseOverBackground}"/>
                             <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource ControlMouseOverBorderBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryMouseOverGlythColour}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimaryMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryMouseOverGlyphColour}"/>
+                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimaryMouseOverGlyphColour}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource ControlDisabledBackground}"/>
                             <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource ControlDisabledBorderBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryDisabledGlythColour}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimaryDisabledGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryDisabledGlyphColour}"/>
+                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimaryDisabledGlyphColour}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource ControlSelectedBackground}"/>
                             <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource ControlSelectedBorderBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedGlythColour}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimarySelectedGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedGlyphColour}"/>
+                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimarySelectedGlyphColour}"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="true"/>
                                 <Condition Property="IsPressed" Value="true"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedMouseOverGlythColour}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimarySelectedMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedMouseOverGlyphColour}"/>
+                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource ControlPrimarySelectedMouseOverGlyphColour}"/>
                         </MultiTrigger>
                         <Trigger Property="IsChecked" Value="true">
                             <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
@@ -499,7 +513,7 @@
                                 HorizontalAlignment="Right" Margin="0" 
                                 SnapsToDevicePixels="true" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}">
                             <Path x:Name="arrow" Data="F1 M 0,0 L 2.667,2.66665 L 5.3334,0 L 5.3334,-1.78168 L 2.6667,0.88501 L0,-1.78168 L0,0 Z" 
-                                  Fill="{StaticResource ControlGlythColour}" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+                                  Fill="{StaticResource ControlGlyphColour}" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
                         </Border>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -516,7 +530,7 @@
                             <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ControlDefaultBorderBrush}"/>
                         </MultiDataTrigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                         </Trigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -558,7 +572,7 @@
                             <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ControlPrimarySelectedBorderBrush}"/>
                         </MultiDataTrigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -800,7 +814,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -886,7 +900,7 @@
                                     </TransformGroup>
                                 </Grid.LayoutTransform>
                                 <Ellipse x:Name="circle" Fill="{StaticResource ControlDefaultBackground}" HorizontalAlignment="Center" Height="19" Stroke="{StaticResource ControlDefaultBorderBrush}" VerticalAlignment="Center" Width="19"/>
-                                <Path x:Name="arrow" Data="M 1,1.5 L 4.5,5 L 8,1.5" HorizontalAlignment="Center" SnapsToDevicePixels="false" Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" VerticalAlignment="Center"/>
+                                <Path x:Name="arrow" Data="M 1,1.5 L 4.5,5 L 8,1.5" HorizontalAlignment="Center" SnapsToDevicePixels="false" Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" VerticalAlignment="Center"/>
                             </Grid>
                             <ContentPresenter HorizontalAlignment="Center" Margin="0,4,0,0" Grid.Row="1" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Top"/>
                         </Grid>
@@ -909,7 +923,7 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Stroke" TargetName="circle" Value="{StaticResource ControlDisabledBorderBrush}"/>
                             <Setter Property="Fill" TargetName="circle" Value="{StaticResource ControlDisabledBackground}"/>
-                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -939,7 +953,7 @@
                                 <Ellipse x:Name="circle" Fill="{StaticResource ControlDefaultBackground}" HorizontalAlignment="Center" Height="19" 
                                          Stroke="{StaticResource ControlDefaultBorderBrush}" VerticalAlignment="Center" Width="19"/>
                                 <Path x:Name="arrow" Data="M 1,1.5 L 4.5,5 L 8,1.5" HorizontalAlignment="Center" SnapsToDevicePixels="false"
-                                      Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" VerticalAlignment="Center"/>
+                                      Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" VerticalAlignment="Center"/>
                             </Grid>
                             <ContentPresenter Grid.Column="1" HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                         </Grid>
@@ -962,7 +976,7 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Stroke" TargetName="circle" Value="{StaticResource ControlDisabledBorderBrush}"/>
                             <Setter Property="Fill" TargetName="circle" Value="{StaticResource ControlDisabledBackground}"/>
-                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -992,7 +1006,7 @@
                                 <Ellipse x:Name="circle" Fill="{StaticResource ControlDefaultBackground}" HorizontalAlignment="Center" Height="19" 
                                          Stroke="{StaticResource ControlDefaultBorderBrush}" VerticalAlignment="Center" Width="19"/>
                                 <Path x:Name="arrow" Data="M 1,1.5 L 4.5,5 L 8,1.5" HorizontalAlignment="Center" SnapsToDevicePixels="false" 
-                                      Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" VerticalAlignment="Center"/>
+                                      Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" VerticalAlignment="Center"/>
                             </Grid>
                             <ContentPresenter HorizontalAlignment="Center" Margin="0,4,0,0" Grid.Row="1" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Top"/>
                         </Grid>
@@ -1015,7 +1029,7 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Stroke" TargetName="circle" Value="{StaticResource ControlDisabledBorderBrush}"/>
                             <Setter Property="Fill" TargetName="circle" Value="{StaticResource ControlDisabledBackground}"/>
-                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1069,7 +1083,7 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Stroke" TargetName="circle" Value="{StaticResource ControlDisabledBorderBrush}"/>
                             <Setter Property="Fill" TargetName="circle" Value="{StaticResource ControlDisabledBackground}"/>
-                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Stroke" TargetName="arrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1126,7 +1140,7 @@
                             <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderLeftHeaderStyle}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1272,7 +1286,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1405,7 +1419,7 @@
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ControlPrimarySelectedBorderBrush}"/>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1671,7 +1685,7 @@
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ControlPrimarySelectedBorderBrush}"/>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1802,7 +1816,7 @@
                             <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ControlPrimaryMouseOverBorderBrush}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                         <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
                             <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
@@ -1831,7 +1845,7 @@
                 </Border>
                 <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
-                <Path x:Name="RightArrow" Grid.Column="5" Data="M0,0L4,3.5 0,7z" Fill="{StaticResource ControlGlythColour}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                <Path x:Name="RightArrow" Grid.Column="5" Data="M0,0L4,3.5 0,7z" Fill="{StaticResource ControlGlyphColour}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
                 <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" HorizontalOffset="-2" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Right" VerticalOffset="-3">
                     <Themes:SystemDropShadowChrome Name="Shdw" 
                                                    Themes:SystemDropShadowChrome.Color="#71000000" 
@@ -1871,9 +1885,9 @@
                 <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ControlPrimaryMouseOverBorderBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlythColour}"/>
-                <Setter Property="Fill" TargetName="Glyph" Value="{StaticResource ControlDisabledGlythColour}"/>
-                <Setter Property="Fill" TargetName="RightArrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                <Setter Property="Fill" TargetName="Glyph" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                <Setter Property="Fill" TargetName="RightArrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </Trigger>
             <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
                 <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
@@ -1898,7 +1912,7 @@
                 </Border>
                 <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
-                <Path x:Name="RightArrow" Grid.Column="5" Data="M0,0L4,3.5 0,7z" Visibility="Hidden" Fill="{StaticResource ControlGlythColour}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                <Path x:Name="RightArrow" Grid.Column="5" Data="M0,0L4,3.5 0,7z" Visibility="Hidden" Fill="{StaticResource ControlGlyphColour}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
                 <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" HorizontalOffset="-2" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Right" VerticalOffset="-3">
                     <Border x:Name="SubMenuBorder" 
                             BorderBrush="{StaticResource ControlDefaultBorderBrush}" BorderThickness="1" 
@@ -1933,9 +1947,9 @@
                 <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ControlPrimaryMouseOverBorderBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlythColour}"/>
-                <Setter Property="Fill" TargetName="Glyph" Value="{StaticResource ControlDisabledGlythColour}"/>
-                <Setter Property="Fill" TargetName="RightArrow" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                <Setter Property="Fill" TargetName="Glyph" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                <Setter Property="Fill" TargetName="RightArrow" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </Trigger>
             <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
                 <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
@@ -1991,7 +2005,7 @@
                     <Condition Property="IsInactiveSelectionHighlightEnabled" Value="true"/>
                     <Condition Property="IsSelectionActive" Value="false"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="SelectionBrush" Value="{StaticResource ControlPrimaryDisabledGlythColour}"/>
+                <Setter Property="SelectionBrush" Value="{StaticResource ControlPrimaryDisabledGlyphColour}"/>
             </MultiTrigger>
         </Style.Triggers>
     </Style>
@@ -2086,7 +2100,7 @@
                                 HorizontalAlignment="Center" VerticalAlignment="Center" 
                                 Height="16" Width="16">
                             <Grid x:Name="markGrid" Margin="2">
-                                <Ellipse x:Name="optionMark" Fill="{DynamicResource ControlPrimaryGlythColour}" MinWidth="6" MinHeight="6" Opacity="0"/>
+                                <Ellipse x:Name="optionMark" Fill="{DynamicResource ControlPrimaryGlyphColour}" MinWidth="6" MinHeight="6" Opacity="0"/>
                             </Grid>
                         </Border>
                         <ContentPresenter x:Name="contentPresenter" 
@@ -2103,24 +2117,24 @@
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="Background" TargetName="radioButtonBorder" Value="{StaticResource ControlMouseOverBackground}"/>
                             <Setter Property="BorderBrush" TargetName="radioButtonBorder" Value="{StaticResource ControlMouseOverBorderBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryMouseOverGlyphColour}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" TargetName="radioButtonBorder" Value="{StaticResource ControlDisabledBackground}"/>
                             <Setter Property="BorderBrush" TargetName="radioButtonBorder" Value="{StaticResource ControlDisabledBorderBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryDisabledGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimaryDisabledGlyphColour}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter Property="Background" TargetName="radioButtonBorder" Value="{StaticResource ControlSelectedBackground}"/>
                             <Setter Property="BorderBrush" TargetName="radioButtonBorder" Value="{StaticResource ControlSelectedBorderBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedGlyphColour}"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="true"/>
                                 <Condition Property="IsPressed" Value="true"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource ControlPrimarySelectedMouseOverGlyphColour}"/>
                         </MultiTrigger>
                         <Trigger Property="IsChecked" Value="true">
                             <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
@@ -2198,7 +2212,7 @@
                     <Condition Property="IsInactiveSelectionHighlightEnabled" Value="true"/>
                     <Condition Property="IsSelectionActive" Value="false"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="SelectionBrush" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="SelectionBrush" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </MultiTrigger>
         </Style.Triggers>
     </Style>
@@ -2211,7 +2225,7 @@
                 <Setter Property="Foreground" Value="{StaticResource ControlPrimaryBrightDefaultBackground}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
-                <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="true">
                 <Setter Property="Cursor" Value="Hand"/>
@@ -2246,7 +2260,7 @@
                                         Command="{x:Static ScrollBar.LineUpCommand}" 
                                         BorderThickness="1 1 1 0">
                             <Path x:Name="ArrowTop" Data="M 0,4 C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4 z"
-                                  Fill="{StaticResource ControlGlythColour}" Margin="3,4,3,3" Stretch="Uniform"/>
+                                  Fill="{StaticResource ControlGlyphColour}" Margin="3,4,3,3" Stretch="Uniform"/>
                         </Button>
                         <Border BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="1 0 1 0" 
@@ -2271,7 +2285,7 @@
                                         Grid.Row="2">
                             <Path x:Name="ArrowBottom"
                                   Data="M 0,2.5 C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5 z" 
-                                  Fill="{StaticResource ControlGlythColour}" Margin="3,4,3,3" Stretch="Uniform"/>
+                                  Fill="{StaticResource ControlGlyphColour}" Margin="3,4,3,3" Stretch="Uniform"/>
                         </Button>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -2280,32 +2294,32 @@
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineDownButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineDownButton}" Value="true"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlSelectedGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlSelectedGlyphColour}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineUpButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineUpButton}" Value="true"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlSelectedGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlSelectedGlyphColour}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineDownButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineDownButton}" Value="false"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineUpButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineUpButton}" Value="false"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                         </MultiDataTrigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlDisabledGlythColour}"/>
-                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -2334,7 +2348,7 @@
                                         BorderThickness="1 1 0 1"
                                         Command="{x:Static ScrollBar.LineLeftCommand}" >
                                     <Path x:Name="ArrowLeft" Data="M 3.18,7 C3.18,7 5,7 5,7 5,7 1.81,3.5 1.81,3.5 1.81,3.5 5,0 5,0 5,0 3.18,0 3.18,0 3.18,0 0,3.5 0,3.5 0,3.5 3.18,7 3.18,7 z" 
-                                          Fill="{StaticResource ControlGlythColour}" Margin="3" Stretch="Uniform"/>
+                                          Fill="{StaticResource ControlGlyphColour}" Margin="3" Stretch="Uniform"/>
                                 </Button>
                                 <Border BorderBrush="{TemplateBinding BorderBrush}" 
                                         BorderThickness="0 1 0 1" 
@@ -2355,7 +2369,7 @@
 
                                 <Button x:Name="PART_LineRightButton" Grid.Column="2" Command="{x:Static ScrollBar.LineRightCommand}" 
                                         BorderThickness="0 1 1 1">
-                                    <Path x:Name="ArrowRight" Data="M 1.81,7 C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7 z" Fill="{StaticResource ControlGlythColour}" Margin="3" Stretch="Uniform"/>
+                                    <Path x:Name="ArrowRight" Data="M 1.81,7 C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7 z" Fill="{StaticResource ControlGlyphColour}" Margin="3" Stretch="Uniform"/>
                                 </Button>
                             </Grid>
                             <ControlTemplate.Triggers>
@@ -2364,32 +2378,32 @@
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineRightButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineRightButton}" Value="true"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlSelectedGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlSelectedGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineLeftButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineLeftButton}" Value="true"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlSelectedGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlSelectedGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineRightButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineRightButton}" Value="false"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineLeftButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineLeftButton}" Value="false"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlDisabledGlythColour}"/>
-                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlDisabledGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlDisabledGlyphColour}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -2421,7 +2435,7 @@
                                         Command="{x:Static ScrollBar.LineUpCommand}" 
                                         BorderThickness="1 1 1 0">
                             <Path x:Name="ArrowTop" Data="M 0,4 C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4 z"
-                                  Fill="{StaticResource ControlGlythColour}" Margin="3,4,3,3" Stretch="Uniform"/>
+                                  Fill="{StaticResource ControlGlyphColour}" Margin="3,4,3,3" Stretch="Uniform"/>
                         </Button>
                         <Border BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="1 0 1 0" 
@@ -2446,7 +2460,7 @@
                                 Grid.Row="2">
                             <Path x:Name="ArrowBottom"
                                   Data="M 0,2.5 C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5 z" 
-                                  Fill="{StaticResource ControlGlythColour}" Margin="3,4,3,3" Stretch="Uniform"/>
+                                  Fill="{StaticResource ControlGlyphColour}" Margin="3,4,3,3" Stretch="Uniform"/>
                         </Button>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -2455,32 +2469,32 @@
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineDownButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineDownButton}" Value="true"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlSelectedGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlSelectedGlyphColour}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineUpButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineUpButton}" Value="true"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlSelectedGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlSelectedGlyphColour}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineDownButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineDownButton}" Value="false"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineUpButton}" Value="true"/>
                                 <Condition Binding="{Binding IsPressed, ElementName=PART_LineUpButton}" Value="false"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                         </MultiDataTrigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlDisabledGlythColour}"/>
-                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowTop" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                            <Setter Property="Fill" TargetName="ArrowBottom" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -2511,12 +2525,12 @@
                                         BorderThickness="1"
                                         Command="{x:Static ScrollBar.LineLeftCommand}" >
                                     <Path x:Name="ArrowLeft" Data="M 3.18,7 C3.18,7 5,7 5,7 5,7 1.81,3.5 1.81,3.5 1.81,3.5 5,0 5,0 5,0 3.18,0 3.18,0 3.18,0 0,3.5 0,3.5 0,3.5 3.18,7 3.18,7 z" 
-                                          Fill="{StaticResource ControlGlythColour}" Margin="3" Stretch="Uniform"/>
+                                          Fill="{StaticResource ControlGlyphColour}" Margin="3" Stretch="Uniform"/>
                                 </Button>
 
                                 <Button x:Name="PART_LineRightButton" Grid.Column="2" Command="{x:Static ScrollBar.LineRightCommand}" 
                                         BorderThickness="1">
-                                    <Path x:Name="ArrowRight" Data="M 1.81,7 C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7 z" Fill="{StaticResource ControlGlythColour}" Margin="3" Stretch="Uniform"/>
+                                    <Path x:Name="ArrowRight" Data="M 1.81,7 C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7 z" Fill="{StaticResource ControlGlyphColour}" Margin="3" Stretch="Uniform"/>
                                 </Button>
                             </Grid>
                             <ControlTemplate.Triggers>
@@ -2525,32 +2539,32 @@
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineRightButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineRightButton}" Value="true"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlSelectedGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlSelectedGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineLeftButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineLeftButton}" Value="true"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlSelectedGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlSelectedGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineRightButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineRightButton}" Value="false"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding IsMouseOver, ElementName=PART_LineLeftButton}" Value="true"/>
                                         <Condition Binding="{Binding IsPressed, ElementName=PART_LineLeftButton}" Value="false"/>
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlMouseOverGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlMouseOverGlyphColour}"/>
                                 </MultiDataTrigger>
                                 <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlDisabledGlythColour}"/>
-                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlDisabledGlythColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowLeft" Value="{StaticResource ControlDisabledGlyphColour}"/>
+                                    <Setter Property="Fill" TargetName="ArrowRight" Value="{StaticResource ControlDisabledGlyphColour}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -3025,7 +3039,7 @@
         <Setter Property="Stylus.IsPressAndHoldEnabled" Value="True"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ControlPrimaryGlythColour}"/>
+        <Setter Property="Foreground" Value="{StaticResource ControlPrimaryGlyphColour}"/>
         <Setter Property="Template" Value="{StaticResource SliderHorizontal}"/>
         <Setter Property="Minimum" Value="0"/>
         <Setter Property="Maximum" Value="100"/>
@@ -3101,7 +3115,7 @@
                             <Setter Property="Margin" TargetName="headerPanel" Value="0,2,2,2"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3541,7 +3555,7 @@
                 <Setter Property="Margin" TargetName="headerPanel" Value="0,2,2,2"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
-                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -3605,7 +3619,7 @@
                     <Condition Property="IsInactiveSelectionHighlightEnabled" Value="true"/>
                     <Condition Property="IsSelectionActive" Value="false"/>
                 </MultiTrigger.Conditions>
-                <Setter Property="SelectionBrush" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="SelectionBrush" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </MultiTrigger>
         </Style.Triggers>
     </Style>
@@ -3637,7 +3651,7 @@
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource ControlDefaultBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ControlGlythColour}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3669,7 +3683,7 @@
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource ControlDefaultBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ControlGlythColour}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3701,7 +3715,7 @@
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource ControlDefaultBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ControlGlythColour}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3831,7 +3845,7 @@
                             <Setter Property="Background" Value="{StaticResource ControlDefaultBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlythColour}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlyphColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3908,7 +3922,7 @@
                 <Setter Property="Background" Value="{StaticResource ControlDefaultBackground}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
-                <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="Foreground" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -4086,7 +4100,7 @@
                                             <Rectangle Width="10" 
                                                        VerticalAlignment="Center" 
                                                        Margin="1 1 0 0" 
-                                                       Stroke="{StaticResource ControlGlythColour}" 
+                                                       Stroke="{StaticResource ControlGlyphColour}" 
                                                        StrokeThickness="2"/>
                                         </Button>
 
@@ -4098,11 +4112,11 @@
                                                 Click="AutoMinimize_Event">
                                             <Grid Width="12" Height="12">
                                                 <Rectangle StrokeThickness="2" 
-                                                           Stroke="{StaticResource ControlGlythColour}"
+                                                           Stroke="{StaticResource ControlGlyphColour}"
                                                            Margin="3,0,0,3"/>
                                                 <Rectangle StrokeThickness="2" 
                                                            Fill="{TemplateBinding BorderBrush}"
-                                                           Stroke="{StaticResource ControlGlythColour}"
+                                                           Stroke="{StaticResource ControlGlyphColour}"
                                                            Margin="0 3 3 0"/>
                                             </Grid>
                                         </Button>
@@ -4114,8 +4128,8 @@
                                                 WindowChrome.IsHitTestVisibleInChrome="True" 
                                                 Click="CloseWindow_Event">
                                             <Grid Margin="0 1 0 0">
-                                                <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" />
-                                                <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" />
+                                                <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" />
+                                                <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" />
                                             </Grid>
                                         </Button>
                                     </StackPanel>
@@ -4191,7 +4205,7 @@
                                             <Rectangle Width="10"
                                                        VerticalAlignment="Center"
                                                        Margin="1 1 0 0" 
-                                                       Stroke="{StaticResource ControlGlythColour}"
+                                                       Stroke="{StaticResource ControlGlyphColour}"
                                                        StrokeThickness="2"/>
                                         </Button>
                                         <Button x:Name="btnClose"
@@ -4202,8 +4216,8 @@
                                                 WindowChrome.IsHitTestVisibleInChrome="True" 
                                                 Click="CloseWindow_Event">
                                             <Grid Margin="0 1 0 0">
-                                                <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" />
-                                                <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{StaticResource ControlGlythColour}" StrokeThickness="2" />
+                                                <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" />
+                                                <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{StaticResource ControlGlyphColour}" StrokeThickness="2" />
                                             </Grid>
                                         </Button>
                                     </StackPanel>
@@ -4256,7 +4270,7 @@
             <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Background" TargetName="border" Value="{StaticResource ControlBrightDefaultBackground}"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ControlBrightDefaultBorderBrush}"/>
-                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ControlDisabledGlythColour}"/>
+                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ControlDisabledGlyphColour}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
