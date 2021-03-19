@@ -38,53 +38,55 @@
             <ColumnDefinition Width="220" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <StackPanel Background="#343434">
-            <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
-                <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
-            </GroupBox>
-            <GroupBox Header="Date Filter" Style="{StaticResource H1}">
-                <CheckBox Content="Show only newer than now"
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Background="#343434">
+                <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
+                    <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
+                </GroupBox>
+                <GroupBox Header="Date Filter" Style="{StaticResource H1}">
+                    <CheckBox Content="Show only newer than now"
                           Command="{Binding ShowNewerThanNow}"
                           CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
-            </GroupBox>
-            <GroupBox Header="Level" Style="{StaticResource H1}">
-                <StackPanel>
-                    <CheckBox Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
-                    <CheckBox Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />
-                    <CheckBox Content="Notices" IsChecked="{Binding ShowNotices.Value}" />
-                    <CheckBox Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Include only matching" Style="{StaticResource H1}">
-                <StackPanel>
-                    <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Exclude matching" Style="{StaticResource H1}">
-                <StackPanel>
-                    <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Search" Style="{StaticResource H1}">
-                <StackPanel>
-                    <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
-                    <UniformGrid Rows="1" Columns="2">
-                        <Button Content="Prev" Command="{Binding PrevIndex}" Margin="10,0" />
-                        <Button Content="Next" Command="{Binding NextIndex}" Margin="0,0,10,0" />
-                    </UniformGrid>
-                    <TextBlock Text="Contains text, case insensitive" Style="{StaticResource ExplanationText}" />
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Loaded files" Style="{StaticResource H1}">
-                <StackPanel>
-                    <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
-                         SelectionChanged="AllFiles_SelectionChanged" DisplayMemberPath="Value" MaxHeight="220" />
-                    <TextBlock Text="Ctrl+Click to select multiple files" Style="{StaticResource ExplanationText}" />
-                </StackPanel>
-            </GroupBox>
-        </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Level" Style="{StaticResource H1}">
+                    <StackPanel>
+                        <CheckBox Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
+                        <CheckBox Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />
+                        <CheckBox Content="Notices" IsChecked="{Binding ShowNotices.Value}" />
+                        <CheckBox Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Include only matching" Style="{StaticResource H1}">
+                    <StackPanel>
+                        <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Exclude matching" Style="{StaticResource H1}">
+                    <StackPanel>
+                        <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Search" Style="{StaticResource H1}">
+                    <StackPanel>
+                        <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                        <UniformGrid Rows="1" Columns="2">
+                            <Button Content="Prev" Command="{Binding PrevIndex}" Margin="10,0" />
+                            <Button Content="Next" Command="{Binding NextIndex}" Margin="0,0,10,0" />
+                        </UniformGrid>
+                        <TextBlock Text="Contains text, case insensitive" Style="{StaticResource ExplanationText}" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Loaded files" Style="{StaticResource H1}">
+                    <StackPanel>
+                        <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
+                            SelectionChanged="AllFiles_SelectionChanged" DisplayMemberPath="Value" />
+                        <TextBlock Text="Ctrl+Click to select multiple files" Style="{StaticResource ExplanationText}" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
         <!--NOTE: Since not all items are the same height, setting VirtualizingPanel.ScrollUnit="Pixel"
         greatly reduces the scroll performance -->
         <ItemsControl Grid.Column="1" ItemsSource="{Binding ItemsSource}"
