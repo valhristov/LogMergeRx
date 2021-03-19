@@ -12,7 +12,7 @@ namespace LogMergeRx
                 return param;
             };
 
-        private static T Log<T>(T value, string format)
+        public static T Log<T>(T value, string format)
         {
             Debug.WriteLine(format, value);
             return value;

@@ -21,7 +21,24 @@ namespace LogMergeRx.Rx
         {
             Root = root;
 
-            InitFileSystemWatcher(root, filter.StartsWith("*") ? filter : $"*{filter}");
+            Logger.Log(root, "Monitoring: '{0}'");
+
+            _fsw = new FileSystemWatcher
+            {
+                Path = root.Value + "\\",
+                Filter = "*.csv", //filter.StartsWith("*") ? filter : $"*{filter}",
+                NotifyFilter = NotifyFilters.LastWrite,
+                IncludeSubdirectories = true,
+            };
+
+            _fsw.Changed += (s, e) =>
+                Logger.Log(e.FullPath, "Detected change: '{0}'");
+
+            _fsw.Created += (s, e) =>
+                Logger.Log(e.FullPath, "Detected create: '{0}'");
+
+            _fsw.Error += (s, e) =>
+                Logger.Log(e.GetException().Message, "Detected error: '{0}'");
 
             var changed = Observable
                 .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => _fsw.Changed += h, h => _fsw.Changed -= h)
@@ -36,32 +53,6 @@ namespace LogMergeRx.Rx
                 .Select(path => RelativePath.FromPathAndRoot(root, path));
 
             Changed = Observable.Merge(_existing, changed, created);
-        }
-
-        private void InitFileSystemWatcher(string directoryPath, string filter)
-        {
-            _fsw = new FileSystemWatcher
-            {
-                Path = directoryPath,
-                Filter = filter,
-                NotifyFilter = NotifyFilters.LastWrite,
-                IncludeSubdirectories = true,
-            };
-
-            // FSW sometimes makes errors which stop the watching... When an
-            // error occurs, we create a new watcher.
-            _fsw.Error += OnFileSystemWatcherError;
-        }
-
-        private void OnFileSystemWatcherError(object sender, ErrorEventArgs e)
-        {
-            var fsw = _fsw;
-
-            InitFileSystemWatcher(fsw.Path, fsw.Filter);
-
-            fsw.Error -= OnFileSystemWatcherError;
-            fsw.EnableRaisingEvents = false;
-            fsw.Dispose();
         }
 
         public void Start(bool notifyForExistingFiles)
