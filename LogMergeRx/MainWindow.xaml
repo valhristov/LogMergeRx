@@ -75,7 +75,7 @@
             <GroupBox Header="Loaded files" Style="{StaticResource H1}">
                 <StackPanel>
                     <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
-                         SelectionChanged="AllFiles_SelectionChanged" DisplayMemberPath="Value" />
+                         SelectionChanged="AllFiles_SelectionChanged" DisplayMemberPath="Value" MaxHeight="220" />
                     <TextBlock Text="Ctrl+Click to select multiple files" Style="{StaticResource ExplanationText}" />
                 </StackPanel>
             </GroupBox>
@@ -98,7 +98,7 @@
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="70" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="200" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Date" Margin="5,2" />
                             <TextBlock Grid.Column="1" Text="Level" Margin="5,2"/>
@@ -125,7 +125,7 @@
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="70" />
                             <ColumnDefinition />
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="200" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
                         <TextBlock Grid.Column="1" FontWeight="Bold" Margin="3"
@@ -135,7 +135,7 @@
                                    local:HighlightHelper.Text="{Binding Message}"
                                    local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, ElementName=Root}"
                                    TextWrapping="Wrap"/>
-                        <TextBlock Grid.Column="3" Text="{Binding RelativePath}" Margin="3" />
+                        <TextBlock Grid.Column="3" Text="{Binding RelativePath}" Margin="3" ToolTip="{Binding RelativePath}" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
