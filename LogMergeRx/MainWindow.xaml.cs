@@ -1,11 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using LogMergeRx.Model;
-using Microsoft.Win32;
 
 namespace LogMergeRx
 {
@@ -29,7 +27,7 @@ namespace LogMergeRx
                 return;
             }
 
-            Title = $"Monitoring: {path}";
+            Title = $"LogMerge {path}";
 
             ViewModel = new MainWindowViewModel();
 
