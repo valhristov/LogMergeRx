@@ -3,6 +3,7 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using LogMergeRx.Model;
 using Microsoft.Win32;
 
@@ -51,10 +52,12 @@ namespace LogMergeRx
 
         private bool TryGetDirectoryToRead(out string path)
         {
-            var dialog = new OpenFileDialog { Multiselect = false, };
-            path = dialog.ShowDialog() == true && dialog.FileNames.Length > 0
-                ? Path.GetDirectoryName(dialog.FileName)
+            using var dialog = new FolderBrowserDialog();
+
+            path = dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
+                ? dialog.SelectedPath
                 : null;
+
             return path != null;
         }
 
