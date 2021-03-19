@@ -33,6 +33,9 @@ namespace LogMergeRx.Model
         public override int GetHashCode() =>
             Value == null ? 0 : Value.GetHashCode();
 
+        public override string ToString() =>
+            Value;
+
         public static bool operator ==(RelativePath left, RelativePath right) =>
             left.Equals(right);
 
