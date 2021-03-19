@@ -28,6 +28,8 @@ namespace LogMergeRx
                 return;
             }
 
+            Title = $"Monitoring: {path}";
+
             ViewModel = new MainWindowViewModel();
 
             _monitor = new LogMonitor(AbsolutePath.FromFullPath(path));
