@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <UseWinforms>true</UseWinforms>
     <StartupObject>LogMergeRx.App</StartupObject>
+    <ApplicationIcon>LogMerge.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
