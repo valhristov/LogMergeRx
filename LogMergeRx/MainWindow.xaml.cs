@@ -10,6 +10,8 @@ namespace LogMergeRx
 {
     public partial class MainWindow : Window
     {
+        private readonly LogMonitor _monitor;
+
         private MainWindowViewModel ViewModel
         {
             get => (MainWindowViewModel)DataContext;
@@ -28,17 +30,17 @@ namespace LogMergeRx
 
             ViewModel = new MainWindowViewModel();
 
-            var monitor = new LogMonitor(AbsolutePath.FromFullPath(path));
+            _monitor = new LogMonitor(AbsolutePath.FromFullPath(path));
 
-            monitor.ChangedFiles
+            _monitor.ChangedFiles
                 .ObserveOnDispatcher()
                 .Subscribe(ViewModel.AddFileToFilter); // add changed files to the filter
 
-            monitor.ReadEntries
+            _monitor.ReadEntries
                 .ObserveOnDispatcher()
                 .Subscribe(ViewModel.ItemsSource.AddRange); // read all content of created or changed files
 
-            monitor.Start();
+            _monitor.Start();
 
             ViewModel.SelectedFiles
                 .ToObservable()
