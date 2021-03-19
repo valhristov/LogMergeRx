@@ -28,8 +28,11 @@ namespace LogMergeRx
         public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
         public ObservableProperty<LogEntry> ScrollToItem { get; } = new ObservableProperty<LogEntry>(null);
 
+        public ObservableProperty<DateTime> MinDate { get; } = new ObservableProperty<DateTime>(DateTime.MinValue);
+
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
+        public ActionCommand ShowNewerThanNow { get; }
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
@@ -48,6 +51,8 @@ namespace LogMergeRx
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
+            ShowNewerThanNow = new ActionCommand(param => MinDate.Value = param is bool enabled && enabled ? DateTime.Now : DateTime.MinValue);
+
             ItemsSourceView.Filter = Filter;
             ItemsSourceView.CustomSort = new LogEntryDateComparer();
 
@@ -56,6 +61,9 @@ namespace LogMergeRx
                 .Subscribe(_ => ItemsSourceView.Refresh());
             Observable
                 .Merge(IncludeRegex, ExcludeRegex)
+                .Subscribe(_ => ItemsSourceView.Refresh());
+            Observable
+                .Merge(MinDate)
                 .Subscribe(_ => ItemsSourceView.Refresh());
 
             FollowTail
@@ -124,7 +132,12 @@ namespace LogMergeRx
 
         private bool Filter(object o)
         {
-            return o is LogEntry log && FilterByLevel(log) && FilterByInclude(log) && FilterByExclude(log) && FilterByFile(log);
+            return o is LogEntry log
+                && FilterByLevel(log)
+                && FilterByInclude(log)
+                && FilterByExclude(log)
+                && FilterByFile(log)
+                && FilterByDate(log);
 
             bool FilterByLevel(LogEntry log) =>
                 ShowErrors.Value && log.Level == LogLevel.ERROR ||
@@ -140,6 +153,9 @@ namespace LogMergeRx
 
             bool FilterByFile(LogEntry log) =>
                 AllFiles.Count == 0 || _selection.Contains(log.RelativePath);
+
+            bool FilterByDate(LogEntry log) =>
+                log.Date > MinDate.Value;
         }
     }
 }

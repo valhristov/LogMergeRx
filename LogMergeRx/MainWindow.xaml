@@ -42,6 +42,11 @@
             <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
                 <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
             </GroupBox>
+            <GroupBox Header="Date Filter" Style="{StaticResource H1}">
+                <CheckBox Content="Show only newer than now"
+                          Command="{Binding ShowNewerThanNow}"
+                          CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            </GroupBox>
             <GroupBox Header="Level" Style="{StaticResource H1}">
                 <StackPanel>
                     <CheckBox Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
