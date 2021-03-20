@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using LogMergeRx.Model;
 
 namespace LogMergeRx
@@ -20,6 +21,21 @@ namespace LogMergeRx
         public MainWindow()
         {
             InitializeComponent();
+
+            CommandBindings.Add(new CommandBinding(
+                SystemCommands.CloseWindowCommand,
+                (s, e) => SystemCommands.CloseWindow(this)));
+            CommandBindings.Add(new CommandBinding(
+                SystemCommands.RestoreWindowCommand,
+                (s, e) => SystemCommands.RestoreWindow(this),
+                (s, e) => e.CanExecute = WindowState == WindowState.Maximized));
+            CommandBindings.Add(new CommandBinding(
+                SystemCommands.MaximizeWindowCommand,
+                (s, e) => SystemCommands.MaximizeWindow(this),
+                (s, e) => e.CanExecute = WindowState != WindowState.Maximized));
+            CommandBindings.Add(new CommandBinding(
+                SystemCommands.MinimizeWindowCommand,
+                (s, e) => SystemCommands.MinimizeWindow(this)));
 
             if (!TryGetDirectoryToRead(out var path))
             {
