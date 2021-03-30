@@ -8,10 +8,11 @@ namespace LogMergeRx
 {
     public static class LogHelper
     {
+        private static readonly DateTime start = new DateTime(2021, 03, 25, 15, 05, 05, 0);
         private static int counter;
 
-        public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string date = null, string source = "source", string fileName = default) =>
-            new LogEntry(RelativePath.FromPath(fileName), date ?? counter++.ToString("00"), level, source, message);
+        public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string source = "source", string fileName = default) =>
+            new LogEntry(RelativePath.FromPath(fileName), start.AddMilliseconds(counter++), level, source, message);
 
         public static void Append(AbsolutePath path, params LogEntry[] entries) =>
             File.AppendAllLines(path, entries.Select(ToCsv));
@@ -49,6 +50,6 @@ namespace LogMergeRx
         }
 
         private static string ToCsv(LogEntry entry) =>
-            $"\"{entry.Date}\";\"\";\"{entry.Level}\";\"{entry.Source}\";\"{entry.Message}\"";
+            $"\"{entry.Date:yyyy-MM-dd HH:mm:ss,fff}\";\"\";\"{entry.Level}\";\"{entry.Source}\";\"{entry.Message}\"";
     }
 }

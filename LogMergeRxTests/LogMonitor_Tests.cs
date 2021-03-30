@@ -78,6 +78,26 @@ namespace LogMergeRxTests
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
 
+        [TestMethod]
+        public async Task Read_Overflown_Files()
+        {
+            LogMonitor.Start();
+
+            LogHelper.AppendHeaders(GetPath("log1.csv"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("1"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("2"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("3"));
+            LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("4"));
+
+            await Task.Delay(500);
+
+            Files.Count.Should().Be(5);
+            Files.Select(x => x.Value).Distinct().Should().Equal("log1.csv");
+
+            Entries.Count.Should().Be(4);
+            Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
+        }
+
         private AbsolutePath GetPath(string fileName) =>
             AbsolutePath.FromFullPath(Path.Combine(LogsPath, fileName));
     }

@@ -34,7 +34,7 @@ namespace LogMergeRx
 
             while (csv.Read())
             {
-                var entry = new LogEntry(
+                var entry = LogEntry.Create(
                     path: path,
                     date: csv.GetField<string>(0),
                     level: ParseLevel(csv.GetField<string>(2)?.Trim()),
