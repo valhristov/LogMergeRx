@@ -1,6 +1,6 @@
 ﻿using System.Windows.Threading;
 
-namespace LogMergeRxTests
+namespace LogMergeRx
 {
     public static class DispatcherUtil
     {

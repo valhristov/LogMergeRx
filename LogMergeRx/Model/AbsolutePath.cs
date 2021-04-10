@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace LogMergeRx.Model
 {
+    [DebuggerDisplay("AbsolutePath:{Value}")]
     public struct AbsolutePath : IEquatable<AbsolutePath?>
     {
         public string Value { get; }
@@ -14,7 +16,7 @@ namespace LogMergeRx.Model
         public static implicit operator string(AbsolutePath filePath) =>
             filePath.Value;
 
-        public static AbsolutePath FromFullPath(string fullPath) =>
+        public static explicit operator AbsolutePath(string fullPath) =>
             new AbsolutePath(fullPath);
 
         public bool Equals(AbsolutePath? other) =>

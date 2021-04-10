@@ -47,7 +47,7 @@ namespace LogMergeRx
 
             ViewModel = new MainWindowViewModel();
 
-            _monitor = new LogMonitor(AbsolutePath.FromFullPath(path));
+            _monitor = new LogMonitor((AbsolutePath)path);
 
             _monitor.ChangedFiles
                 .ObserveOnDispatcher()

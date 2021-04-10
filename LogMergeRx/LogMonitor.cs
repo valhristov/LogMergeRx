@@ -13,18 +13,26 @@ namespace LogMergeRx
     {
         private readonly ObservableFileSystemWatcher _watcher;
 
-        private readonly ConcurrentDictionary<RelativePath, long> _offsets =
-            new ConcurrentDictionary<RelativePath, long>();
+        private readonly FileMap _fileMap = new();
 
-        public IObservable<RelativePath> ChangedFiles { get; }
+        private readonly ConcurrentDictionary<FileId, long> _offsets = new();
+
+        public IObservable<FileId> ChangedFiles { get; }
 
         public IObservable<List<LogEntry>> ReadEntries { get; }
+
+        public bool TryGetRelativePath(FileId fileId, out RelativePath relativePath) =>
+            _fileMap.TryGetRelativePath(fileId, out relativePath);
 
         public LogMonitor(AbsolutePath root, string filter = "*.csv")
         {
             _watcher = new ObservableFileSystemWatcher(root, filter);
 
-            ChangedFiles = _watcher.Changed;
+            ChangedFiles = _watcher.Changed
+                .Select(_fileMap.GetOrAddFileId);
+
+            _watcher.Renamed
+                .Subscribe(x => _fileMap.TryRename(x.Old, x.New));
 
             ReadEntries = ChangedFiles
                 .Select(ReadToEnd);
@@ -35,22 +43,27 @@ namespace LogMergeRx
             _watcher.Start(notifyForExistingFiles: true);
         }
 
-        private List<LogEntry> ReadToEnd(RelativePath path)
+        private List<LogEntry> ReadToEnd(FileId fileId)
         {
             List<LogEntry> entries = null;
 
-            using var stream = File.Open(Path.Combine(_watcher.Root, path), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            if (!_fileMap.TryGetRelativePath(fileId, out var relativePath))
+            {
+                return null;
+            }
 
-            _offsets.AddOrUpdate(path,
-                fullName => ReadAndGetNewOffset(stream, 0, fullName, out entries),
-                (fullName, offset) => ReadAndGetNewOffset(stream, offset, fullName, out entries));
+            using var stream = File.Open(Path.Combine(_watcher.Root, relativePath), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+            _offsets.AddOrUpdate(fileId,
+                fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
+                (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
 
             return entries;
 
-            static long ReadAndGetNewOffset(Stream stream, long offset, RelativePath path, out List<LogEntry> entries)
+            static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out List<LogEntry> entries)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
-                entries = CsvParser.Parse(stream, path);
+                entries = CsvParser.Parse(stream, fileId);
                 return stream.Position == 0 ? 0 : stream.Position - Environment.NewLine.Length;
             }
         }

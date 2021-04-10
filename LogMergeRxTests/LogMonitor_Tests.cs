@@ -9,14 +9,14 @@ using LogMergeRx;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace LogMergeRxTests
+namespace LogMergeRx
 {
     [TestClass]
     public class LogMonitor_Tests
     {
         public TestContext TestContext { get; set; }
 
-        private List<RelativePath> Files { get; set; }
+        private List<FileId> Files { get; set; }
         private List<LogEntry> Entries { get; set; }
         private LogMonitor LogMonitor { get; set; }
         private AbsolutePath LogsPath { get; set; }
@@ -24,15 +24,15 @@ namespace LogMergeRxTests
         [TestInitialize]
         public void TestInitialize()
         {
-            LogsPath = AbsolutePath.FromFullPath(Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName));
+            LogsPath = (AbsolutePath)Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName);
 
             Directory.CreateDirectory(LogsPath);
 
-            Files = new List<RelativePath>();
+            Files = new List<FileId>();
             Entries = new List<LogEntry>();
 
             LogMonitor = new LogMonitor(LogsPath);
-            LogMonitor.ChangedFiles.Subscribe(Files.Add);
+            LogMonitor.ChangedFiles.Subscribe(x => Files.Add(x));
             LogMonitor.ReadEntries.Subscribe(Entries.AddRange);
         }
 
@@ -52,7 +52,7 @@ namespace LogMergeRxTests
             await Task.Delay(100);
 
             Files.Count.Should().Be(6); //2 headers and 4 entries
-            Files.Select(x => x.Value).Distinct().Should().Equal("log1.csv", "log2.csv");
+            Files.Select(x => x.Id).Distinct().Should().Equal(1, 2);
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
@@ -72,7 +72,7 @@ namespace LogMergeRxTests
             await Task.Delay(500);
 
             Files.Count.Should().Be(2); // We start after the file was last modified
-            Files.Select(x => x.Value).Distinct().Should().Equal("log1.csv", "log2.csv");
+            Files.Select(x => x.Id).Distinct().Should().Equal(1, 2);
 
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
@@ -86,19 +86,25 @@ namespace LogMergeRxTests
             LogHelper.AppendHeaders(GetPath("log1.csv"));
             LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("1"));
             LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("2"));
+
+            await Task.Delay(500);
+
+            await LogHelper.Rename(GetPath("log1.csv"), GetPath("log2.csv"));
+
+            LogHelper.AppendHeaders(GetPath("log1.csv"));
             LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("3"));
             LogHelper.Append(GetPath("log1.csv"), LogHelper.Create("4"));
 
             await Task.Delay(500);
 
-            Files.Count.Should().Be(5);
-            Files.Select(x => x.Value).Distinct().Should().Equal("log1.csv");
+            Files.Count.Should().Be(8);
+            Files.Select(x => x.Id).Distinct().Should().Equal(1, 2);
 
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
 
         private AbsolutePath GetPath(string fileName) =>
-            AbsolutePath.FromFullPath(Path.Combine(LogsPath, fileName));
+            (AbsolutePath)Path.Combine(LogsPath, fileName);
     }
 }

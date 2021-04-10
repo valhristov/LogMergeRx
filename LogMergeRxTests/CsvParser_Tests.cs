@@ -16,17 +16,17 @@ namespace LogMergeRx
 
             LogHelper.AppendHeaders(stream);
 
-            var entries = new[] { LogHelper.Create("1", fileName: "FileName"), LogHelper.Create("2", fileName: "FileName") };
+            var entries = new[] { LogHelper.Create("1", fileId: 1), LogHelper.Create("2", fileId: 1) };
             LogHelper.Append(stream, entries);
-            CsvParser.Parse(stream, RelativePath.FromPath("FileName")).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
+            CsvParser.Parse(stream, new FileId(1)).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
 
-            entries = new[] { LogHelper.Create("3", fileName: "FileName") };
+            entries = new[] { LogHelper.Create("3", fileId: 1) };
             LogHelper.Append(stream, entries);
-            CsvParser.Parse(stream, RelativePath.FromPath("FileName")).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
+            CsvParser.Parse(stream, new FileId(1)).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
 
-            entries = new[] { LogHelper.Create("4", fileName: "FileName") };
+            entries = new[] { LogHelper.Create("4", fileId: 1) };
             LogHelper.Append(stream, entries);
-            CsvParser.Parse(stream, RelativePath.FromPath("FileName")).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
+            CsvParser.Parse(stream, new FileId(1)).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
         }
 
         [TestMethod]
@@ -35,9 +35,9 @@ namespace LogMergeRx
             using var stream = new MemoryStream();
 
             // The following should not throw exceptions
-            CsvParser.Parse(stream, RelativePath.FromPath("FileName"));
-            CsvParser.Parse(stream, RelativePath.FromPath("FileName"));
-            CsvParser.Parse(stream, RelativePath.FromPath("FileName"));
+            CsvParser.Parse(stream, new FileId(1));
+            CsvParser.Parse(stream, new FileId(1));
+            CsvParser.Parse(stream, new FileId(1));
         }
     }
 }

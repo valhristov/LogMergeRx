@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LogMergeRx.Model;
 
 namespace LogMergeRx
@@ -11,8 +12,8 @@ namespace LogMergeRx
         private static readonly DateTime start = new DateTime(2021, 03, 25, 15, 05, 05, 0);
         private static int counter;
 
-        public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string source = "source", string fileName = default) =>
-            new LogEntry(RelativePath.FromPath(fileName), start.AddMilliseconds(counter++), level, source, message);
+        public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string source = "source", int fileId = default) =>
+            new LogEntry(new FileId(fileId), start.AddMilliseconds(counter++), level, source, message);
 
         public static void Append(AbsolutePath path, params LogEntry[] entries) =>
             File.AppendAllLines(path, entries.Select(ToCsv));
@@ -51,5 +52,22 @@ namespace LogMergeRx
 
         private static string ToCsv(LogEntry entry) =>
             $"\"{entry.Date:yyyy-MM-dd HH:mm:ss,fff}\";\"\";\"{entry.Level}\";\"{entry.Source}\";\"{entry.Message}\"";
+
+        public static async Task Rename(AbsolutePath from, AbsolutePath to)
+        {
+            var retries = 0;
+            while (retries++ < 5)
+            {
+                try
+                {
+                    File.Move(from, to);
+                    break;
+                }
+                catch (IOException)
+                {
+                    await Task.Delay(100);
+                }
+            }
+        }
     }
 }

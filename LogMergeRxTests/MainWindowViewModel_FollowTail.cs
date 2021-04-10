@@ -4,7 +4,7 @@ using LogMergeRx;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace LogMergeRxTests
+namespace LogMergeRx
 {
     [TestClass]
     public class MainWindowViewModel_FollowTail_Tests

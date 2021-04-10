@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace LogMergeRx.Model
 {
+    [DebuggerDisplay("RelativePath:{Value}")]
     public struct RelativePath : IEquatable<RelativePath?>
     {
         public string Value { get; }
@@ -22,7 +24,7 @@ namespace LogMergeRx.Model
             new RelativePath(fileName);
 
         public AbsolutePath ToAbsolute(AbsolutePath root) =>
-            AbsolutePath.FromFullPath(Path.Combine(root, Value));
+            (AbsolutePath)(Path.Combine(root, Value));
 
         public bool Equals(RelativePath? other) =>
             Value.Equals(other?.Value, StringComparison.OrdinalIgnoreCase);

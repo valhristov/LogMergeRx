@@ -10,7 +10,7 @@ namespace LogMergeRx
 {
     public class MainWindowViewModel
     {
-        private readonly HashSet<string> _selection = new HashSet<string>();
+        private readonly HashSet<int> _selection = new HashSet<int>();
 
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
@@ -40,11 +40,11 @@ namespace LogMergeRx
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public WpfObservableRangeCollection<RelativePath> AllFiles { get; } =
-            new WpfObservableRangeCollection<RelativePath>();
+        public WpfObservableRangeCollection<FileId> AllFiles { get; } =
+            new WpfObservableRangeCollection<FileId>();
 
-        public WpfObservableRangeCollection<RelativePath> SelectedFiles { get; } =
-            new WpfObservableRangeCollection<RelativePath>();
+        public WpfObservableRangeCollection<FileId> SelectedFiles { get; } =
+            new WpfObservableRangeCollection<FileId>();
 
         public MainWindowViewModel()
         {
@@ -81,7 +81,7 @@ namespace LogMergeRx
                 .Subscribe(e =>
                 {
                     _selection.Clear();
-                    _selection.UnionWith(SelectedFiles.Select(p => p.Value));
+                    _selection.UnionWith(SelectedFiles.Select(p => p.Id));
                     ItemsSourceView.Refresh();
                 });
 
@@ -98,12 +98,12 @@ namespace LogMergeRx
             }
         }
 
-        public void AddFileToFilter(RelativePath path)
+        public void AddFileToFilter(FileId fileId)
         {
-            if (!AllFiles.Contains(path))
+            if (!AllFiles.Contains(fileId))
             {
-                AllFiles.Add(path);
-                SelectedFiles.Add(path);
+                AllFiles.Add(fileId);
+                SelectedFiles.Add(fileId);
             }
         }
 
@@ -152,7 +152,7 @@ namespace LogMergeRx
                 string.IsNullOrWhiteSpace(ExcludeRegex.Value) || !RegexCache.GetRegex(ExcludeRegex.Value).IsMatch(log.Message);
 
             bool FilterByFile(LogEntry log) =>
-                AllFiles.Count == 0 || _selection.Contains(log.RelativePath);
+                AllFiles.Count == 0 || _selection.Contains(log.FileId.Id);
 
             bool FilterByDate(LogEntry log) =>
                 log.Date > MinDate.Value;

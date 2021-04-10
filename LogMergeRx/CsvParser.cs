@@ -14,15 +14,15 @@ namespace LogMergeRx
             {
                 Delimiter = ";",
                 LeaveOpen = true,
-                //        BadDataFound = null,
+                BadDataFound = null,
                 //    MissingFieldFound = null,
             };
 
-        public static List<LogEntry> Parse(Stream stream, RelativePath path) =>
-            ReadToEnd(stream, path)
+        public static List<LogEntry> Parse(Stream stream, FileId fileId) =>
+            ReadToEnd(stream, fileId)
                 .ToList();
 
-        private static IEnumerable<LogEntry> ReadToEnd(Stream stream, RelativePath path)
+        private static IEnumerable<LogEntry> ReadToEnd(Stream stream, FileId fileId)
         {
             using var textReader = new StreamReader(stream, leaveOpen: true);
             using var csv = new CsvHelper.CsvReader(textReader, _configuration);
@@ -35,7 +35,7 @@ namespace LogMergeRx
             while (csv.Read())
             {
                 var entry = LogEntry.Create(
-                    path: path,
+                    fileId: fileId,
                     date: csv.GetField<string>(0),
                     level: ParseLevel(csv.GetField<string>(2)?.Trim()),
                     source: csv.GetField<string>(3)?.Trim(),

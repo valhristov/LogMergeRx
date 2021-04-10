@@ -16,6 +16,7 @@ namespace LogMergeRx.Rx
 
         public AbsolutePath Root { get; }
         public IObservable<RelativePath> Changed { get; }
+        public IObservable<(RelativePath Old, RelativePath New)> Renamed { get; }
 
         public ObservableFileSystemWatcher(AbsolutePath root, string filter)
         {
@@ -27,15 +28,10 @@ namespace LogMergeRx.Rx
             {
                 Path = root.Value + "\\",
                 Filter = "*.csv", //filter.StartsWith("*") ? filter : $"*{filter}",
-                NotifyFilter = NotifyFilters.LastWrite,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.Size | NotifyFilters.LastWrite,
                 IncludeSubdirectories = true,
+                InternalBufferSize = 65532,
             };
-
-            _fsw.Changed += (s, e) =>
-                Logger.Log(e.FullPath, "Detected change: '{0}'");
-
-            _fsw.Created += (s, e) =>
-                Logger.Log(e.FullPath, "Detected create: '{0}'");
 
             _fsw.Error += (s, e) =>
                 Logger.Log(e.GetException().Message, "Detected error: '{0}'");
@@ -43,16 +39,25 @@ namespace LogMergeRx.Rx
             var changed = Observable
                 .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => _fsw.Changed += h, h => _fsw.Changed -= h)
                 .Select(x => x.EventArgs.FullPath)
-                .Select(Logger.Log<string>("File changed '{0}'"))
-                .Select(path => RelativePath.FromPathAndRoot(root, path));
+                .Select(path => RelativePath.FromPathAndRoot(root, path))
+                .Select(Logger.Log<RelativePath>("File changed '{0}'"))
+                ;
 
             var created = Observable
                 .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(h => _fsw.Created += h, h => _fsw.Created -= h)
                 .Select(x => x.EventArgs.FullPath)
-                .Select(Logger.Log<string>("File created '{0}'"))
-                .Select(path => RelativePath.FromPathAndRoot(root, path));
+                .Select(path => RelativePath.FromPathAndRoot(root, path))
+                .Select(Logger.Log<RelativePath>("File created '{0}'"))
+                ;
 
             Changed = Observable.Merge(_existing, changed, created);
+
+            Renamed = Observable
+                .FromEventPattern<RenamedEventHandler, RenamedEventArgs>(h => _fsw.Renamed += h, h => _fsw.Renamed -= h)
+                .Select(x =>
+                    (RelativePath.FromPathAndRoot(root, x.EventArgs.OldFullPath),
+                     RelativePath.FromPathAndRoot(root, x.EventArgs.FullPath)))
+                ;
         }
 
         public void Start(bool notifyForExistingFiles)
