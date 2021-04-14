@@ -8,20 +8,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LogMergeRx
 {
     [TestClass]
-    public class FileSystemWatcherTests
+    public class FileSystemWatcherTests : IntegrationTestBase
     {
         private FileSystemWatcher _fsw;
 
-        public TestContext TestContext { get; set; }
-        public AbsolutePath LogsPath { get; private set; }
         public List<FswEvent> Events { get; private set; }
 
-        [TestInitialize]
-        public void TestInitialize()
+        protected override void OnTestInitialize()
         {
-            LogsPath = (AbsolutePath)Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName);
-            Directory.CreateDirectory(LogsPath);
-
             _fsw = new FileSystemWatcher(LogsPath, "*.csv");
             _fsw.NotifyFilter =
                 //NotifyFilters.Attributes |
@@ -40,9 +34,6 @@ namespace LogMergeRx
             _fsw.Renamed += (sender, e) => Events.Add(new FswEvent { ChangeType = e.ChangeType, Path = RelativePath.FromPathAndRoot(LogsPath, e.FullPath), OldPath = RelativePath.FromPathAndRoot(LogsPath, e.OldFullPath) });
             _fsw.Deleted += (sender, e) => Events.Add(new FswEvent { ChangeType = e.ChangeType, OldPath = RelativePath.FromPathAndRoot(LogsPath, e.FullPath), });
         }
-
-        private AbsolutePath GetPath(string fileName) =>
-            (AbsolutePath)Path.Combine(LogsPath, fileName);
 
         [TestMethod]
         public async Task MyTestMethod()

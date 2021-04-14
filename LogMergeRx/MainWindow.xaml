@@ -81,7 +81,13 @@
                 <GroupBox Header="Loaded files" Style="{StaticResource H1}">
                     <StackPanel>
                         <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
-                            SelectionChanged="AllFiles_SelectionChanged" DisplayMemberPath="Value" />
+                            SelectionChanged="AllFiles_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FileId}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                         <TextBlock Text="Ctrl+Click to select multiple files" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>

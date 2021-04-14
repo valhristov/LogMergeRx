@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using CsvHelper.Configuration;
 using LogMergeRx.Model;
 
@@ -18,9 +18,9 @@ namespace LogMergeRx
                 //    MissingFieldFound = null,
             };
 
-        public static List<LogEntry> Parse(Stream stream, FileId fileId) =>
+        public static ImmutableList<LogEntry> Parse(Stream stream, FileId fileId) =>
             ReadToEnd(stream, fileId)
-                .ToList();
+                .ToImmutableList();
 
         private static IEnumerable<LogEntry> ReadToEnd(Stream stream, FileId fileId)
         {
@@ -34,13 +34,22 @@ namespace LogMergeRx
 
             while (csv.Read())
             {
-                var entry = LogEntry.Create(
-                    fileId: fileId,
-                    date: csv.GetField<string>(0),
-                    level: ParseLevel(csv.GetField<string>(2)?.Trim()),
-                    source: csv.GetField<string>(3)?.Trim(),
-                    message: csv.GetField<string>(4));
-
+                var originalOffset = stream.Position;
+                LogEntry entry = null;
+                try
+                {
+                    entry = LogEntry.Create(
+                        fileId: fileId,
+                        date: csv.GetField<string>(0),
+                        level: ParseLevel(csv.GetField<string>(2)?.Trim()),
+                        source: csv.GetField<string>(3)?.Trim(),
+                        message: csv.GetField<string>(4));
+                }
+                catch
+                {
+                    stream.Seek(originalOffset, SeekOrigin.Begin);
+                    yield break;
+                }
                 yield return entry;
             }
 

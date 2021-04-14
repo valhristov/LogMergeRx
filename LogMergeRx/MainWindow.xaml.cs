@@ -53,6 +53,10 @@ namespace LogMergeRx
                 .ObserveOnDispatcher()
                 .Subscribe(ViewModel.AddFileToFilter); // add changed files to the filter
 
+            //_monitor.RenamedFiles
+            //    .ObserveOnDispatcher()
+            //    .Subscribe(fileId => ViewModel.ChangeFileName(fileId, _monitor.TryGetRelativePath(fileId, out var relativePath))); // update renamed file names. File ID remains the same
+
             _monitor.ReadEntries
                 .ObserveOnDispatcher()
                 .Subscribe(ViewModel.ItemsSource.AddRange); // read all content of created or changed files

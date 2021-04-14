@@ -40,11 +40,16 @@ namespace LogMergeRx
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public WpfObservableRangeCollection<FileId> AllFiles { get; } =
-            new WpfObservableRangeCollection<FileId>();
+        internal void ChangeFileName(FileId obj)
+        {
+            throw new NotImplementedException();
+        }
 
-        public WpfObservableRangeCollection<FileId> SelectedFiles { get; } =
-            new WpfObservableRangeCollection<FileId>();
+        public WpfObservableRangeCollection<FileViewModel> AllFiles { get; } =
+            new WpfObservableRangeCollection<FileViewModel>();
+
+        public WpfObservableRangeCollection<FileViewModel> SelectedFiles { get; } =
+            new WpfObservableRangeCollection<FileViewModel>();
 
         public MainWindowViewModel()
         {
@@ -81,7 +86,7 @@ namespace LogMergeRx
                 .Subscribe(e =>
                 {
                     _selection.Clear();
-                    _selection.UnionWith(SelectedFiles.Select(p => p.Id));
+                    _selection.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
                     ItemsSourceView.Refresh();
                 });
 
@@ -100,10 +105,11 @@ namespace LogMergeRx
 
         public void AddFileToFilter(FileId fileId)
         {
-            if (!AllFiles.Contains(fileId))
+            if (!AllFiles.Any(x => x.FileId == fileId))
             {
-                AllFiles.Add(fileId);
-                SelectedFiles.Add(fileId);
+                var viewModel = new FileViewModel(fileId);
+                AllFiles.Add(viewModel);
+                SelectedFiles.Add(viewModel);
             }
         }
 

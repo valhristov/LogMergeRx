@@ -12,22 +12,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LogMergeRx
 {
     [TestClass]
-    public class LogMonitor_Tests
+    public class LogMonitor_Tests : IntegrationTestBase
     {
-        public TestContext TestContext { get; set; }
-
         private List<FileId> Files { get; set; }
         private List<LogEntry> Entries { get; set; }
         private LogMonitor LogMonitor { get; set; }
-        private AbsolutePath LogsPath { get; set; }
 
-        [TestInitialize]
-        public void TestInitialize()
+        protected override void OnTestInitialize()
         {
-            LogsPath = (AbsolutePath)Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName);
-
-            Directory.CreateDirectory(LogsPath);
-
             Files = new List<FileId>();
             Entries = new List<LogEntry>();
 
