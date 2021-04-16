@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,39 +38,38 @@ namespace LogMergeRx
                 SystemCommands.MinimizeWindowCommand,
                 (s, e) => SystemCommands.MinimizeWindow(this)));
 
-            if (!TryGetDirectoryToRead(out var path))
+            var pathResult = GetMonitorDirectory();
+            if (pathResult.IsFailure)
             {
                 Close();
                 return;
             }
 
-            Title = $"LogMerge {path}";
-
             ViewModel = new MainWindowViewModel();
 
-            _monitor = new LogMonitor((AbsolutePath)path);
+            _monitor = new LogMonitor(pathResult.ValueOrThrow());
+
+            Title = $"LogMerge {pathResult.ValueOrThrow()}";
 
             _monitor.ChangedFiles
                 .ObserveOnDispatcher()
                 .Subscribe(fileId =>
-                {
-                    if (_monitor.TryGetRelativePath(fileId, out var relativePath))
-                    {
-                        // add changed files to the filter
-                        ViewModel.AddFileToFilter(fileId, relativePath);
-                    }
-                });
+                    _monitor
+                        .GetRelativePath(fileId)
+                        .Match(
+                            // add changed files to the filter
+                            relativePath => ViewModel.AddFileToFilter(fileId, relativePath),
+                            errors => Logger.Log(errors.FirstOrDefault(), "Error occurred: {0}")));
 
             _monitor.RenamedFiles
                 .ObserveOnDispatcher()
                 .Subscribe(fileId =>
-                {
-                    if (_monitor.TryGetRelativePath(fileId, out var relativePath))
-                    {
-                        // update renamed file names. File ID remains the same
-                        ViewModel.ChangeFileName(fileId, relativePath);
-                    }
-                });
+                    _monitor
+                        .GetRelativePath(fileId)
+                        .Match(
+                            // update renamed file names. File ID remains the same
+                            relativePath => ViewModel.ChangeFileName(fileId, relativePath),
+                            errors => Logger.Log(errors.FirstOrDefault(), "Error occurred: {0}")));
 
             _monitor.ReadEntries
                 .ObserveOnDispatcher()
@@ -82,15 +82,12 @@ namespace LogMergeRx
                 .Subscribe(args => AllFiles.SelectedItems.Sync(args)); // synchronize VM selection with listbox
         }
 
-        private bool TryGetDirectoryToRead(out string path)
+        private static Result<AbsolutePath> GetMonitorDirectory()
         {
             using var dialog = new FolderBrowserDialog();
-
-            path = dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
-                ? dialog.SelectedPath
-                : null;
-
-            return path != null;
+            return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
+                ? Result.Success((AbsolutePath)dialog.SelectedPath)
+                : Result.Failure<AbsolutePath>("User did not choose a directory.");
         }
 
         private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e) =>

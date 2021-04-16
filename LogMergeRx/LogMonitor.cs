@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using LogMergeRx.Model;
 using LogMergeRx.Rx;
 
@@ -25,8 +23,8 @@ namespace LogMergeRx
 
         public IObservable<ImmutableList<LogEntry>> ReadEntries { get; }
 
-        public bool TryGetRelativePath(FileId fileId, out RelativePath relativePath) =>
-            _fileMap.TryGetRelativePath(fileId, out relativePath);
+        public Result<RelativePath> GetRelativePath(FileId fileId) =>
+            _fileMap.GetRelativePath(fileId);
 
         public LogMonitor(AbsolutePath root, string filter = "*.csv")
         {
@@ -36,9 +34,9 @@ namespace LogMergeRx
                 .Select(_fileMap.GetOrAddFileId);
 
             RenamedFiles = _watcher.Renamed
-                .Select(x => _fileMap.TryRename(x.Old, x.New, out var fileId) ? (true, fileId) : (false, default))
-                .Where(x => x.Item1 == true)
-                .Select(x => x.fileId);
+                .Select(x => _fileMap.Rename(x.Old, x.New))
+                .Where(result => !result.IsFailure)
+                .Select(result => result.ValueOrThrow());
 
             ReadEntries = Observable.Merge(RenamedFiles, ChangedFiles)
                 .Select(ReadToEnd);
@@ -51,27 +49,29 @@ namespace LogMergeRx
 
         private ImmutableList<LogEntry> ReadToEnd(FileId fileId)
         {
-            // TODO: this should not return invald path
-            if (!_fileMap.TryGetRelativePath(fileId, out var relativePath))
-            {
-                return ImmutableList<LogEntry>.Empty;
-            }
+            return _fileMap
+                .GetRelativePath(fileId)
+                .Select(
+                    relativePath =>
+                    {
+                        try
+                        {
+                            using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-            try
-            {
-                using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                            ImmutableList<LogEntry> entries = null;
+                            _offsets.AddOrUpdate(fileId,
+                                fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
+                                (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
 
-                ImmutableList<LogEntry> entries = null;
-                _offsets.AddOrUpdate(fileId,
-                    fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
-                    (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
+                            return entries;
+                        }
+                        catch
+                        {
+                            return ImmutableList<LogEntry>.Empty; // TODO: log
+                        }
+                    },
+                    errors => ImmutableList<LogEntry>.Empty); // TODO: log
 
-                return entries;
-            }
-            catch
-            {
-                return ImmutableList<LogEntry>.Empty;
-            }
 
             static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableList<LogEntry> entries)
             {

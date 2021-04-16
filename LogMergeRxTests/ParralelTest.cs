@@ -51,7 +51,7 @@ namespace LogMergeRx
                 var expected = Enumerable.Range(0, 1100).Select(i => $"{prefix}{i:0000}").ToHashSet();
 
                 var filePaths = entries.OrderBy(e => e.Message)
-                    .Select(e => LogMonitor.TryGetRelativePath(e.FileId, out var relativePath) ? relativePath : RelativePath.FromPath("."))
+                    .Select(e => LogMonitor.GetRelativePath(e.FileId).ValueOrThrow())
                     .ToList();
 
                 var actual = entries.Select(e => e.Message).ToHashSet();

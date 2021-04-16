@@ -6,27 +6,31 @@ namespace LogMergeRx
 {
     public class FileMap
     {
-        private int lastId = 0;
+        private int _lastId = 0;
 
-        private readonly ConcurrentDictionary<RelativePath, FileId> pathToFileId = new();
-        private readonly ConcurrentDictionary<FileId, RelativePath> fileIdToPath = new();
+        private readonly ConcurrentDictionary<RelativePath, FileId> _pathToFileId = new();
+        private readonly ConcurrentDictionary<FileId, RelativePath> _fileIdToPath = new();
 
         public FileId GetOrAddFileId(RelativePath relativePath)
         {
-            return pathToFileId.GetOrAdd(relativePath, key =>
+            return _pathToFileId.GetOrAdd(relativePath, key =>
             {
-                var fileId = new FileId(Interlocked.Increment(ref lastId));
-                fileIdToPath[fileId] = relativePath;
+                var fileId = new FileId(Interlocked.Increment(ref _lastId));
+                _fileIdToPath[fileId] = relativePath;
                 return fileId;
             });
         }
 
-        public bool TryGetRelativePath(FileId fileId, out RelativePath relativePath) =>
-            fileIdToPath.TryGetValue(fileId, out relativePath);
+        public Result<RelativePath> GetRelativePath(FileId fileId) =>
+            _fileIdToPath.TryGetValue(fileId, out var relativePath)
+                ? Result.Success(relativePath)
+                : Result.Failure<RelativePath>($"Cannot find the path of file '{fileId}'");
 
-        public bool TryRename(RelativePath from, RelativePath to, out FileId fileId) =>
-            pathToFileId.TryRemove(from, out fileId) &&
-            pathToFileId.TryAdd(to, fileId) &&
-            fileIdToPath.TryUpdate(fileId, to, from);
+        public Result<FileId> Rename(RelativePath from, RelativePath to) =>
+            _pathToFileId.TryRemove(from, out var fileId) &&
+            _pathToFileId.TryAdd(to, fileId) &&
+            _fileIdToPath.TryUpdate(fileId, to, from)
+                ? Result.Success(fileId)
+                : Result.Failure<FileId>($"Cannot rename '{from}' to '{to}'");
     }
 }

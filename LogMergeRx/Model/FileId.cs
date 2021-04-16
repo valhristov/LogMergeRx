@@ -27,5 +27,8 @@ namespace LogMergeRx
 
         public static bool operator !=(FileId left, FileId right) =>
             !(left == right);
+
+        public override string ToString() =>
+            Id.ToString();
     }
 }
