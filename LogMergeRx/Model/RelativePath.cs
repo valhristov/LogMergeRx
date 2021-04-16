@@ -27,7 +27,7 @@ namespace LogMergeRx.Model
             (AbsolutePath)(Path.Combine(root, Value));
 
         public bool Equals(RelativePath? other) =>
-            Value.Equals(other?.Value, StringComparison.OrdinalIgnoreCase);
+            Value != null && Value.Equals(other?.Value, StringComparison.OrdinalIgnoreCase);
 
         public override bool Equals(object obj) =>
             Equals(obj as RelativePath?);

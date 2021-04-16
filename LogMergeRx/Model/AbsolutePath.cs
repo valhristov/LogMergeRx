@@ -20,7 +20,7 @@ namespace LogMergeRx.Model
             new AbsolutePath(fullPath);
 
         public bool Equals(AbsolutePath? other) =>
-            Value.Equals(other?.Value, StringComparison.OrdinalIgnoreCase);
+            Value != null && Value.Equals(other?.Value, StringComparison.OrdinalIgnoreCase);
 
         public override bool Equals(object obj) =>
             Equals(obj as AbsolutePath?);

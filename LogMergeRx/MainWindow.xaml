@@ -84,7 +84,7 @@
                             SelectionChanged="AllFiles_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding FileId}" />
+                                    <TextBlock Text="{Binding RelativePath.Value}" />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
@@ -111,12 +111,12 @@
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="70" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="200" />
+                                <!--<ColumnDefinition Width="200" />-->
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Date" Margin="5,2" />
                             <TextBlock Grid.Column="1" Text="Level" Margin="5,2"/>
                             <TextBlock Grid.Column="2" Text="Message" Margin="5,2"/>
-                            <TextBlock Grid.Column="3" Text="File Name" Margin="5,2"/>
+                            <!--<TextBlock Grid.Column="3" Text="File Name" Margin="5,2"/>-->
                         </Grid>
                         <ScrollViewer Grid.Row="1" CanContentScroll="True" Focusable="False"
                                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
@@ -138,7 +138,7 @@
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="70" />
                             <ColumnDefinition />
-                            <ColumnDefinition Width="200" />
+                            <!--<ColumnDefinition Width="200" />-->
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
                         <TextBlock Grid.Column="1" FontWeight="Bold" Margin="3"
@@ -148,7 +148,7 @@
                                    local:HighlightHelper.Text="{Binding Message}"
                                    local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, ElementName=Root}"
                                    TextWrapping="Wrap"/>
-                        <TextBlock Grid.Column="3" Text="{Binding RelativePath}" Margin="3" ToolTip="{Binding RelativePath}" />
+                        <!--<TextBlock Grid.Column="3" Text="{Binding RelativePath}" Margin="3" ToolTip="{Binding RelativePath}" />-->
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

@@ -18,7 +18,6 @@ namespace LogMergeRx
         private readonly FileMap _fileMap = new();
 
         private readonly ConcurrentDictionary<FileId, long> _offsets = new();
-        private readonly Subject<FileId> _renamedFiles = new();
 
         public IObservable<FileId> ChangedFiles { get; }
 
@@ -36,16 +35,10 @@ namespace LogMergeRx
             ChangedFiles = _watcher.Changed
                 .Select(_fileMap.GetOrAddFileId);
 
-            RenamedFiles = _renamedFiles;
-
-            _watcher.Renamed
-                .Subscribe(x =>
-                    {
-                        if (_fileMap.TryRename(x.Old, x.New))
-                        {
-                            _renamedFiles.OnNext(_fileMap.GetOrAddFileId(x.New));
-                        }
-                    });
+            RenamedFiles = _watcher.Renamed
+                .Select(x => _fileMap.TryRename(x.Old, x.New, out var fileId) ? (true, fileId) : (false, default))
+                .Where(x => x.Item1 == true)
+                .Select(x => x.fileId);
 
             ReadEntries = Observable.Merge(RenamedFiles, ChangedFiles)
                 .Select(ReadToEnd);
@@ -66,7 +59,7 @@ namespace LogMergeRx
 
             try
             {
-                using var stream = File.Open(Path.Combine(_watcher.Root, relativePath), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
                 ImmutableList<LogEntry> entries = null;
                 _offsets.AddOrUpdate(fileId,
@@ -82,7 +75,7 @@ namespace LogMergeRx
 
             static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableList<LogEntry> entries)
             {
-                if (stream.Length < offset)
+                if (stream.Length <= offset) // The file was renamed, don't read anything, wait for renaming notification to arrive
                 {
                     entries = ImmutableList<LogEntry>.Empty;
                     return offset;

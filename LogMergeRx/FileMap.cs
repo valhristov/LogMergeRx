@@ -24,8 +24,8 @@ namespace LogMergeRx
         public bool TryGetRelativePath(FileId fileId, out RelativePath relativePath) =>
             fileIdToPath.TryGetValue(fileId, out relativePath);
 
-        public bool TryRename(RelativePath from, RelativePath to) =>
-            pathToFileId.TryRemove(from, out var fileId) &&
+        public bool TryRename(RelativePath from, RelativePath to, out FileId fileId) =>
+            pathToFileId.TryRemove(from, out fileId) &&
             pathToFileId.TryAdd(to, fileId) &&
             fileIdToPath.TryUpdate(fileId, to, from);
     }

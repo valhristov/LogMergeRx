@@ -7,9 +7,10 @@ namespace LogMergeRx
         public FileId FileId { get; }
         public ObservableProperty<RelativePath> RelativePath { get; } = new ObservableProperty<RelativePath>();
 
-        public FileViewModel(FileId fileId)
+        public FileViewModel(FileId fileId, RelativePath relativePath)
         {
             FileId = fileId;
+            RelativePath.Value = relativePath;
         }
     }
 }

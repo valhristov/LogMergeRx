@@ -40,9 +40,13 @@ namespace LogMergeRx
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        internal void ChangeFileName(FileId obj)
+        public void ChangeFileName(FileId obj, RelativePath relativePath)
         {
-            throw new NotImplementedException();
+            var fileViewModel = AllFiles.FirstOrDefault(vm => vm.FileId == obj);
+            if (fileViewModel != null)
+            {
+                fileViewModel.RelativePath.Value = relativePath;
+            }
         }
 
         public WpfObservableRangeCollection<FileViewModel> AllFiles { get; } =
@@ -103,11 +107,11 @@ namespace LogMergeRx
             }
         }
 
-        public void AddFileToFilter(FileId fileId)
+        public void AddFileToFilter(FileId fileId, RelativePath relativePath)
         {
             if (!AllFiles.Any(x => x.FileId == fileId))
             {
-                var viewModel = new FileViewModel(fileId);
+                var viewModel = new FileViewModel(fileId, relativePath);
                 AllFiles.Add(viewModel);
                 SelectedFiles.Add(viewModel);
             }

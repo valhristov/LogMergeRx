@@ -53,7 +53,7 @@ namespace LogMergeRx
             map.TryGetRelativePath(new FileId(1), out var relativePath).Should().BeTrue();
             relativePath.Value.Should().Be("pathA");
 
-            map.TryRename(RelativePath.FromPath("not existing"), RelativePath.FromPath("new path"))
+            map.TryRename(RelativePath.FromPath("not existing"), RelativePath.FromPath("new path"), out var renamedFileId)
                 .Should().BeFalse();
 
             map.TryGetRelativePath(new FileId(1), out relativePath).Should().BeTrue();
@@ -72,10 +72,12 @@ namespace LogMergeRx
             relativePath.Value.Should().Be("pathA");
 
             // Act
-            map.TryRename(RelativePath.FromPath("pathA"), RelativePath.FromPath("new path"))
+            map.TryRename(RelativePath.FromPath("pathA"), RelativePath.FromPath("new path"), out var renamedFileId)
                 .Should().BeTrue();
 
             // Assert
+            renamedFileId.Id.Should().Be(1);
+
             map.TryGetRelativePath(new FileId(1), out relativePath).Should().BeTrue();
             relativePath.Value.Should().Be("new path");
 
