@@ -25,6 +25,18 @@ namespace LogMergeRx
                 ? Failure<IEnumerable<T>>(groups[true].OfType<Result<T>.Failure>().SelectMany(f => f.Errors).ToImmutableArray())
                 : Success<IEnumerable<T>>(groups[false].OfType<Result<T>.Success>().Select(s => s.Value).ToList());
         }
+
+        public static Result<T> Try<T>(Func<T> func)
+        {
+            try
+            {
+                return Success(func());
+            }
+            catch (Exception e)
+            {
+                return Failure<T>(e.Message);
+            }
+        }
     }
 
     public class Result<T>

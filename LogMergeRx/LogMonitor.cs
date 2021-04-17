@@ -53,25 +53,23 @@ namespace LogMergeRx
                 .GetRelativePath(fileId)
                 .Select(
                     relativePath =>
-                    {
-                        try
-                        {
-                            using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-                            ImmutableList<LogEntry> entries = null;
-                            _offsets.AddOrUpdate(fileId,
-                                fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
-                                (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
-
-                            return entries;
-                        }
-                        catch
-                        {
-                            return ImmutableList<LogEntry>.Empty; // TODO: log
-                        }
-                    },
+                        Result
+                            .Try(() => Read(relativePath))
+                            .Select(
+                                entries => entries,
+                                errors => ImmutableList<LogEntry>.Empty),
                     errors => ImmutableList<LogEntry>.Empty); // TODO: log
 
+            ImmutableList<LogEntry> Read(RelativePath relativePath)
+            {
+                using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                ImmutableList<LogEntry> entries = null;
+                _offsets.AddOrUpdate(fileId,
+                    fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
+                    (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
+
+                return entries;
+            }
 
             static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableList<LogEntry> entries)
             {
