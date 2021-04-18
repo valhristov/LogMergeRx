@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

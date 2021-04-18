@@ -14,19 +14,13 @@ namespace LogMergeRx
             var map = new FileMap();
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(1);
-            var result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
 
             map.GetOrAddFileId(RelativePath.FromPath("pathB")).Id.Should().Be(2);
-            result = map.GetRelativePath(new FileId(2));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathB");
+            map.GetRelativePath(new FileId(2)).ValueOrThrow().ToString().Should().Be("pathB");
 
             map.GetOrAddFileId(RelativePath.FromPath("pathC")).Id.Should().Be(3);
-            result = map.GetRelativePath(new FileId(3));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathC");
+            map.GetRelativePath(new FileId(3)).ValueOrThrow().ToString().Should().Be("pathC");
         }
 
         [TestMethod]
@@ -35,19 +29,13 @@ namespace LogMergeRx
             var map = new FileMap();
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(1);
-            var result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(1);
-            result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(1);
-            result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
         }
 
         [TestMethod]
@@ -56,19 +44,14 @@ namespace LogMergeRx
             var map = new FileMap();
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(1);
-            var result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
 
-            var renameResult = map.Rename(RelativePath.FromPath("not existing"), RelativePath.FromPath("new path"));
-            renameResult.IsFailure.Should().BeTrue();
+            map .Rename(RelativePath.FromPath("not existing"), RelativePath.FromPath("new path"))
+                .ErrorsOrEmpty().Should().NotBeEmpty();
 
-            result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
 
-            result = map.GetRelativePath(new FileId(2));
-            result.IsFailure.Should().BeTrue();
+            map.GetRelativePath(new FileId(2)).ErrorsOrEmpty().Should().NotBeEmpty();
         }
 
         [TestMethod]
@@ -78,25 +61,16 @@ namespace LogMergeRx
             var map = new FileMap();
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(1);
-            var result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
 
             // Act
-            var renameResult = map.Rename(RelativePath.FromPath("pathA"), RelativePath.FromPath("new path"));
-            renameResult.IsFailure.Should().BeFalse();
+            map.Rename(RelativePath.FromPath("pathA"), RelativePath.FromPath("new path"))
+                .ValueOrThrow().Should().Be(new FileId(1));
 
-            // Assert
-            renameResult.ValueOrThrow().Id.Should().Be(1);
-
-            result = map.GetRelativePath(new FileId(1));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("new path");
+            map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("new path");
 
             map.GetOrAddFileId(RelativePath.FromPath("pathA")).Id.Should().Be(2);
-            result = map.GetRelativePath(new FileId(2));
-            result.IsFailure.Should().BeFalse();
-            result.ValueOrThrow().Value.Should().Be("pathA");
+            map.GetRelativePath(new FileId(2)).ValueOrThrow().ToString().Should().Be("pathA");
         }
     }
 }

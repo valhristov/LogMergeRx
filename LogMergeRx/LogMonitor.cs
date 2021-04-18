@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using LogMergeRx.Model;
 using LogMergeRx.Rx;
+using Neat.Results;
 
 namespace LogMergeRx
 {
@@ -35,8 +36,10 @@ namespace LogMergeRx
 
             RenamedFiles = _watcher.Renamed
                 .Select(x => _fileMap.Rename(x.Old, x.New))
-                .Where(result => !result.IsFailure)
-                .Select(result => result.ValueOrThrow());
+                .SelectMany(result =>
+                    result.Value(
+                        value => Observable.Return(value),
+                        errors => Observable.Empty<FileId>()));
 
             ReadEntries = Observable.Merge(RenamedFiles, ChangedFiles)
                 .Select(ReadToEnd);
@@ -51,29 +54,31 @@ namespace LogMergeRx
         {
             return _fileMap
                 .GetRelativePath(fileId)
-                .Select(
-                    relativePath =>
-                        Result
-                            .Try(() => Read(relativePath))
-                            .Select(
-                                entries => entries,
-                                errors => ImmutableList<LogEntry>.Empty),
-                    errors => ImmutableList<LogEntry>.Empty); // TODO: log
+                .Select(Read)
+                .ValueOrDefault(ImmutableList<LogEntry>.Empty); // TODO: log
 
-            ImmutableList<LogEntry> Read(RelativePath relativePath)
+            Result<ImmutableList<LogEntry>> Read(RelativePath relativePath)
             {
-                using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                ImmutableList<LogEntry> entries = null;
-                _offsets.AddOrUpdate(fileId,
-                    fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
-                    (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
+                try
+                {
+                    using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    ImmutableList<LogEntry> entries = null;
+                    _offsets.AddOrUpdate(fileId,
+                        fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
+                        (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
 
-                return entries;
+                    return Result.Success(entries);
+                }
+                catch (Exception e)
+                {
+                    return Result.Failure<ImmutableList<LogEntry>>(e.Message);
+                }
             }
 
             static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableList<LogEntry> entries)
             {
-                if (stream.Length <= offset) // The file was renamed, don't read anything, wait for renaming notification to arrive
+                // The file was probably renamed, don't read anything
+                if (stream.Length <= offset)
                 {
                     entries = ImmutableList<LogEntry>.Empty;
                     return offset;

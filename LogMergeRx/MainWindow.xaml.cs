@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using LogMergeRx.Model;
+using Neat.Results;
 
 namespace LogMergeRx
 {
@@ -39,15 +40,17 @@ namespace LogMergeRx
                 (s, e) => SystemCommands.MinimizeWindow(this)));
 
             var pathResult = GetMonitorDirectory();
-            if (pathResult.IsFailure)
+
+            _monitor = pathResult.Value(
+                path => new LogMonitor(path),
+                errors => null);
+
+            if (_monitor == null)
             {
                 Close();
                 return;
             }
-
             ViewModel = new MainWindowViewModel();
-
-            _monitor = new LogMonitor(pathResult.ValueOrThrow());
 
             Title = $"LogMerge {pathResult.ValueOrThrow()}";
 

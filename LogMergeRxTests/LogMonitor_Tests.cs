@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LogMergeRx;
 using LogMergeRx.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -95,8 +94,5 @@ namespace LogMergeRx
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
-
-        private AbsolutePath GetPath(string fileName) =>
-            (AbsolutePath)Path.Combine(LogsPath, fileName);
     }
 }

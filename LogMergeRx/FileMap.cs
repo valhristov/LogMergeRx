@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using LogMergeRx.Model;
+using Neat.Results;
 
 namespace LogMergeRx
 {
@@ -11,15 +12,14 @@ namespace LogMergeRx
         private readonly ConcurrentDictionary<RelativePath, FileId> _pathToFileId = new();
         private readonly ConcurrentDictionary<FileId, RelativePath> _fileIdToPath = new();
 
-        public FileId GetOrAddFileId(RelativePath relativePath)
-        {
-            return _pathToFileId.GetOrAdd(relativePath, key =>
-            {
-                var fileId = new FileId(Interlocked.Increment(ref _lastId));
-                _fileIdToPath[fileId] = relativePath;
-                return fileId;
-            });
-        }
+        public FileId GetOrAddFileId(RelativePath relativePath) =>
+            _pathToFileId.GetOrAdd(relativePath,
+                key =>
+                {
+                    var fileId = new FileId(Interlocked.Increment(ref _lastId));
+                    _fileIdToPath[fileId] = relativePath;
+                    return fileId;
+                });
 
         public Result<RelativePath> GetRelativePath(FileId fileId) =>
             _fileIdToPath.TryGetValue(fileId, out var relativePath)
