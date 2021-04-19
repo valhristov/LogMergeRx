@@ -18,28 +18,23 @@ namespace LogMergeRx
 
         private readonly ConcurrentDictionary<FileId, long> _offsets = new();
 
-        public IObservable<FileId> ChangedFiles { get; }
+        public IObservable<LogFile> ChangedFiles { get; }
 
-        public IObservable<FileId> RenamedFiles { get; }
+        public IObservable<LogFile> RenamedFiles { get; }
 
         public IObservable<ImmutableList<LogEntry>> ReadEntries { get; }
-
-        public Result<RelativePath> GetRelativePath(FileId fileId) =>
-            _fileMap.GetRelativePath(fileId);
 
         public LogMonitor(AbsolutePath root, string filter = "*.csv")
         {
             _watcher = new ObservableFileSystemWatcher(root, filter);
 
             ChangedFiles = _watcher.Changed
-                .Select(_fileMap.GetOrAddFileId);
+                .Select(GetOrAdd);
 
             RenamedFiles = _watcher.Renamed
-                .Select(x => _fileMap.Rename(x.Old, x.New))
-                .SelectMany(result =>
-                    result.Value(
-                        value => Observable.Return(value),
-                        errors => Observable.Empty<FileId>()));
+                .Select(x => Rename(x.Old, x.New))
+                .SelectMany(
+                    result => result.Value(Observable.Return, errors => Observable.Empty<LogFile>())); // TODO log
 
             ReadEntries = Observable.Merge(RenamedFiles, ChangedFiles)
                 .Select(ReadToEnd);
@@ -50,29 +45,31 @@ namespace LogMergeRx
             _watcher.Start(notifyForExistingFiles: true);
         }
 
-        private ImmutableList<LogEntry> ReadToEnd(FileId fileId)
+        private LogFile GetOrAdd(RelativePath relativePath) =>
+            new LogFile(_fileMap.GetOrAddFileId(relativePath), relativePath);
+
+        private Result<LogFile> Rename(RelativePath oldPath, RelativePath newPath) =>
+            _fileMap
+                .Rename(oldPath, newPath)
+                .Select(fileId => Result.Success(new LogFile(fileId, newPath)));
+
+        private ImmutableList<LogEntry> ReadToEnd(LogFile logFile)
         {
-            return _fileMap
-                .GetRelativePath(fileId)
-                .Select(Read)
-                .ValueOrDefault(ImmutableList<LogEntry>.Empty); // TODO: log
-
-            Result<ImmutableList<LogEntry>> Read(RelativePath relativePath)
+            try
             {
-                try
-                {
-                    using var stream = File.Open(relativePath.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    ImmutableList<LogEntry> entries = null;
-                    _offsets.AddOrUpdate(fileId,
-                        fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
-                        (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
+                using var stream = File.Open(logFile.Path.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-                    return Result.Success(entries);
-                }
-                catch (Exception e)
-                {
-                    return Result.Failure<ImmutableList<LogEntry>>(e.Message);
-                }
+                var entries = ImmutableList<LogEntry>.Empty;
+
+                _offsets.AddOrUpdate(logFile.Id,
+                    fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
+                    (fileId, offset) => ReadAndGetNewOffset(stream, offset, fileId, out entries));
+
+                return entries;
+            }
+            catch (Exception)
+            {
+                return ImmutableList<LogEntry>.Empty; // TODO log
             }
 
             static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableList<LogEntry> entries)
@@ -80,7 +77,7 @@ namespace LogMergeRx
                 // The file was probably renamed, don't read anything
                 if (stream.Length <= offset)
                 {
-                    entries = ImmutableList<LogEntry>.Empty;
+                    entries = ImmutableList<LogEntry>.Empty; // TODO log
                     return offset;
                 }
                 stream.Seek(offset, SeekOrigin.Begin);

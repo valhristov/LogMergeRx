@@ -22,7 +22,7 @@ namespace LogMergeRx
             Entries = new List<LogEntry>();
 
             LogMonitor = new LogMonitor(LogsPath);
-            LogMonitor.ChangedFiles.Subscribe(x => Files.Add(x));
+            LogMonitor.ChangedFiles.Subscribe(x => Files.Add(x.Id));
             LogMonitor.ReadEntries.Subscribe(Entries.AddRange);
 
             LogMonitor.Start();
@@ -49,10 +49,6 @@ namespace LogMergeRx
             {
                 var entries = Entries.Where(e => e.Message.StartsWith(prefix));
                 var expected = Enumerable.Range(0, 1100).Select(i => $"{prefix}{i:0000}").ToHashSet();
-
-                var filePaths = entries.OrderBy(e => e.Message)
-                    .Select(e => LogMonitor.GetRelativePath(e.FileId).ValueOrThrow())
-                    .ToList();
 
                 var actual = entries.Select(e => e.Message).ToHashSet();
                 expected.Except(actual).Should().BeEmpty();

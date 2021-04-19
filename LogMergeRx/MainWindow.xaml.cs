@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +11,7 @@ namespace LogMergeRx
 {
     public partial class MainWindow : Window
     {
+        // Need to keep a reference to prevent the GC from collecting the monitor
         private readonly LogMonitor _monitor;
 
         private MainWindowViewModel ViewModel
@@ -39,53 +39,46 @@ namespace LogMergeRx
                 SystemCommands.MinimizeWindowCommand,
                 (s, e) => SystemCommands.MinimizeWindow(this)));
 
-            var pathResult = GetMonitorDirectory();
-
-            _monitor = pathResult.Value(
-                path => new LogMonitor(path),
-                errors => null);
-
-            if (_monitor == null)
-            {
-                Close();
-                return;
-            }
             ViewModel = new MainWindowViewModel();
-
-            Title = $"LogMerge {pathResult.ValueOrThrow()}";
-
-            _monitor.ChangedFiles
-                .ObserveOnDispatcher()
-                .Subscribe(fileId =>
-                    _monitor
-                        .GetRelativePath(fileId)
-                        .Match(
-                            // add changed files to the filter
-                            relativePath => ViewModel.AddFileToFilter(fileId, relativePath),
-                            errors => Logger.Log(errors.FirstOrDefault(), "Error occurred: {0}")));
-
-            _monitor.RenamedFiles
-                .ObserveOnDispatcher()
-                .Subscribe(fileId =>
-                    _monitor
-                        .GetRelativePath(fileId)
-                        .Match(
-                            // update renamed file names. File ID remains the same
-                            relativePath => ViewModel.ChangeFileName(fileId, relativePath),
-                            errors => Logger.Log(errors.FirstOrDefault(), "Error occurred: {0}")));
-
-            _monitor.ReadEntries
-                .ObserveOnDispatcher()
-                .Subscribe(ViewModel.ItemsSource.AddRange); // read all content of created or changed files
-
-            _monitor.Start();
 
             ViewModel.SelectedFiles
                 .ToObservable()
                 .Subscribe(args => AllFiles.SelectedItems.Sync(args)); // synchronize VM selection with listbox
+
+            _monitor = GetLogsPath().Value(
+                logsPath =>
+                {
+                    var monitor = new LogMonitor(logsPath);
+
+                    monitor.ChangedFiles
+                        .ObserveOnDispatcher()
+                        // Add changed files to the filter
+                        .Subscribe(ViewModel.AddFileToFilter);
+
+                    monitor.RenamedFiles
+                        .ObserveOnDispatcher()
+                        // Update renamed file names. File ID remains the same
+                        .Subscribe(ViewModel.UpdateFileName);
+
+                    monitor.ReadEntries
+                        .ObserveOnDispatcher()
+                        // Add new entries
+                        .Subscribe(ViewModel.ItemsSource.AddRange);
+
+                    monitor.Start();
+
+                    Title = $"LogMerge: {logsPath}";
+
+                    return monitor;
+                },
+                errors =>
+                {
+                    Close();
+                    return null;
+                });
         }
 
-        private static Result<AbsolutePath> GetMonitorDirectory()
+        private static Result<AbsolutePath> GetLogsPath()
         {
             using var dialog = new FolderBrowserDialog();
             return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
