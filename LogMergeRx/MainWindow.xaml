@@ -15,6 +15,7 @@
             Info="White"
             Notice="White"
             />
+        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="Explanation" TargetType="Label">
             <Setter Property="FontSize" Value="10"/>
         </Style>
@@ -40,6 +41,10 @@
         </Grid.ColumnDefinitions>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <StackPanel Background="#343434">
+                <GroupBox Header="Filters" Style="{StaticResource H1}"
+                          Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="1" />
+                </GroupBox>
                 <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
                     <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
                 </GroupBox>

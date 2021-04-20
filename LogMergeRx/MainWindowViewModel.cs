@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Data;
 using LogMergeRx.Model;
@@ -33,9 +34,13 @@ namespace LogMergeRx
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
         public ActionCommand ShowNewerThanNow { get; }
+        public ActionCommand ClearFilter { get; }
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
+
+        private ListCollectionView AllFilesView =>
+            (ListCollectionView)CollectionViewSource.GetDefaultView(AllFiles);
 
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
@@ -62,18 +67,29 @@ namespace LogMergeRx
 
             ShowNewerThanNow = new ActionCommand(param => MinDate.Value = param is bool enabled && enabled ? DateTime.Now : DateTime.MinValue);
 
+            // Order loaded files alphabetically
+            AllFilesView.CustomSort = new FunctionComparer<FileViewModel>(
+                (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.RelativePath.Value, y.RelativePath.Value));
+
             ItemsSourceView.Filter = Filter;
-            ItemsSourceView.CustomSort = new LogEntryDateComparer();
+            ItemsSourceView.CustomSort = new FunctionComparer<LogEntry>(
+                (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Date, y.Date));
 
             Observable
-                .Merge(ShowErrors, ShowWarnings, ShowNotices, ShowInfos)
-                .Subscribe(_ => ItemsSourceView.Refresh());
-            Observable
-                .Merge(IncludeRegex, ExcludeRegex)
-                .Subscribe(_ => ItemsSourceView.Refresh());
-            Observable
-                .Merge(MinDate)
-                .Subscribe(_ => ItemsSourceView.Refresh());
+                .Merge(
+                    ShowErrors.Select(_ => Unit.Default),
+                    ShowWarnings.Select(_ => Unit.Default),
+                    ShowNotices.Select(_ => Unit.Default),
+                    ShowInfos.Select(_ => Unit.Default),
+                    IncludeRegex.Select(_ => Unit.Default),
+                    ExcludeRegex.Select(_ => Unit.Default),
+                    MinDate.Select(_ => Unit.Default),
+                    SelectedFiles.ToObservable().Select(_ => Unit.Default))
+                .Subscribe(_ =>
+                {
+                    ItemsSourceView.Refresh();
+                    ClearFilter.RaiseCanExecuteChanged();
+                });
 
             FollowTail
                 .Where(value => value) // only when enabled
@@ -91,12 +107,35 @@ namespace LogMergeRx
                 {
                     _selection.Clear();
                     _selection.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
-                    ItemsSourceView.Refresh();
                 });
 
             SearchRegex
                 .Subscribe(pattern => FindNext(pattern, -1));
+
+            ClearFilter = new ActionCommand(ClearFilters, HasFilters);
         }
+
+        private void ClearFilters(object _)
+        {
+            ShowErrors.Reset();
+            ShowWarnings.Reset();
+            ShowInfos.Reset();
+            ShowNotices.Reset();
+            IncludeRegex.Reset();
+            ExcludeRegex.Reset();
+            MinDate.Reset();
+            _selection.UnionWith(AllFiles.Select(x => x.FileId.Id));
+        }
+
+        private bool HasFilters(object _) =>
+            !(ShowErrors.IsInitial &&
+            ShowWarnings.IsInitial &&
+            ShowInfos.IsInitial &&
+            ShowNotices.IsInitial &&
+            IncludeRegex.IsInitial &&
+            ExcludeRegex.IsInitial &&
+            MinDate.IsInitial &&
+            AllFiles.Count == _selection.Count);
 
         private void ScrollToEnd()
         {

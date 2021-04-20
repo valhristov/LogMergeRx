@@ -10,12 +10,13 @@ namespace LogMergeRx
         private T _value;
         private readonly IEqualityComparer<T> _comparer;
         private readonly Subject<T> _subject = new Subject<T>();
+        private readonly T _initialValue;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableProperty(T initialValue = default, IEqualityComparer<T> comparer = null)
         {
-            _value = initialValue;
+            _value = _initialValue = initialValue;
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
@@ -33,6 +34,12 @@ namespace LogMergeRx
                 _subject.OnNext(value);
             }
         }
+
+        public bool IsInitial =>
+            _comparer.Equals(_value, _initialValue);
+
+        public void Reset() =>
+            Value = _initialValue;
 
         public IDisposable Subscribe(IObserver<T> observer) =>
             _subject.Subscribe(observer);
