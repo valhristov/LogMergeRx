@@ -81,10 +81,11 @@ namespace LogMergeRx
                     ShowWarnings.Select(_ => Unit.Default),
                     ShowNotices.Select(_ => Unit.Default),
                     ShowInfos.Select(_ => Unit.Default),
-                    IncludeRegex.Select(_ => Unit.Default),
-                    ExcludeRegex.Select(_ => Unit.Default),
+                    IncludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromSeconds(1)),
+                    ExcludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromSeconds(1)),
                     MinDate.Select(_ => Unit.Default),
                     SelectedFiles.ToObservable().Select(_ => Unit.Default))
+                .ObserveOnDispatcher()
                 .Subscribe(_ =>
                 {
                     ItemsSourceView.Refresh();
