@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LogMergeRx"
+        xmlns:local="clr-namespace:LogMergeRx" xmlns:mvvm="clr-namespace:LogMergeRx.MVVM"
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         Style="{DynamicResource DarkWindow}"
         mc:Ignorable="d"
@@ -140,11 +140,11 @@
                             <ColumnDefinition />
                             <!--<ColumnDefinition Width="200" />-->
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
+                        <mvvm:SelectableTextBlock Grid.Column="0" Text="{Binding Date}" Margin="3" />
                         <TextBlock Grid.Column="1" FontWeight="Bold" Margin="3"
                                    Text="{Binding Level}"
                                    Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}" />
-                        <TextBlock Grid.Column="2" Margin="3"
+                        <mvvm:SelectableTextBlock Grid.Column="2" Margin="3"
                                    local:HighlightHelper.Text="{Binding Message}"
                                    local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, ElementName=Root}"
                                    TextWrapping="Wrap"/>
