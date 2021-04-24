@@ -31,6 +31,8 @@ namespace LogMergeRx
 
         public ObservableProperty<DateTime> MinDate { get; } = new ObservableProperty<DateTime>(DateTime.MinValue);
 
+        public ObservableProperty<string> FiltersText { get; } = new ObservableProperty<string>(string.Empty);
+
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
         public ActionCommand ShowNewerThanNow { get; }
@@ -88,6 +90,7 @@ namespace LogMergeRx
                 .ObserveOnDispatcher()
                 .Subscribe(_ =>
                 {
+                    FiltersText.Value = "Showing: " + string.Join(", ", GetFiltersText());
                     ItemsSourceView.Refresh();
                     ClearFilter.RaiseCanExecuteChanged();
                 });
@@ -111,9 +114,21 @@ namespace LogMergeRx
                 });
 
             SearchRegex
+                .Throttle(TimeSpan.FromSeconds(1))
                 .Subscribe(pattern => FindNext(pattern, -1));
 
             ClearFilter = new ActionCommand(ClearFilters, HasFilters);
+        }
+
+        private IEnumerable<string> GetFiltersText()
+        {
+            if (!ShowErrors.Value) yield return "no errors";
+            if (!ShowWarnings.Value) yield return "no warnings";
+            if (!ShowInfos.Value) yield return "no infos";
+            if (!ShowNotices.Value) yield return "no notices";
+            if (MinDate.Value != DateTime.MinValue) yield return $"only items older than {MinDate.Value:f}";
+            if (!string.IsNullOrEmpty(IncludeRegex.Value)) yield return $"matching '{IncludeRegex.Value}'";
+            if (!string.IsNullOrEmpty(ExcludeRegex.Value)) yield return $"not matching '{ExcludeRegex.Value}'";
         }
 
         private void ClearFilters(object _)

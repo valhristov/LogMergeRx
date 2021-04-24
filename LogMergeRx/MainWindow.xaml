@@ -39,12 +39,12 @@
             <ColumnDefinition Width="220" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <StackPanel Background="#343434">
-                <GroupBox Header="Filters" Style="{StaticResource H1}"
-                          Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="1" />
-                </GroupBox>
                 <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
                     <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
                 </GroupBox>
@@ -158,5 +158,10 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="1" />
+            <TextBlock Text="{Binding FiltersText.Value}" VerticalAlignment="Center" />
+        </StackPanel>
     </Grid>
 </Window>
