@@ -12,7 +12,7 @@ namespace LogMergeRx
 
         public MainWindowViewModel_Search_tests()
         {
-            _viewModel = new MainWindowViewModel();
+            _viewModel = new MainWindowViewModel(TimeSpan.Zero);
             _viewModel.FollowTail.Value = false;
             Array.ForEach(
                 new[]

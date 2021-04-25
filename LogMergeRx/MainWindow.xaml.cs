@@ -39,7 +39,7 @@ namespace LogMergeRx
                 SystemCommands.MinimizeWindowCommand,
                 (s, e) => SystemCommands.MinimizeWindow(this)));
 
-            ViewModel = new MainWindowViewModel();
+            ViewModel = new MainWindowViewModel(textBoxChangeDelay: TimeSpan.FromMilliseconds(500));
 
             ViewModel.SelectedFiles
                 .ToObservable()

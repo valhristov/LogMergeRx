@@ -52,23 +52,28 @@ namespace LogMergeRx
         {
             if (ItemsSource.Count == 0)
             {
-                FirstItemSeconds.Value = VisibleRangeStart.Value = FromDateToSeconds(items.Min(x => x.Date));
-                LastItemSeconds.Value = VisibleRangeEnd.Value = FromDateToSeconds(items.Max(x => x.Date));
+                FirstItemSeconds.Value = VisibleRangeStart.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date));
+                LastItemSeconds.Value = VisibleRangeEnd.Value = DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date));
             }
             else
             {
-                FirstItemSeconds.Value = Math.Min(FirstItemSeconds.Value, FromDateToSeconds(items.Min(x => x.Date)));
-                LastItemSeconds.Value = Math.Max(LastItemSeconds.Value, FromDateToSeconds(items.Max(x => x.Date)));
+                var newFirstItem = Math.Min(FirstItemSeconds.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)));
+                var newLastItem = Math.Max(LastItemSeconds.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)));
+                if (VisibleRangeStart.Value == FirstItemSeconds.Value)
+                {
+                    VisibleRangeStart.Value = newFirstItem;
+                }
+                if (VisibleRangeEnd.Value == LastItemSeconds.Value)
+                {
+                    VisibleRangeEnd.Value = newLastItem;
+                }
+
+                FirstItemSeconds.Value = newFirstItem;
+                LastItemSeconds.Value = newLastItem;
             }
 
             ItemsSource.AddRange(items);
         }
-
-        private static double FromDateToSeconds(DateTime dateTime) =>
-            dateTime.Subtract(new DateTime(2020, 01, 01)).TotalSeconds;
-
-        private static DateTime FromSecondsToDate(double seconds) =>
-            new DateTime(2020, 01, 01).AddSeconds(seconds);
 
         private ListCollectionView AllFilesView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(AllFiles);
@@ -91,12 +96,12 @@ namespace LogMergeRx
         public WpfObservableRangeCollection<FileViewModel> SelectedFiles { get; } =
             new WpfObservableRangeCollection<FileViewModel>();
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(TimeSpan textBoxChangeDelay)
         {
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
-            ShowNewerThanNow = new ActionCommand(param => VisibleRangeStart.Value = FromDateToSeconds(DateTime.Now));
+            ShowNewerThanNow = new ActionCommand(param => VisibleRangeStart.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
 
             // Order loaded files alphabetically
             AllFilesView.CustomSort = new FunctionComparer<FileViewModel>(
@@ -112,10 +117,10 @@ namespace LogMergeRx
                     ShowWarnings.Select(_ => Unit.Default),
                     ShowNotices.Select(_ => Unit.Default),
                     ShowInfos.Select(_ => Unit.Default),
-                    IncludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromSeconds(1)),
-                    ExcludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromSeconds(1)),
-                    VisibleRangeStart.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500)),
-                    VisibleRangeEnd.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500)),
+                    IncludeRegex.Select(_ => Unit.Default).Throttle(textBoxChangeDelay),
+                    ExcludeRegex.Select(_ => Unit.Default).Throttle(textBoxChangeDelay),
+                    VisibleRangeStart.Select(_ => Unit.Default).Throttle(textBoxChangeDelay),
+                    VisibleRangeEnd.Select(_ => Unit.Default).Throttle(textBoxChangeDelay),
                     SelectedFiles.ToObservable().Select(_ => Unit.Default))
                 .ObserveOnDispatcher()
                 .Subscribe(_ =>
@@ -126,10 +131,10 @@ namespace LogMergeRx
                 });
 
             VisibleRangeStart
-                .Subscribe(value => MinDate.Value = FromSecondsToDate(value));
+                .Subscribe(value => MinDate.Value = DateTimeHelper.FromSecondsToDate(value));
 
             VisibleRangeEnd
-                .Subscribe(value => MaxDate.Value = FromSecondsToDate(value));
+                .Subscribe(value => MaxDate.Value = DateTimeHelper.FromSecondsToDate(value));
 
             FollowTail
                 .Where(value => value) // only when enabled
@@ -150,7 +155,7 @@ namespace LogMergeRx
                 });
 
             SearchRegex
-                .Throttle(TimeSpan.FromSeconds(1))
+                .Throttle(textBoxChangeDelay)
                 .Subscribe(pattern => FindNext(pattern, -1));
 
             ClearFilter = new ActionCommand(ClearFilters, HasFilters);
@@ -241,7 +246,8 @@ namespace LogMergeRx
                 && FilterByInclude(log)
                 && FilterByExclude(log)
                 && FilterByFile(log)
-                && FilterByDate(log);
+                && FilterByDate(log)
+                ;
 
             bool FilterByLevel(LogEntry log) =>
                 ShowErrors.Value && log.Level == LogLevel.ERROR ||
