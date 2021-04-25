@@ -6,11 +6,14 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace LogMergeRx
 {
     public static class HighlightHelper
     {
+        private static readonly Brush highlightBrush = new SolidColorBrush(Colors.MediumAquamarine);
+
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.RegisterAttached("Text", typeof(string), typeof(HighlightHelper), new FrameworkPropertyMetadata(string.Empty, OnTextChanged));
 
@@ -54,7 +57,7 @@ namespace LogMergeRx
 
             Run GetRun(string textPart) =>
                 string.Equals(textPart, highlight, StringComparison.OrdinalIgnoreCase)
-                    ? new Run { Text = textPart, FontWeight = FontWeights.ExtraBold }
+                    ? new Run { Text = textPart, FontWeight = FontWeights.ExtraBold, Foreground = highlightBrush }
                     : new Run { Text = textPart };
 
             IEnumerable<string> Split() =>
