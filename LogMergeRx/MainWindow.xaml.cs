@@ -63,7 +63,7 @@ namespace LogMergeRx
                     monitor.ReadEntries
                         .ObserveOnDispatcher()
                         // Add new entries
-                        .Subscribe(ViewModel.ItemsSource.AddRange);
+                        .Subscribe(ViewModel.AddItems);
 
                     monitor.Start();
 

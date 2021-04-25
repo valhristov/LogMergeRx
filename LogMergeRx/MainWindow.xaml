@@ -49,9 +49,18 @@
                     <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
                 </GroupBox>
                 <GroupBox Header="Date Filter" Style="{StaticResource H1}">
-                    <CheckBox Content="Show only newer than now"
-                          Command="{Binding ShowNewerThanNow}"
-                          CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+                    <StackPanel>
+                        <Button Content="Show only newer than now"
+                              Command="{Binding ShowNewerThanNow}" />
+                        <TextBlock Text="Start" FontWeight="Bold" />
+                        <Slider Minimum="{Binding FirstItemSeconds.Value}" Value="{Binding VisibleRangeStart.Value}"
+                                Maximum="{Binding VisibleRangeEnd.Value}" Orientation="Horizontal" />
+                        <TextBlock Text="{Binding MinDate.Value}" />
+                        <TextBlock Text="End" FontWeight="Bold" />
+                        <Slider Minimum="{Binding VisibleRangeStart.Value}" Value="{Binding VisibleRangeEnd.Value}"
+                                Maximum="{Binding LastItemSeconds.Value}" Orientation="Horizontal" />
+                        <TextBlock Text="{Binding MaxDate.Value}" />
+                    </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Level" Style="{StaticResource H1}">
                     <StackPanel>

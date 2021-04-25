@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -29,7 +30,13 @@ namespace LogMergeRx
         public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
         public ObservableProperty<LogEntry> ScrollToItem { get; } = new ObservableProperty<LogEntry>(null);
 
-        public ObservableProperty<DateTime> MinDate { get; } = new ObservableProperty<DateTime>(DateTime.MinValue);
+        public ObservableProperty<double> FirstItemSeconds { get; } = new ObservableProperty<double>();
+        public ObservableProperty<double> VisibleRangeStart { get; } = new ObservableProperty<double>();
+        public ObservableProperty<double> VisibleRangeEnd { get; } = new ObservableProperty<double>();
+        public ObservableProperty<double> LastItemSeconds { get; } = new ObservableProperty<double>();
+
+        public ObservableProperty<DateTime> MinDate { get; } = new ObservableProperty<DateTime>();
+        public ObservableProperty<DateTime> MaxDate { get; } = new ObservableProperty<DateTime>();
 
         public ObservableProperty<string> FiltersText { get; } = new ObservableProperty<string>(string.Empty);
 
@@ -40,6 +47,28 @@ namespace LogMergeRx
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
+
+        public void AddItems(ImmutableList<LogEntry> items)
+        {
+            if (ItemsSource.Count == 0)
+            {
+                FirstItemSeconds.Value = VisibleRangeStart.Value = FromDateToSeconds(items.Min(x => x.Date));
+                LastItemSeconds.Value = VisibleRangeEnd.Value = FromDateToSeconds(items.Max(x => x.Date));
+            }
+            else
+            {
+                FirstItemSeconds.Value = Math.Min(FirstItemSeconds.Value, FromDateToSeconds(items.Min(x => x.Date)));
+                LastItemSeconds.Value = Math.Max(LastItemSeconds.Value, FromDateToSeconds(items.Max(x => x.Date)));
+            }
+
+            ItemsSource.AddRange(items);
+        }
+
+        private static double FromDateToSeconds(DateTime dateTime) =>
+            dateTime.Subtract(new DateTime(2020, 01, 01)).TotalSeconds;
+
+        private static DateTime FromSecondsToDate(double seconds) =>
+            new DateTime(2020, 01, 01).AddSeconds(seconds);
 
         private ListCollectionView AllFilesView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(AllFiles);
@@ -67,7 +96,7 @@ namespace LogMergeRx
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
-            ShowNewerThanNow = new ActionCommand(param => MinDate.Value = param is bool enabled && enabled ? DateTime.Now : DateTime.MinValue);
+            ShowNewerThanNow = new ActionCommand(param => VisibleRangeStart.Value = FromDateToSeconds(DateTime.Now));
 
             // Order loaded files alphabetically
             AllFilesView.CustomSort = new FunctionComparer<FileViewModel>(
@@ -85,7 +114,8 @@ namespace LogMergeRx
                     ShowInfos.Select(_ => Unit.Default),
                     IncludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromSeconds(1)),
                     ExcludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromSeconds(1)),
-                    MinDate.Select(_ => Unit.Default),
+                    VisibleRangeStart.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500)),
+                    VisibleRangeEnd.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500)),
                     SelectedFiles.ToObservable().Select(_ => Unit.Default))
                 .ObserveOnDispatcher()
                 .Subscribe(_ =>
@@ -94,6 +124,12 @@ namespace LogMergeRx
                     ItemsSourceView.Refresh();
                     ClearFilter.RaiseCanExecuteChanged();
                 });
+
+            VisibleRangeStart
+                .Subscribe(value => MinDate.Value = FromSecondsToDate(value));
+
+            VisibleRangeEnd
+                .Subscribe(value => MaxDate.Value = FromSecondsToDate(value));
 
             FollowTail
                 .Where(value => value) // only when enabled
@@ -126,7 +162,8 @@ namespace LogMergeRx
             if (!ShowWarnings.Value) yield return "no warnings";
             if (!ShowInfos.Value) yield return "no infos";
             if (!ShowNotices.Value) yield return "no notices";
-            if (MinDate.Value != DateTime.MinValue) yield return $"only items older than {MinDate.Value:f}";
+            if (VisibleRangeStart.Value != FirstItemSeconds.Value) yield return $"older than {MinDate.Value:f}";
+            if (VisibleRangeEnd.Value != LastItemSeconds.Value) yield return $"newer than {MaxDate.Value:f}";
             if (!string.IsNullOrEmpty(IncludeRegex.Value)) yield return $"matching '{IncludeRegex.Value}'";
             if (!string.IsNullOrEmpty(ExcludeRegex.Value)) yield return $"not matching '{ExcludeRegex.Value}'";
         }
@@ -139,7 +176,8 @@ namespace LogMergeRx
             ShowNotices.Reset();
             IncludeRegex.Reset();
             ExcludeRegex.Reset();
-            MinDate.Reset();
+            VisibleRangeStart.Reset();
+            VisibleRangeEnd.Reset();
             _selection.UnionWith(AllFiles.Select(x => x.FileId.Id));
         }
 
@@ -150,7 +188,8 @@ namespace LogMergeRx
             ShowNotices.IsInitial &&
             IncludeRegex.IsInitial &&
             ExcludeRegex.IsInitial &&
-            MinDate.IsInitial &&
+            VisibleRangeStart.IsInitial &&
+            VisibleRangeEnd.IsInitial &&
             AllFiles.Count == _selection.Count);
 
         private void ScrollToEnd()
@@ -220,7 +259,7 @@ namespace LogMergeRx
                 AllFiles.Count == 0 || _selection.Contains(log.FileId.Id);
 
             bool FilterByDate(LogEntry log) =>
-                log.Date > MinDate.Value;
+                log.Date >= MinDate.Value && log.Date <= MaxDate.Value;
         }
     }
 }
