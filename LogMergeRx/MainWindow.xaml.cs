@@ -39,6 +39,9 @@ namespace LogMergeRx
                 SystemCommands.MinimizeWindowCommand,
                 (s, e) => SystemCommands.MinimizeWindow(this)));
 
+            var command = new ActionCommand(_ => SearchTextBox.Focus());
+            InputBindings.Add(new KeyBinding(command, Key.F, ModifierKeys.Control));
+
             ViewModel = new MainWindowViewModel(textBoxChangeDelay: TimeSpan.FromMilliseconds(500));
 
             ViewModel.SelectedFiles

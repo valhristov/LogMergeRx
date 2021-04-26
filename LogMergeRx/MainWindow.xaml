@@ -52,14 +52,22 @@
                     <StackPanel>
                         <Button Content="Show only newer than now"
                               Command="{Binding ShowNewerThanNow}" />
-                        <TextBlock Text="Start" FontWeight="Bold" />
-                        <Slider Minimum="{Binding FirstItemSeconds.Value}" Value="{Binding VisibleRangeStart.Value}"
-                                Maximum="{Binding VisibleRangeEnd.Value}" Orientation="Horizontal" />
-                        <TextBlock Text="{Binding MinDate.Value}" />
-                        <TextBlock Text="End" FontWeight="Bold" />
-                        <Slider Minimum="{Binding VisibleRangeStart.Value}" Value="{Binding VisibleRangeEnd.Value}"
-                                Maximum="{Binding LastItemSeconds.Value}" Orientation="Horizontal" />
-                        <TextBlock Text="{Binding MaxDate.Value}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="Start: " FontWeight="Bold" />
+                            <TextBlock Text="{Binding MinDate.Value}" />
+                        </StackPanel>
+                        <Slider Orientation="Horizontal" 
+                                Minimum="{Binding FirstItemSeconds.Value}"
+                                Value="{Binding VisibleRangeStart.Value}"
+                                Maximum="{Binding VisibleRangeEnd.Value}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="End: " FontWeight="Bold" />
+                            <TextBlock Text="{Binding MaxDate.Value}" />
+                        </StackPanel>
+                        <Slider Orientation="Horizontal"
+                                Minimum="{Binding VisibleRangeStart.Value}"
+                                Value="{Binding VisibleRangeEnd.Value}"
+                                Maximum="{Binding LastItemSeconds.Value}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Level" Style="{StaticResource H1}">
@@ -72,22 +80,26 @@
                 </GroupBox>
                 <GroupBox Header="Include only matching" Style="{StaticResource H1}">
                     <StackPanel>
-                        <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
                         <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Exclude matching" Style="{StaticResource H1}">
                     <StackPanel>
-                        <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
                         <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Search" Style="{StaticResource H1}">
                     <StackPanel>
-                        <TextBox Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox x:Name="SearchTextBox" Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
                         <UniformGrid Rows="1" Columns="2">
-                            <Button Content="Prev" Command="{Binding PrevIndex}" Margin="10,0" />
-                            <Button Content="Next" Command="{Binding NextIndex}" Margin="0,0,10,0" />
+                            <Button Command="{Binding PrevIndex}" Margin="10,0" ToolTip="Previous result">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE0A6;" FontSize="14" />
+                            </Button>
+                            <Button Command="{Binding NextIndex}" Margin="0,0,10,0" ToolTip="Next result">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE0AB;" FontSize="14" />
+                            </Button>
                         </UniformGrid>
                         <TextBlock Text="Contains text, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
