@@ -50,6 +50,11 @@ namespace LogMergeRx
 
         public void AddItems(ImmutableList<LogEntry> items)
         {
+            if (items.Count == 0)
+            {
+                return;
+            }
+
             if (ItemsSource.Count == 0)
             {
                 FirstItemSeconds.Value = VisibleRangeStart.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date));
