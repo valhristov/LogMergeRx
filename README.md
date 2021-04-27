@@ -21,28 +21,4 @@ There is rudimentary search and highlight.
 - The main window is not brought into view after you select a directory. I need to fix that, it is annoying.
 
 
-# TODO
-
-## Should have
-- Clear buttons for the regex boxes
-- application logs and errors should be visible somewhere
-- multiple search boxes (multiple highlights) or search with regex?
-- datepickers for precise date filtering
-- buttons +/-5s, 1min, etc. for changing the visible range
-- highlight the current search result (at least highlight the entry)
-- splitter between filters and log entries
-
-## Nice to have
-- when filtering, remember the current scroll offset and go there after the items are hidden.
-- theme
-    - fix window icons - this is difficult, I should add triggers to change the content of the buttons
-- loaded files list box
-    - put markers on files that contain errors
-- show loaded files in a treeview
-
-## Future
-- search results map (show minimap on scrollbar, or nearby, of search results, also could put errors, warnings, etc.)
-- Data virtualization (load only part of the log entries initially, load more when you scroll). This will make the performance with huge log files acceptable.
-
-
 
