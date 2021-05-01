@@ -127,12 +127,12 @@ namespace LogMergeRx
                     VisibleRangeStart.Select(_ => Unit.Default).Throttle(textBoxChangeDelay),
                     VisibleRangeEnd.Select(_ => Unit.Default).Throttle(textBoxChangeDelay),
                     SelectedFiles.ToObservable().Select(_ => Unit.Default))
-                .ObserveOnDispatcher()
+               // .ObserveOnDispatcher()
                 .Subscribe(_ =>
                 {
-                    FiltersText.Value = "Showing: " + string.Join(", ", GetFiltersText());
+                    FiltersText.Value = GetFiltersText();
                     ItemsSourceView.Refresh();
-                    ClearFilter.RaiseCanExecuteChanged();
+                 //   ClearFilter.RaiseCanExecuteChanged();
                 });
 
             VisibleRangeStart
@@ -166,16 +166,21 @@ namespace LogMergeRx
             ClearFilter = new ActionCommand(ClearFilters, HasFilters);
         }
 
-        private IEnumerable<string> GetFiltersText()
+        private string GetFiltersText()
         {
-            if (!ShowErrors.Value) yield return "no errors";
-            if (!ShowWarnings.Value) yield return "no warnings";
-            if (!ShowInfos.Value) yield return "no infos";
-            if (!ShowNotices.Value) yield return "no notices";
-            if (VisibleRangeStart.Value != FirstItemSeconds.Value) yield return $"older than {MinDate.Value:f}";
-            if (VisibleRangeEnd.Value != LastItemSeconds.Value) yield return $"newer than {MaxDate.Value:f}";
-            if (!string.IsNullOrEmpty(IncludeRegex.Value)) yield return $"matching '{IncludeRegex.Value}'";
-            if (!string.IsNullOrEmpty(ExcludeRegex.Value)) yield return $"not matching '{ExcludeRegex.Value}'";
+            return string.Join(", ", GetFilterValues());
+
+            IEnumerable<string> GetFilterValues()
+            {
+                if (!ShowErrors.Value) yield return "no errors";
+                if (!ShowWarnings.Value) yield return "no warnings";
+                if (!ShowInfos.Value) yield return "no infos";
+                if (!ShowNotices.Value) yield return "no notices";
+                if (VisibleRangeStart.Value != FirstItemSeconds.Value) yield return $"older than {MinDate.Value:f}";
+                if (VisibleRangeEnd.Value != LastItemSeconds.Value) yield return $"newer than {MaxDate.Value:f}";
+                if (!string.IsNullOrEmpty(IncludeRegex.Value)) yield return $"matching '{IncludeRegex.Value}'";
+                if (!string.IsNullOrEmpty(ExcludeRegex.Value)) yield return $"not matching '{ExcludeRegex.Value}'";
+            }
         }
 
         private void ClearFilters(object _)
@@ -186,8 +191,8 @@ namespace LogMergeRx
             ShowNotices.Reset();
             IncludeRegex.Reset();
             ExcludeRegex.Reset();
-            VisibleRangeStart.Reset();
-            VisibleRangeEnd.Reset();
+            VisibleRangeStart.Value = FirstItemSeconds.Value;
+            VisibleRangeEnd.Value = LastItemSeconds.Value;
             _selection.UnionWith(AllFiles.Select(x => x.FileId.Id));
         }
 
