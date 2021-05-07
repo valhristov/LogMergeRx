@@ -36,10 +36,10 @@ namespace LogMergeRx
         public ObservableProperty<double> End { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
         public ObservableProperty<double> Maximum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
 
-        public ObservableProperty<DateTime> StartDate { get; } = new ObservableProperty<DateTime>(DateTime.MinValue);
-        public ObservableProperty<DateTime> EndDate { get; } = new ObservableProperty<DateTime>(DateTime.MaxValue);
+        public ReadOnlyObservableProperty<DateTime> StartDate { get; }
+        public ReadOnlyObservableProperty<DateTime> EndDate { get; }
 
-        public ObservableProperty<string> FiltersText { get; } = new ObservableProperty<string>(string.Empty);
+        public ReadOnlyObservableProperty<string> FiltersText { get; }
 
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
@@ -107,7 +107,7 @@ namespace LogMergeRx
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
-            ShowNewerThanNow = new ActionCommand(param => Start.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
+            ShowNewerThanNow = new ActionCommand(_ => Start.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
 
             // Order loaded files alphabetically
             AllFilesView.CustomSort = new FunctionComparer<FileViewModel>(
@@ -133,16 +133,13 @@ namespace LogMergeRx
                 .ObserveOnDispatcher()
                 .Subscribe(_ =>
                 {
-                    FiltersText.Value = GetFiltersText();
                     ItemsSourceView.Refresh();
                  //   ClearFilter.RaiseCanExecuteChanged();
                 });
 
-            Start
-                .Subscribe(value => StartDate.Value = DateTimeHelper.FromSecondsToDate(value));
-
-            End
-                .Subscribe(value => EndDate.Value = DateTimeHelper.FromSecondsToDate(value));
+            StartDate = new ReadOnlyObservableProperty<DateTime>(Start.Select(DateTimeHelper.FromSecondsToDate), DateTime.MinValue);
+            EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);
+            FiltersText = new ReadOnlyObservableProperty<string>(anyFilterChanged.Select(_ => GetFiltersText()));
 
             FollowTail
                 .Where(value => value) // only when enabled
