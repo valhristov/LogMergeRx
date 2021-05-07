@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,7 +43,7 @@ namespace LogMergeRx
             var command = new ActionCommand(_ => SearchTextBox.Focus());
             InputBindings.Add(new KeyBinding(command, Key.F, ModifierKeys.Control));
 
-            ViewModel = new MainWindowViewModel(textBoxChangeDelay: TimeSpan.FromMilliseconds(500));
+            ViewModel = new MainWindowViewModel(Scheduler.Default);
 
             ViewModel.SelectedFiles
                 .ToObservable()

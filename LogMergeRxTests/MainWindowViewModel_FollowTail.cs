@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LogMergeRx;
 using LogMergeRx.Model;
+using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LogMergeRx
@@ -11,10 +13,12 @@ namespace LogMergeRx
     public class MainWindowViewModel_FollowTail_Tests
     {
         private readonly MainWindowViewModel _viewModel;
+        private readonly TestScheduler _scheduler;
 
         public MainWindowViewModel_FollowTail_Tests()
         {
-            _viewModel = new MainWindowViewModel(TimeSpan.Zero);
+            _scheduler = new TestScheduler();
+            _viewModel = new MainWindowViewModel(_scheduler);
             _viewModel.ItemsSource.Add(LogHelper.Create("message error 1", LogLevel.ERROR));
             _viewModel.ItemsSource.Add(LogHelper.Create("message error 2", LogLevel.ERROR));
             _viewModel.ItemsSource.Add(LogHelper.Create("message warning 1", LogLevel.WARN));
@@ -23,15 +27,21 @@ namespace LogMergeRx
             _viewModel.ItemsSource.Add(LogHelper.Create("message info 1", LogLevel.INFO));
         }
 
+        private static readonly TimeSpan DefaultThrottle = TimeSpan.FromMilliseconds(510);
+
+        private void DoAndWait(Action action)
+        {
+            action();
+            _scheduler.AdvanceBy(DefaultThrottle.Ticks);
+            DispatcherUtil.DoEvents();
+        }
+
         [TestMethod]
         public void Setting_SearchRegex_Disables_Follow_Tail()
         {
             _viewModel.FollowTail.Value = true;
 
-            _viewModel.SearchRegex.Value = "xxx";
-
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
+            DoAndWait(() => _viewModel.SearchRegex.Value = "xxx");
 
             _viewModel.FollowTail.Value.Should().BeFalse();
         }

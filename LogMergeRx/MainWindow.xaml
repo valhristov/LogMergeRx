@@ -54,20 +54,20 @@
                               Command="{Binding ShowNewerThanNow}" />
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="Start: " FontWeight="Bold" />
-                            <TextBlock Text="{Binding MinDate.Value}" />
-                        </StackPanel>
-                        <Slider Orientation="Horizontal" 
-                                Minimum="{Binding FirstItemSeconds.Value}"
-                                Value="{Binding VisibleRangeStart.Value}"
-                                Maximum="{Binding VisibleRangeEnd.Value}" />
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <TextBlock Text="End: " FontWeight="Bold" />
-                            <TextBlock Text="{Binding MaxDate.Value}" />
+                            <TextBlock Text="{Binding StartDate.Value}" />
                         </StackPanel>
                         <Slider Orientation="Horizontal"
-                                Minimum="{Binding VisibleRangeStart.Value}"
-                                Value="{Binding VisibleRangeEnd.Value}"
-                                Maximum="{Binding LastItemSeconds.Value}" />
+                                Minimum="{Binding Minimum.Value}"
+                                Value="{Binding Start.Value}"
+                                Maximum="{Binding End.Value}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="End: " FontWeight="Bold" />
+                            <TextBlock Text="{Binding EndDate.Value}" />
+                        </StackPanel>
+                        <Slider Orientation="Horizontal"
+                                Minimum="{Binding Start.Value}"
+                                Value="{Binding End.Value}"
+                                Maximum="{Binding Maximum.Value}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Level" Style="{StaticResource H1}">

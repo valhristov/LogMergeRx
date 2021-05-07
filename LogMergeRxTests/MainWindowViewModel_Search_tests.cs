@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Reactive.Concurrency;
 using FluentAssertions;
 using LogMergeRx.Model;
+using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LogMergeRx
@@ -8,29 +11,38 @@ namespace LogMergeRx
     [TestClass]
     public class MainWindowViewModel_Search_tests
     {
+        private readonly TestScheduler _scheduler;
         private readonly MainWindowViewModel _viewModel;
 
         public MainWindowViewModel_Search_tests()
         {
-            _viewModel = new MainWindowViewModel(TimeSpan.Zero);
+            _scheduler = new TestScheduler();
+            _viewModel = new MainWindowViewModel(_scheduler);
             _viewModel.FollowTail.Value = false;
-            Array.ForEach(
-                new[]
-                {
-                    // only errors are enabled by default
-                    LogHelper.Create("1", LogLevel.ERROR), // index:0
-                    LogHelper.Create("1", LogLevel.ERROR), // index:1
-                    LogHelper.Create("1", LogLevel.ERROR), // index:2
-                    LogHelper.Create("2", LogLevel.WARN), //  index:3  // index:0 with removed errors
-                    LogHelper.Create("3", LogLevel.ERROR), // index:4
-                    LogHelper.Create("2", LogLevel.WARN), //  index:5  // index:1 with removed errors
-                    LogHelper.Create("2", LogLevel.WARN), //  index:6  // index:2 with removed errors
-                    LogHelper.Create("3", LogLevel.WARN), //  index:7  // index:3 with removed errors
-                    LogHelper.Create("2", LogLevel.WARN), //  index:8  // index:4 with removed errors
-                    LogHelper.Create("2", LogLevel.WARN), //  index:9  // index:5 with removed errors
-                    LogHelper.Create("1", LogLevel.WARN), //  index:10 // index:6 with removed errors
-                },
-                _viewModel.ItemsSource.Add);
+            _viewModel.AddItems(
+                ImmutableList.Create(
+                // only errors are enabled by default
+                LogHelper.Create("1", LogLevel.ERROR), // index:0
+                LogHelper.Create("1", LogLevel.ERROR), // index:1
+                LogHelper.Create("1", LogLevel.ERROR), // index:2
+                LogHelper.Create("2", LogLevel.WARN), //  index:3  // index:0 with removed errors
+                LogHelper.Create("3", LogLevel.ERROR), // index:4
+                LogHelper.Create("2", LogLevel.WARN), //  index:5  // index:1 with removed errors
+                LogHelper.Create("2", LogLevel.WARN), //  index:6  // index:2 with removed errors
+                LogHelper.Create("3", LogLevel.WARN), //  index:7  // index:3 with removed errors
+                LogHelper.Create("2", LogLevel.WARN), //  index:8  // index:4 with removed errors
+                LogHelper.Create("2", LogLevel.WARN), //  index:9  // index:5 with removed errors
+                LogHelper.Create("1", LogLevel.WARN)  //  index:10 // index:6 with removed errors
+                ));
+        }
+
+        private static readonly TimeSpan DefaultThrottle = TimeSpan.FromMilliseconds(510);
+
+        private void DoAndWait(Action action)
+        {
+            action();
+            _scheduler.AdvanceBy(DefaultThrottle.Ticks);
+            DispatcherUtil.DoEvents();
         }
 
         [TestMethod]
@@ -38,16 +50,16 @@ namespace LogMergeRx
         {
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
 
-            _viewModel.SearchRegex.Value = "1";
+            DoAndWait(() => _viewModel.SearchRegex.Value = "1");
             _viewModel.ScrollToIndex.Value.Should().Be(0);
 
-            _viewModel.SearchRegex.Value = "2";
+            DoAndWait(() => _viewModel.SearchRegex.Value = "2");
             _viewModel.ScrollToIndex.Value.Should().Be(3);
 
-            _viewModel.SearchRegex.Value = "3";
+            DoAndWait(() => _viewModel.SearchRegex.Value = "3");
             _viewModel.ScrollToIndex.Value.Should().Be(4);
 
-            _viewModel.SearchRegex.Value = "1";
+            DoAndWait(() => _viewModel.SearchRegex.Value = "1");
             _viewModel.ScrollToIndex.Value.Should().Be(0);
         }
 
@@ -56,22 +68,22 @@ namespace LogMergeRx
         {
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
 
-            _viewModel.SearchRegex.Value = "2";
+            DoAndWait(() => _viewModel.SearchRegex.Value = "2");
             _viewModel.ScrollToIndex.Value.Should().Be(3);
 
-            _viewModel.NextIndex.Execute(null);
+            DoAndWait(() => _viewModel.NextIndex.Execute(null));
             _viewModel.ScrollToIndex.Value.Should().Be(5);
 
-            _viewModel.NextIndex.Execute(null);
+            DoAndWait(() => _viewModel.NextIndex.Execute(null));
             _viewModel.ScrollToIndex.Value.Should().Be(6);
 
-            _viewModel.NextIndex.Execute(null);
+            DoAndWait(() => _viewModel.NextIndex.Execute(null));
             _viewModel.ScrollToIndex.Value.Should().Be(8);
 
-            _viewModel.NextIndex.Execute(null);
+            DoAndWait(() => _viewModel.NextIndex.Execute(null));
             _viewModel.ScrollToIndex.Value.Should().Be(9);
 
-            _viewModel.NextIndex.Execute(null); // cannot find more, stay on the last
+            DoAndWait(() => _viewModel.NextIndex.Execute(null)); // cannot find more, stay on the last
             _viewModel.ScrollToIndex.Value.Should().Be(9);
         }
 
@@ -106,9 +118,11 @@ namespace LogMergeRx
         public void Searching_with_filter()
         {
             _viewModel.ShowErrors.Value = false; // remove errors, the indexes will shift
+            DispatcherUtil.DoEvents();
+
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
 
-            _viewModel.SearchRegex.Value = "2";
+            DoAndWait(() => _viewModel.SearchRegex.Value = "2");
             _viewModel.ScrollToIndex.Value = 0; // first result
 
             _viewModel.NextIndex.Execute(null);

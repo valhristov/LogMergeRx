@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Windows.Data;
 using FluentAssertions;
 using LogMergeRx.Model;
+using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LogMergeRx
@@ -12,10 +14,12 @@ namespace LogMergeRx
     public class MainWindowViewModel_Filter_Tests
     {
         private readonly MainWindowViewModel _viewModel;
+        private readonly TestScheduler _scheduler;
 
         public MainWindowViewModel_Filter_Tests()
         {
-            _viewModel = new MainWindowViewModel(TimeSpan.Zero);
+            _scheduler = new TestScheduler();
+            _viewModel = new MainWindowViewModel(_scheduler);
             _viewModel.ItemsSource.Add(LogHelper.Create("message error 1", LogLevel.ERROR));
             _viewModel.ItemsSource.Add(LogHelper.Create("message error 2", LogLevel.ERROR));
             _viewModel.ItemsSource.Add(LogHelper.Create("message warning 1", LogLevel.WARN));
@@ -26,6 +30,15 @@ namespace LogMergeRx
 
         private IEnumerable<LogEntry> View =>
             CollectionViewSource.GetDefaultView(_viewModel.ItemsSource).OfType<LogEntry>();
+
+        private static readonly TimeSpan DefaultThrottle = TimeSpan.FromMilliseconds(510);
+
+        private void DoAndWait(Action action)
+        {
+            action();
+            _scheduler.AdvanceBy(DefaultThrottle.Ticks);
+            DispatcherUtil.DoEvents();
+        }
 
         [TestMethod]
         public void Include_errors()
@@ -106,17 +119,17 @@ namespace LogMergeRx
         [TestMethod]
         public void Include_regex()
         {
-            _viewModel.IncludeRegex.Value = string.Empty; // default
+            DoAndWait(() => _viewModel.IncludeRegex.Value = string.Empty); // default
             View.Should().HaveCount(6); // all items
 
-            _viewModel.IncludeRegex.Value = "2";
+            DoAndWait(() => _viewModel.IncludeRegex.Value = "2");
             DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(2);
             View.Select(x => x.Message).Should().Equal("message error 2", "message warning 2");
 
             // lang=regex
-            _viewModel.IncludeRegex.Value = "message.*\\s1";
+            DoAndWait(() => _viewModel.IncludeRegex.Value = "message.*\\s1");
             DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(4);
@@ -126,17 +139,17 @@ namespace LogMergeRx
         [TestMethod]
         public void Exclude_regex()
         {
-            _viewModel.ExcludeRegex.Value = string.Empty; // default
+            DoAndWait(() => _viewModel.ExcludeRegex.Value = string.Empty); // default
             View.Should().HaveCount(6); // all items
 
-            _viewModel.ExcludeRegex.Value = "2";
+            DoAndWait(() => _viewModel.ExcludeRegex.Value = "2");
             DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(4);
             View.Select(x => x.Message).Should().Equal("message error 1", "message warning 1", "message notice 1", "message info 1");
 
             // lang=regex
-            _viewModel.ExcludeRegex.Value = "message.*\\s1";
+            DoAndWait(() => _viewModel.ExcludeRegex.Value = "message.*\\s1");
             DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(2);
