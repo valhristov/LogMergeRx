@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace LogMergeRx
@@ -24,5 +25,8 @@ namespace LogMergeRx
 
         public void RaiseCanExecuteChanged() =>
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+        public void Subscribe(IObservable<object> observable) =>
+            observable.Where(CanExecute).Subscribe(Execute);
     }
 }

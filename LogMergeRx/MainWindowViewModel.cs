@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Data;
@@ -45,6 +44,8 @@ namespace LogMergeRx
         public ActionCommand PrevIndex { get; }
         public ActionCommand ShowNewerThanNow { get; }
         public ActionCommand ClearFilter { get; }
+        public ActionCommand RefreshItemsSource { get; }
+        public ActionCommand ScrollToLast { get; }
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
@@ -66,11 +67,11 @@ namespace LogMergeRx
                 var newFirstItem = Math.Min(Minimum.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)));
                 var newLastItem = Math.Max(Maximum.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)));
                 if (Start.Value == Minimum.Value)
-                {
+                { // Move start with minimum when displaying the full range
                     Start.Value = newFirstItem;
                 }
                 if (End.Value == Maximum.Value)
-                {
+                { // Move end with maximum when displaying the full range
                     End.Value = newLastItem;
                 }
 
@@ -117,43 +118,35 @@ namespace LogMergeRx
             ItemsSourceView.CustomSort = new FunctionComparer<LogEntry>(
                 (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Date, y.Date));
 
-            var anyFilterChanged = Observable
-                .Merge(
-                    ShowErrors.Select(_ => Unit.Default),
-                    ShowWarnings.Select(_ => Unit.Default),
-                    ShowNotices.Select(_ => Unit.Default),
-                    ShowInfos.Select(_ => Unit.Default),
-                    IncludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                    ExcludeRegex.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                    Start.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                    End.Select(_ => Unit.Default).Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                    SelectedFiles.ToObservable().Select(_ => Unit.Default));
+            var anyFilterChanged = Observable.Merge(
+                ShowErrors.ToObject(),
+                ShowWarnings.ToObject(),
+                ShowNotices.ToObject(),
+                ShowInfos.ToObject(),
+                IncludeRegex.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                ExcludeRegex.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                Start.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                End.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                SelectedFiles.ToObservable().ToObject());
 
-            anyFilterChanged
-                .ObserveOnDispatcher()
-                .Subscribe(_ =>
-                {
-                    ItemsSourceView.Refresh();
-                 //   ClearFilter.RaiseCanExecuteChanged();
-                });
+            RefreshItemsSource = new ActionCommand(_ => ItemsSourceView.Refresh());
+            RefreshItemsSource.Subscribe(anyFilterChanged);
+
+            ScrollToLast = new ActionCommand(_ => ScrollToEnd());
+            ScrollToLast.Subscribe(
+                Observable
+                    .Merge(FollowTail.ToObject(), ItemsSourceView.ToObservable())
+                    .Where(_ => FollowTail.Value) // only when follow tail is checked
+                    //.Throttle(TimeSpan.FromMilliseconds(100), scheduler)
+                    .ObserveOnDispatcher());
 
             StartDate = new ReadOnlyObservableProperty<DateTime>(Start.Select(DateTimeHelper.FromSecondsToDate), DateTime.MinValue);
             EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);
             FiltersText = new ReadOnlyObservableProperty<string>(anyFilterChanged.Select(_ => GetFiltersText()));
 
-            FollowTail
-                .Where(value => value) // only when enabled
-                .Subscribe(_ => ScrollToEnd());
-
-            ItemsSourceView // We scroll to end when new items arrive
-                .ToObservable()
-                .Where(_ => FollowTail.Value) // only when FollowTail is enabled
-                .ObserveOnDispatcher() // not nice, but without this the initial scroll to end does not work
-                .Subscribe(_ => ScrollToEnd());
-
             SelectedFiles
                 .ToObservable()
-                .Subscribe(e =>
+                .Subscribe(_ =>
                 {
                     _selection.Clear();
                     _selection.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
