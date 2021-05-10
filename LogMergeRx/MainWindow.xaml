@@ -50,8 +50,6 @@
                 </GroupBox>
                 <GroupBox Header="Date Filter" Style="{StaticResource H1}">
                     <StackPanel>
-                        <Button Content="Show only newer than now"
-                              Command="{Binding ShowNewerThanNow}" />
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="Start: " FontWeight="Bold" />
                             <TextBlock Text="{Binding StartDate.Value}" />
@@ -68,6 +66,8 @@
                                 Minimum="{Binding Start.Value}"
                                 Value="{Binding End.Value}"
                                 Maximum="{Binding Maximum.Value}" />
+                        <Button Content="Show only newer than now"
+                              Command="{Binding ShowNewerThanNow}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Level" Style="{StaticResource H1}">

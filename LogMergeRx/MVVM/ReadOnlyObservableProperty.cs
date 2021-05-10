@@ -20,7 +20,7 @@ namespace LogMergeRx
 
             _source = source.Where(x => !_comparer.Equals(_value, x));
 
-            _source.Subscribe(x => _value = x);
+            _source.Subscribe(x => Value = x);
         }
 
         public T Value
@@ -28,10 +28,6 @@ namespace LogMergeRx
             get => _value;
             private set
             {
-                if (_comparer.Equals(_value, value))
-                {
-                    return;
-                }
                 _value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             }
