@@ -137,8 +137,7 @@ namespace LogMergeRx
                 Observable
                     .Merge(FollowTail.ToObject(), ItemsSourceView.ToObservable())
                     .Where(_ => FollowTail.Value) // only when follow tail is checked
-                    //.Throttle(TimeSpan.FromMilliseconds(100), scheduler)
-                    .ObserveOnDispatcher());
+                    .ObserveOn(scheduler));
 
             StartDate = new ReadOnlyObservableProperty<DateTime>(Start.Select(DateTimeHelper.FromSecondsToDate), DateTime.MinValue);
             EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);

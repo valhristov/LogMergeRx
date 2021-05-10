@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using LogMergeRx.Demo;
 using LogMergeRx.Model;
 using Neat.Results;
 
@@ -14,6 +17,7 @@ namespace LogMergeRx
     {
         // Need to keep a reference to prevent the GC from collecting the monitor
         private readonly LogMonitor _monitor;
+        private readonly CancellationTokenSource demoToken = new CancellationTokenSource();
 
         private MainWindowViewModel ViewModel
         {
@@ -43,7 +47,7 @@ namespace LogMergeRx
             var command = new ActionCommand(_ => SearchTextBox.Focus());
             InputBindings.Add(new KeyBinding(command, Key.F, ModifierKeys.Control));
 
-            ViewModel = new MainWindowViewModel(Scheduler.Default);
+            ViewModel = new MainWindowViewModel(DispatcherScheduler.Current);
 
             ViewModel.SelectedFiles
                 .ToObservable()
@@ -71,6 +75,11 @@ namespace LogMergeRx
 
                     monitor.Start();
 
+                    if (logsPath.Value.Contains("log-demo"))
+                    {
+                        LogGenerator.Start(logsPath, demoToken.Token);
+                    }
+
                     Title = $"LogMerge: {logsPath}";
 
                     return monitor;
@@ -80,6 +89,12 @@ namespace LogMergeRx
                     Close();
                     return null;
                 });
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            demoToken.Cancel();
+            base.OnClosing(e);
         }
 
         private static Result<AbsolutePath> GetLogsPath()
