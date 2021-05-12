@@ -181,7 +181,7 @@
         </ItemsControl>
         <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal"
                     Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="1" />
+            <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="2,2,5,2" />
             <TextBlock Text="{Binding FiltersText.Value}" VerticalAlignment="Center" />
         </StackPanel>
     </Grid>

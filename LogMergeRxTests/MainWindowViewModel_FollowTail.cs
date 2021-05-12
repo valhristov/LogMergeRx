@@ -54,7 +54,7 @@ namespace LogMergeRx
             var newEntry = LogHelper.Create("new message 1", LogLevel.ERROR);
             _viewModel.ItemsSource.Add(newEntry);
 
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
+            _scheduler.AdvanceBy(10);
 
             _viewModel.ScrollToItem.Value.Should().Be(newEntry);
             _viewModel.ScrollToIndex.Value.Should().Be(_viewModel.ItemsSource.Count - 1);
@@ -62,7 +62,7 @@ namespace LogMergeRx
             newEntry = LogHelper.Create("new message 2", LogLevel.ERROR);
             _viewModel.ItemsSource.Add(newEntry);
 
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
+            _scheduler.AdvanceBy(10);
 
             _viewModel.ScrollToItem.Value.Should().Be(newEntry);
             _viewModel.ScrollToIndex.Value.Should().Be(_viewModel.ItemsSource.Count - 1);

@@ -26,7 +26,10 @@ namespace LogMergeRx
         public void RaiseCanExecuteChanged() =>
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
-        public void Subscribe(IObservable<object> observable) =>
+        public void ExecuteOn(IObservable<object> observable) =>
             observable.Where(CanExecute).Subscribe(Execute);
+
+        public void UpdateCanExecuteOn(IObservable<object> observable) =>
+            observable.Subscribe(_ => RaiseCanExecuteChanged());
     }
 }

@@ -12,7 +12,7 @@ namespace LogMergeRx
 {
     public class MainWindowViewModel
     {
-        private readonly HashSet<int> _selection = new HashSet<int>();
+        private readonly HashSet<int> _fileFilter = new HashSet<int>();
 
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
@@ -40,12 +40,14 @@ namespace LogMergeRx
 
         public ReadOnlyObservableProperty<string> FiltersText { get; }
 
+        public ActionCommand Find { get; }
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
         public ActionCommand ShowNewerThanNow { get; }
         public ActionCommand ClearFilter { get; }
         public ActionCommand RefreshItemsSource { get; }
         public ActionCommand ScrollToLast { get; }
+        public ActionCommand UpdateFileFilter { get; }
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
@@ -105,6 +107,9 @@ namespace LogMergeRx
 
         public MainWindowViewModel(IScheduler scheduler)
         {
+            Find = new ActionCommand(_ => FindNext(SearchRegex.Value, -1));
+            Find.ExecuteOn(SearchRegex.Throttle(TimeSpan.FromMilliseconds(500), scheduler));
+
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
 
@@ -130,10 +135,10 @@ namespace LogMergeRx
                 SelectedFiles.ToObservable().ToObject());
 
             RefreshItemsSource = new ActionCommand(_ => ItemsSourceView.Refresh());
-            RefreshItemsSource.Subscribe(anyFilterChanged);
+            RefreshItemsSource.ExecuteOn(anyFilterChanged);
 
             ScrollToLast = new ActionCommand(_ => ScrollToEnd());
-            ScrollToLast.Subscribe(
+            ScrollToLast.ExecuteOn(
                 Observable
                     .Merge(FollowTail.ToObject(), ItemsSourceView.ToObservable())
                     .Where(_ => FollowTail.Value) // only when follow tail is checked
@@ -143,19 +148,16 @@ namespace LogMergeRx
             EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);
             FiltersText = new ReadOnlyObservableProperty<string>(anyFilterChanged.Select(_ => GetFiltersText()));
 
-            SelectedFiles
-                .ToObservable()
-                .Subscribe(_ =>
+            UpdateFileFilter = new ActionCommand(
+                _ =>
                 {
-                    _selection.Clear();
-                    _selection.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
+                    _fileFilter.Clear();
+                    _fileFilter.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
                 });
-
-            SearchRegex
-                .Throttle(TimeSpan.FromMilliseconds(500), scheduler)
-                .Subscribe(pattern => FindNext(pattern, -1));
+            UpdateFileFilter.ExecuteOn(SelectedFiles.ToObservable());
 
             ClearFilter = new ActionCommand(ClearFilters, HasFilters);
+            ClearFilter.UpdateCanExecuteOn(anyFilterChanged);
         }
 
         private string GetFiltersText()
@@ -185,7 +187,7 @@ namespace LogMergeRx
             ExcludeRegex.Reset();
             Start.Value = Minimum.Value;
             End.Value = Maximum.Value;
-            _selection.UnionWith(AllFiles.Select(x => x.FileId.Id));
+            _fileFilter.UnionWith(AllFiles.Select(x => x.FileId.Id));
         }
 
         private bool HasFilters(object _) =>
@@ -197,7 +199,7 @@ namespace LogMergeRx
             ExcludeRegex.IsInitial &&
             Start.IsInitial &&
             End.IsInitial &&
-            AllFiles.Count == _selection.Count);
+            AllFiles.Count == _fileFilter.Count);
 
         private void ScrollToEnd()
         {
@@ -264,7 +266,7 @@ namespace LogMergeRx
                 string.IsNullOrWhiteSpace(ExcludeRegex.Value) || !RegexCache.GetRegex(ExcludeRegex.Value).IsMatch(log.Message);
 
             bool FilterByFile(LogEntry log) =>
-                AllFiles.Count == 0 || _selection.Contains(log.FileId.Id);
+                AllFiles.Count == 0 || _fileFilter.Contains(log.FileId.Id);
 
             bool FilterByDate(LogEntry log) =>
                 log.Date >= StartDate.Value && log.Date <= EndDate.Value;

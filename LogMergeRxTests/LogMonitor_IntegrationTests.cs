@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LogMergeRx
 {
     [TestClass]
-    public class ParralelTest : IntegrationTestBase
+    public class LogMonitor_IntegrationTests : IntegrationTestBase
     {
         private List<FileId> Files { get; set; }
         private List<LogEntry> Entries { get; set; }
@@ -29,7 +29,7 @@ namespace LogMergeRx
         }
 
         [TestMethod]
-        public async Task MyTestMethod()
+        public async Task ParallelMonitoring()
         {
             Task.WaitAll(
                 Task.Run(async () => await WriteLogsAsync("a.csv", 'A')),
@@ -38,13 +38,14 @@ namespace LogMergeRx
                 Task.Run(async () => await WriteLogsAsync("d.csv", 'D'))
                 );
 
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             AssertEntries('A');
             AssertEntries('B');
             AssertEntries('C');
             AssertEntries('D');
 
+            // Expect 1100 entries that start with the provided prefix
             void AssertEntries(char prefix)
             {
                 var entries = Entries.Where(e => e.Message.StartsWith(prefix));
