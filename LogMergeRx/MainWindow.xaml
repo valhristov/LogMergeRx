@@ -36,7 +36,8 @@
     </Window.Resources>
     <Grid x:Name="Root">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition MinWidth="220" Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -124,9 +125,10 @@
                 </GroupBox>
             </StackPanel>
         </ScrollViewer>
+        <GridSplitter Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="4" />
         <!--NOTE: Since not all items are the same height, setting VirtualizingPanel.ScrollUnit="Pixel"
         greatly reduces the scroll performance -->
-        <ItemsControl Grid.Column="1" ItemsSource="{Binding ItemsSource}"
+        <ItemsControl Grid.Column="2" ItemsSource="{Binding ItemsSource}"
                       VirtualizingPanel.VirtualizationMode="Recycling"
                       VirtualizingPanel.ScrollUnit="Pixel"
                       Background="#111111">
@@ -184,7 +186,7 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <DockPanel Grid.Row="1" Grid.ColumnSpan="2" LastChildFill="True" HorizontalAlignment="Left"
+        <DockPanel Grid.Row="1" Grid.ColumnSpan="3" LastChildFill="True" HorizontalAlignment="Left"
                    Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="5,2,5,2" DockPanel.Dock="Right" />
             <TextBlock Text="{Binding FiltersText.Value}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
