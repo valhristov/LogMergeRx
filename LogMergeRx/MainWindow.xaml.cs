@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,17 +8,16 @@ namespace LogMergeRx
 {
     public partial class MainWindow : Window
     {
-        // Need to keep a reference to prevent the GC from collecting the monitor
-        private readonly LogMonitor _monitor;
-
         private MainWindowViewModel ViewModel
         {
             get => (MainWindowViewModel)DataContext;
             set => DataContext = value;
         }
 
-        public MainWindow()
+        public MainWindow(MainWindowViewModel viewModel)
         {
+            ViewModel = viewModel;
+
             InitializeComponent();
 
             CommandBindings.Add(new CommandBinding(
@@ -40,33 +38,9 @@ namespace LogMergeRx
             var command = new ActionCommand(_ => SearchTextBox.Focus());
             InputBindings.Add(new KeyBinding(command, Key.F, ModifierKeys.Control));
 
-            ViewModel = new MainWindowViewModel(DispatcherScheduler.Current);
-
             ViewModel.SelectedFiles
                 .ToObservable()
                 .Subscribe(args => AllFiles.SelectedItems.Sync(args)); // synchronize VM selection with listbox
-
-            _monitor = new LogMonitor(App.LogsPath);
-
-            _monitor.ChangedFiles
-                .ObserveOnDispatcher()
-                // Add changed files to the filter
-                .Subscribe(ViewModel.AddFileToFilter);
-
-            _monitor.RenamedFiles
-                .ObserveOnDispatcher()
-                // Update renamed file names. File ID remains the same
-                .Subscribe(ViewModel.UpdateFileName);
-
-            _monitor.ReadEntries
-                .ObserveOnDispatcher()
-                // Add new entries
-                .Subscribe(ViewModel.AddItems);
-
-            _monitor.Start();
-
-
-            Title = $"LogMerge: {App.LogsPath}";
         }
 
         private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e) =>

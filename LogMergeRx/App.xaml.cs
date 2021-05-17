@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Markup;
@@ -10,23 +13,49 @@ namespace LogMergeRx
 {
     public partial class App : Application
     {
-        public static AbsolutePath LogsPath { get; private set; }
+        // Need to keep a reference to prevent the GC from collecting the monitor
+        private LogMonitor _monitor;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             InitializeCurrentLanguageForWPF();
 
-            ShutdownMode = ShutdownMode.OnLastWindowClose;
-
             GetLogsPath()
                 .Match(path =>
                 {
-                    LogsPath = path;
                     if (path.Value.Contains("log-demo"))
                     {
                         LogGenerator.Start(path);
                     }
-                    base.OnStartup(e);
+
+                    var viewModel = new MainWindowViewModel(DispatcherScheduler.Current);
+
+                    _monitor = new LogMonitor(path);
+
+                    _monitor.ChangedFiles
+                        .ObserveOnDispatcher()
+                        // Add changed files to the filter
+                        .Subscribe(viewModel.AddFileToFilter);
+
+                    _monitor.RenamedFiles
+                        .ObserveOnDispatcher()
+                        // Update renamed file names. File ID remains the same
+                        .Subscribe(viewModel.UpdateFileName);
+
+                    _monitor.ReadEntries
+                        .ObserveOnDispatcher()
+                        // Add new entries
+                        .Subscribe(viewModel.AddItems);
+
+                    _monitor.Start();
+
+                    MainWindow = new MainWindow(viewModel);
+                    MainWindow.Title = $"LogMerge: {path}";
+                    MainWindow.Show();
+
+                    // For some reason after the FolderBrowserDialog closes, the
+                    // main window is not activated when shown.
+                    MainWindow.Activate();
                 },
                 errors =>
                 {
@@ -40,7 +69,7 @@ namespace LogMergeRx
             base.OnExit(e);
         }
 
-        public static Result<AbsolutePath> GetLogsPath()
+        private static Result<AbsolutePath> GetLogsPath()
         {
             using var dialog = new System.Windows.Forms.FolderBrowserDialog();
             return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
@@ -51,7 +80,7 @@ namespace LogMergeRx
         /// <summary>
         /// Source: https://github.com/dotnet/wpf/issues/1946#issuecomment-534564980
         /// </summary>
-        public static void InitializeCurrentLanguageForWPF()
+        private static void InitializeCurrentLanguageForWPF()
         {
             // Create a made-up IETF language tag "more specific" than the culture we are based on.
             // This allows all standard logic regarding IETF language tag hierarchy to still make sense and we are
