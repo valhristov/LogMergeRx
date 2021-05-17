@@ -184,10 +184,10 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal"
-                    Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="2,2,5,2" />
-            <TextBlock Text="{Binding FiltersText.Value}" VerticalAlignment="Center" />
-        </StackPanel>
+        <DockPanel Grid.Row="1" Grid.ColumnSpan="2" LastChildFill="True" HorizontalAlignment="Left"
+                   Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button x:Name="ClearFilterButton" Content="Clear" Command="{Binding ClearFilter}" Margin="5,2,5,2" DockPanel.Dock="Right" />
+            <TextBlock Text="{Binding FiltersText.Value}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        </DockPanel>
     </Grid>
 </Window>
