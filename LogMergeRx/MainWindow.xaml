@@ -81,19 +81,37 @@
                 </GroupBox>
                 <GroupBox Header="Include only matching" Style="{StaticResource H1}">
                     <StackPanel>
-                        <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                        <Grid>
+                            <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            <Button Command="{Binding ClearIncludeRegex}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE711;" FontSize="10" />
+                            </Button>
+                        </Grid>
                         <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Exclude matching" Style="{StaticResource H1}">
                     <StackPanel>
-                        <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                        <Grid>
+                            <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            <Button Command="{Binding ClearExcludeRegex}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE711;" FontSize="10" />
+                            </Button>
+                        </Grid>
                         <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Search" Style="{StaticResource H1}">
                     <StackPanel>
-                        <TextBox x:Name="SearchTextBox" Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                        <Grid>
+                            <TextBox x:Name="SearchTextBox" Text="{Binding SearchRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            <Button Command="{Binding ClearSearchRegex}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE711;" FontSize="10" />
+                            </Button>
+                        </Grid>
                         <UniformGrid Rows="1" Columns="2">
                             <Button Command="{Binding PrevIndex}" Margin="10,0" ToolTip="Previous result">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE0A6;" FontSize="14" />

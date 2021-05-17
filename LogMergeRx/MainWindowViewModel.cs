@@ -48,6 +48,9 @@ namespace LogMergeRx
         public ActionCommand RefreshItemsSource { get; }
         public ActionCommand ScrollToLast { get; }
         public ActionCommand UpdateFileFilter { get; }
+        public ActionCommand ClearIncludeRegex { get; }
+        public ActionCommand ClearExcludeRegex { get; }
+        public ActionCommand ClearSearchRegex { get; }
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
@@ -155,6 +158,15 @@ namespace LogMergeRx
                     _fileFilter.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
                 });
             UpdateFileFilter.ExecuteOn(SelectedFiles.ToObservable());
+
+            ClearIncludeRegex = new ActionCommand(_ => IncludeRegex.Reset(), _ => !IncludeRegex.IsInitial);
+            ClearIncludeRegex.UpdateCanExecuteOn(IncludeRegex);
+
+            ClearExcludeRegex = new ActionCommand(_ => ExcludeRegex.Reset(), _ => !ExcludeRegex.IsInitial);
+            ClearExcludeRegex.UpdateCanExecuteOn(ExcludeRegex);
+
+            ClearSearchRegex = new ActionCommand(_ => SearchRegex.Reset(), _ => !SearchRegex.IsInitial);
+            ClearSearchRegex.UpdateCanExecuteOn(SearchRegex);
 
             ClearFilter = new ActionCommand(ClearFilters, HasFilters);
             ClearFilter.UpdateCanExecuteOn(anyFilterChanged);
