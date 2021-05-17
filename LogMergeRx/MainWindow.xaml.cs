@@ -1,15 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
-using LogMergeRx.Demo;
-using LogMergeRx.Model;
-using Neat.Results;
 
 namespace LogMergeRx
 {
@@ -17,7 +11,6 @@ namespace LogMergeRx
     {
         // Need to keep a reference to prevent the GC from collecting the monitor
         private readonly LogMonitor _monitor;
-        private readonly CancellationTokenSource demoToken = new CancellationTokenSource();
 
         private MainWindowViewModel ViewModel
         {
@@ -53,56 +46,27 @@ namespace LogMergeRx
                 .ToObservable()
                 .Subscribe(args => AllFiles.SelectedItems.Sync(args)); // synchronize VM selection with listbox
 
-            _monitor = GetLogsPath().Value(
-                logsPath =>
-                {
-                    var monitor = new LogMonitor(logsPath);
+            _monitor = new LogMonitor(App.LogsPath);
 
-                    monitor.ChangedFiles
-                        .ObserveOnDispatcher()
-                        // Add changed files to the filter
-                        .Subscribe(ViewModel.AddFileToFilter);
+            _monitor.ChangedFiles
+                .ObserveOnDispatcher()
+                // Add changed files to the filter
+                .Subscribe(ViewModel.AddFileToFilter);
 
-                    monitor.RenamedFiles
-                        .ObserveOnDispatcher()
-                        // Update renamed file names. File ID remains the same
-                        .Subscribe(ViewModel.UpdateFileName);
+            _monitor.RenamedFiles
+                .ObserveOnDispatcher()
+                // Update renamed file names. File ID remains the same
+                .Subscribe(ViewModel.UpdateFileName);
 
-                    monitor.ReadEntries
-                        .ObserveOnDispatcher()
-                        // Add new entries
-                        .Subscribe(ViewModel.AddItems);
+            _monitor.ReadEntries
+                .ObserveOnDispatcher()
+                // Add new entries
+                .Subscribe(ViewModel.AddItems);
 
-                    monitor.Start();
+            _monitor.Start();
 
-                    if (logsPath.Value.Contains("log-demo"))
-                    {
-                        LogGenerator.Start(logsPath, demoToken.Token);
-                    }
 
-                    Title = $"LogMerge: {logsPath}";
-
-                    return monitor;
-                },
-                errors =>
-                {
-                    Close();
-                    return null;
-                });
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            demoToken.Cancel();
-            base.OnClosing(e);
-        }
-
-        private static Result<AbsolutePath> GetLogsPath()
-        {
-            using var dialog = new FolderBrowserDialog();
-            return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
-                ? Result.Success((AbsolutePath)dialog.SelectedPath)
-                : Result.Failure<AbsolutePath>("User did not choose a directory.");
+            Title = $"LogMerge: {App.LogsPath}";
         }
 
         private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e) =>

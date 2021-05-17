@@ -1,26 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
+using LogMergeRx.Demo;
+using LogMergeRx.Model;
+using Neat.Results;
 
 namespace LogMergeRx
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        public static AbsolutePath LogsPath { get; private set; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
-
             InitializeCurrentLanguageForWPF();
+
+            ShutdownMode = ShutdownMode.OnLastWindowClose;
+
+            GetLogsPath()
+                .Match(path =>
+                {
+                    LogsPath = path;
+                    if (path.Value.Contains("log-demo"))
+                    {
+                        LogGenerator.Start(path);
+                    }
+                    base.OnStartup(e);
+                },
+                errors =>
+                {
+                    Shutdown();
+                });
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            LogGenerator.Stop();
+            base.OnExit(e);
+        }
+
+        public static Result<AbsolutePath> GetLogsPath()
+        {
+            using var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
+                ? Result.Success((AbsolutePath)dialog.SelectedPath)
+                : Result.Failure<AbsolutePath>("User did not choose a directory.");
         }
 
         /// <summary>

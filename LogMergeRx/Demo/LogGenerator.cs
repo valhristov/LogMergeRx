@@ -8,6 +8,8 @@ namespace LogMergeRx.Demo
 {
     public class LogGenerator
     {
+        private static CancellationTokenSource cts = new CancellationTokenSource();
+
         private static string[] texts = new[]
         {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -37,6 +39,9 @@ namespace LogMergeRx.Demo
             "Aenean hendrerit, eros in pharetra consequat, felis elit accumsan massa, id porttitor eros sem nec mi.",
         };
 
+        public static void Stop() =>
+            cts.Cancel();
+
         private static string[] levels = new[] { "ERROR", "WARN", "NOTICE", "INFO" };
 
         private static string[] sources = new[] { "Source 1", "Source 2", "Source 3", "Source 4" };
@@ -64,10 +69,10 @@ namespace LogMergeRx.Demo
         private static string GetLog() =>
             $"\"{DateTime.Now:yyyy-MM-dd HH:mm:ss,fff}\";\"\";\"{RandomItem(levels)}\";\"{RandomItem(sources)}\";\"{RandomItem(texts)}\"";
 
-        public static Task Start(AbsolutePath path, CancellationToken token) =>
+        public static Task Start(AbsolutePath path) =>
             Task.Run(async () =>
             {
-                while (!token.IsCancellationRequested)
+                while (!cts.Token.IsCancellationRequested)
                 {
                     File.AppendAllLines(RandomItem(logFiles).ToAbsolute(path), new[] { GetLog() });
                     await Task.Delay(RandomItem(delays));
