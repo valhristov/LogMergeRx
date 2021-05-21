@@ -4,7 +4,7 @@ using System.IO;
 
 namespace LogMergeRx.Model
 {
-    [DebuggerDisplay("RelativePath:{Value}")]
+    [DebuggerDisplay("RelativePath:{_value}")]
     public struct RelativePath : IEquatable<RelativePath?>
     {
         private readonly string _value;
