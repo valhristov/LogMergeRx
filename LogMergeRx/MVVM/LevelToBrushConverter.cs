@@ -6,7 +6,7 @@ using LogMergeRx.Model;
 
 namespace LogMergeRx
 {
-    public class LevelToForegroundConverter : IValueConverter
+    public class LevelToBrushConverter : IValueConverter
     {
         public Brush Error { get; set; }
         public Brush Warning { get; set; }

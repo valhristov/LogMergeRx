@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1000">
     <Window.Resources>
-        <local:LevelToForegroundConverter x:Key="LevelToForegroundConverter"
+        <local:LevelToBrushConverter x:Key="LevelToForegroundConverter"
             Error="Red"
             Warning="Orange"
             Info="White"
