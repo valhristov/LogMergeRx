@@ -130,7 +130,7 @@
                         <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
                             SelectionChanged="AllFiles_SelectionChanged" HorizontalContentAlignment="Stretch">
                             <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource ResourceKey={x:Type ListBoxItem}}">
                                     <Setter Property="ToolTip" Value="{Binding RelativePath.Value}" />
                                 </Style>
                             </ListBox.ItemContainerStyle>

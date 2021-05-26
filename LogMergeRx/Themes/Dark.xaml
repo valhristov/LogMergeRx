@@ -1402,19 +1402,20 @@
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource ControlPrimaryMouseOverBackground}"/>
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ControlPrimaryMouseOverBorderBrush}"/>
                         </MultiTrigger>
-                        <MultiTrigger>
+                        <!--<MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="Selector.IsSelectionActive" Value="False"/>
                                 <Condition Property="IsSelected" Value="True"/>
                             </MultiTrigger.Conditions>
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource ControlPrimaryDisabledBackground}"/>
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ControlPrimaryDisabledBorderBrush}"/>
-                        </MultiTrigger>
+                        </MultiTrigger>-->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                                <!--<Condition Property="Selector.IsSelectionActive" Value="True"/>-->
                                 <Condition Property="IsSelected" Value="True"/>
                             </MultiTrigger.Conditions>
+                            <Setter Property="Foreground" Value="Red" />
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource ControlPrimarySelectedBackground}"/>
                             <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ControlPrimarySelectedBorderBrush}"/>
                         </MultiTrigger>
