@@ -37,7 +37,6 @@ namespace LogMergeRx
         {
             action();
             _scheduler.AdvanceBy(DefaultThrottle.Ticks);
-            DispatcherUtil.DoEvents();
         }
 
         [TestMethod]
@@ -46,13 +45,11 @@ namespace LogMergeRx
             _viewModel.ShowWarnings.Value = false;
             _viewModel.ShowInfos.Value = false;
             _viewModel.ShowNotices.Value = false;
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(2);
             View.Select(x => x.Message).Should().Equal("message error 1", "message error 2");
 
             _viewModel.ShowErrors.Value = false;
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().BeEmpty();
         }
@@ -64,8 +61,6 @@ namespace LogMergeRx
             _viewModel.ShowInfos.Value = false;
             _viewModel.ShowNotices.Value = false;
 
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
-
             View.Should().HaveCount(2);
             View.Select(x => x.Message).Should().Equal("message warning 1", "message warning 2");
         }
@@ -76,8 +71,6 @@ namespace LogMergeRx
             _viewModel.ShowErrors.Value = false;
             _viewModel.ShowWarnings.Value = false;
             _viewModel.ShowInfos.Value = false;
-
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(1);
             View.Select(x => x.Message).Should().Equal("message notice 1");
@@ -91,7 +84,6 @@ namespace LogMergeRx
             _viewModel.ShowNotices.Value = false;
 
             _viewModel.ShowInfos.Value = true;
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(1);
             View.Select(x => x.Message).Should().Equal("message info 1");
@@ -111,7 +103,6 @@ namespace LogMergeRx
             _viewModel.ShowWarnings.Value = false;
             _viewModel.ShowNotices.Value = false;
             _viewModel.ShowInfos.Value = false;
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().BeEmpty();
         }
@@ -123,14 +114,12 @@ namespace LogMergeRx
             View.Should().HaveCount(6); // all items
 
             DoAndWait(() => _viewModel.IncludeRegex.Value = "2");
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(2);
             View.Select(x => x.Message).Should().Equal("message error 2", "message warning 2");
 
             // lang=regex
             DoAndWait(() => _viewModel.IncludeRegex.Value = "message.*\\s1");
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(4);
             View.Select(x => x.Message).Should().Equal("message error 1", "message warning 1", "message notice 1", "message info 1");
@@ -143,14 +132,12 @@ namespace LogMergeRx
             View.Should().HaveCount(6); // all items
 
             DoAndWait(() => _viewModel.ExcludeRegex.Value = "2");
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(4);
             View.Select(x => x.Message).Should().Equal("message error 1", "message warning 1", "message notice 1", "message info 1");
 
             // lang=regex
             DoAndWait(() => _viewModel.ExcludeRegex.Value = "message.*\\s1");
-            DispatcherUtil.DoEvents(); // We observe on dispatcher
 
             View.Should().HaveCount(2);
             View.Select(x => x.Message).Should().Equal("message error 2", "message warning 2");
