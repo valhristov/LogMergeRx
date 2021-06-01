@@ -156,6 +156,8 @@ namespace LogMergeRx
                 {
                     _fileFilter.Clear();
                     _fileFilter.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
+
+                    ItemsSourceView.Refresh(); // HACK we need to update the items source view after we update the file filter
                 });
             UpdateFileFilter.ExecuteOn(SelectedFiles.ToObservable());
 
