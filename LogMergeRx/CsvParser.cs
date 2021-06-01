@@ -43,7 +43,7 @@ namespace LogMergeRx
                         date: csv.GetField<string>(0),
                         level: ParseLevel(csv.GetField<string>(2)?.Trim()),
                         source: csv.GetField<string>(3)?.Trim(),
-                        message: csv.GetField<string>(4));
+                        message: csv.GetField<string>(4) + (csv.TryGetField<string>(5, out var exceptionMessage) && exceptionMessage.Length > 0 ? $"\r\n{exceptionMessage}" : string.Empty));
                 }
                 catch
                 {
