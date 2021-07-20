@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive;
@@ -7,7 +8,7 @@ using LogMergeRx.Model;
 
 namespace LogMergeRx
 {
-    public class DateFilterViewModel
+    public class DateFilterViewModel : IFilterViewModel
     {
         public ObservableProperty<double> Minimum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
         public ObservableProperty<double> Start { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
@@ -77,6 +78,12 @@ namespace LogMergeRx
         {
             Start.Value = Minimum.Value;
             End.Value = Maximum.Value;
+        }
+
+        public IEnumerable<string> GetFilterValues()
+        {
+            if (Start.Value != Minimum.Value) yield return $"older than {StartDate.Value:f}";
+            if (End.Value != Maximum.Value) yield return $"newer than {EndDate.Value:f}";
         }
     }
 }

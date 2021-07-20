@@ -81,11 +81,11 @@
                         <CheckBox Content="Infos" IsChecked="{Binding ShowInfos.Value}" />
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Include only matching" Style="{StaticResource H1}">
+                <GroupBox Header="Include only matching" Style="{StaticResource H1}" DataContext="{Binding IncludeRegexViewModel}">
                     <StackPanel>
                         <Grid>
-                            <TextBox Text="{Binding IncludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
-                            <Button Command="{Binding ClearIncludeRegex}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            <TextBox Text="{Binding RegexString.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            <Button Command="{Binding ClearCommand}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
                                     Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE711;" FontSize="10" />
                             </Button>
@@ -93,11 +93,11 @@
                         <TextBlock Text=".NET regular expression, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Exclude matching" Style="{StaticResource H1}">
+                <GroupBox Header="Exclude matching" Style="{StaticResource H1}" DataContext="{Binding ExcludeRegexViewModel}">
                     <StackPanel>
                         <Grid>
-                            <TextBox Text="{Binding ExcludeRegex.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
-                            <Button Command="{Binding ClearExcludeRegex}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            <TextBox Text="{Binding RegexString.Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            <Button Command="{Binding ClearCommand}" Margin="0,2,2,2" HorizontalAlignment="Right" VerticalAlignment="Center"
                                     Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE711;" FontSize="10" />
                             </Button>

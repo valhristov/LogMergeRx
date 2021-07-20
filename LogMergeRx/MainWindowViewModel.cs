@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Data;
 using LogMergeRx.Model;
+using LogMergeRx.ViewModels;
 
 namespace LogMergeRx
 {
@@ -17,7 +18,9 @@ namespace LogMergeRx
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
 
-        public DateFilterViewModel DateFilterViewModel { get; }
+        public DateFilterViewModel DateFilterViewModel { get; } = new DateFilterViewModel();
+        public RegexViewModel IncludeRegexViewModel { get; } = new RegexViewModel(negateFilter: false);
+        public RegexViewModel ExcludeRegexViewModel { get; } = new RegexViewModel(negateFilter: true);
 
         public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
         public ObservableProperty<bool> ShowErrors { get; } = new ObservableProperty<bool>(true);
@@ -25,8 +28,6 @@ namespace LogMergeRx
         public ObservableProperty<bool> ShowNotices { get; } = new ObservableProperty<bool>(true);
         public ObservableProperty<bool> ShowInfos { get; } = new ObservableProperty<bool>(true);
 
-        public ObservableProperty<string> IncludeRegex { get; } = new ObservableProperty<string>(string.Empty);
-        public ObservableProperty<string> ExcludeRegex { get; } = new ObservableProperty<string>(string.Empty);
         public ObservableProperty<string> SearchRegex { get; } = new ObservableProperty<string>(string.Empty);
 
         public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
@@ -47,8 +48,6 @@ namespace LogMergeRx
         public ActionCommand RefreshItemsSource { get; }
         public ActionCommand ScrollToLast { get; }
         public ActionCommand UpdateFileFilter { get; }
-        public ActionCommand ClearIncludeRegex { get; }
-        public ActionCommand ClearExcludeRegex { get; }
         public ActionCommand ClearSearchRegex { get; }
 
         private ListCollectionView ItemsSourceView =>
@@ -77,8 +76,6 @@ namespace LogMergeRx
 
         public MainWindowViewModel(IScheduler scheduler)
         {
-            DateFilterViewModel = new DateFilterViewModel();
-
             Find = new ActionCommand(_ => FindNext(SearchRegex.Value, -1));
             Find.ExecuteOn(SearchRegex.Throttle(TimeSpan.FromMilliseconds(500), scheduler));
 
@@ -98,8 +95,8 @@ namespace LogMergeRx
                 ShowWarnings.ToObject(),
                 ShowNotices.ToObject(),
                 ShowInfos.ToObject(),
-                IncludeRegex.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                ExcludeRegex.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                IncludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                ExcludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 DateFilterViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 SelectedFiles.ToObservable().ToObject());
 
@@ -125,12 +122,6 @@ namespace LogMergeRx
                 });
             UpdateFileFilter.ExecuteOn(SelectedFiles.ToObservable());
 
-            ClearIncludeRegex = new ActionCommand(_ => IncludeRegex.Reset(), _ => !IncludeRegex.IsInitial);
-            ClearIncludeRegex.UpdateCanExecuteOn(IncludeRegex);
-
-            ClearExcludeRegex = new ActionCommand(_ => ExcludeRegex.Reset(), _ => !ExcludeRegex.IsInitial);
-            ClearExcludeRegex.UpdateCanExecuteOn(ExcludeRegex);
-
             ClearSearchRegex = new ActionCommand(_ => SearchRegex.Reset(), _ => !SearchRegex.IsInitial);
             ClearSearchRegex.UpdateCanExecuteOn(SearchRegex);
 
@@ -140,7 +131,11 @@ namespace LogMergeRx
 
         private string GetFiltersText()
         {
-            return string.Join(", ", GetFilterValues());
+            return string.Join(", ",
+                GetFilterValues()
+                    .Union(DateFilterViewModel.GetFilterValues())
+                    .Union(ExcludeRegexViewModel.GetFilterValues())
+                    .Union(IncludeRegexViewModel.GetFilterValues()));
 
             IEnumerable<string> GetFilterValues()
             {
@@ -148,10 +143,6 @@ namespace LogMergeRx
                 if (!ShowWarnings.Value) yield return "no warnings";
                 if (!ShowInfos.Value) yield return "no infos";
                 if (!ShowNotices.Value) yield return "no notices";
-                if (DateFilterViewModel.Start.Value != DateFilterViewModel.Minimum.Value) yield return $"older than {DateFilterViewModel.StartDate.Value:f}";
-                if (DateFilterViewModel.End.Value != DateFilterViewModel.Maximum.Value) yield return $"newer than {DateFilterViewModel.EndDate.Value:f}";
-                if (!string.IsNullOrEmpty(IncludeRegex.Value)) yield return $"matching '{IncludeRegex.Value}'";
-                if (!string.IsNullOrEmpty(ExcludeRegex.Value)) yield return $"not matching '{ExcludeRegex.Value}'";
             }
         }
 
@@ -161,8 +152,8 @@ namespace LogMergeRx
             ShowWarnings.Reset();
             ShowInfos.Reset();
             ShowNotices.Reset();
-            IncludeRegex.Reset();
-            ExcludeRegex.Reset();
+            IncludeRegexViewModel.Clear();
+            ExcludeRegexViewModel.Clear();
             DateFilterViewModel.Clear();
             _fileFilter.UnionWith(AllFiles.Select(x => x.FileId.Id));
         }
@@ -172,8 +163,8 @@ namespace LogMergeRx
             ShowWarnings.IsInitial &&
             ShowInfos.IsInitial &&
             ShowNotices.IsInitial &&
-            IncludeRegex.IsInitial &&
-            ExcludeRegex.IsInitial &&
+            !IncludeRegexViewModel.IsFiltered() &&
+            !ExcludeRegexViewModel.IsFiltered() &&
             !DateFilterViewModel.IsFiltered() &&
             AllFiles.Count == _fileFilter.Count);
 
@@ -223,8 +214,8 @@ namespace LogMergeRx
         {
             return o is LogEntry log
                 && FilterByLevel(log)
-                && FilterByInclude(log)
-                && FilterByExclude(log)
+                && IncludeRegexViewModel.Filter(log)
+                && ExcludeRegexViewModel.Filter(log)
                 && FilterByFile(log)
                 && DateFilterViewModel.Filter(log)
                 ;
@@ -234,12 +225,6 @@ namespace LogMergeRx
                 ShowWarnings.Value && log.Level == LogLevel.WARN ||
                 ShowInfos.Value && log.Level == LogLevel.INFO ||
                 ShowNotices.Value && log.Level == LogLevel.NOTICE;
-
-            bool FilterByInclude(LogEntry log) =>
-                string.IsNullOrWhiteSpace(IncludeRegex.Value) || RegexCache.GetRegex(IncludeRegex.Value).IsMatch(log.Message);
-
-            bool FilterByExclude(LogEntry log) =>
-                string.IsNullOrWhiteSpace(ExcludeRegex.Value) || !RegexCache.GetRegex(ExcludeRegex.Value).IsMatch(log.Message);
 
             bool FilterByFile(LogEntry log) =>
                 AllFiles.Count == 0 || _fileFilter.Contains(log.FileId.Id);
