@@ -73,7 +73,7 @@
                               Command="{Binding ShowNewerThanNowCommand}" />
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Level" Style="{StaticResource H1}">
+                <GroupBox Header="Level" Style="{StaticResource H1}" DataContext="{Binding LevelFilterViewModel}">
                     <StackPanel>
                         <CheckBox Content="Errors" IsChecked="{Binding ShowErrors.Value}" />
                         <CheckBox Content="Warnings" IsChecked="{Binding ShowWarnings.Value}" />

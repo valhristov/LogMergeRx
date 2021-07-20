@@ -21,12 +21,9 @@ namespace LogMergeRx
         public DateFilterViewModel DateFilterViewModel { get; } = new DateFilterViewModel();
         public RegexViewModel IncludeRegexViewModel { get; } = new RegexViewModel(negateFilter: false);
         public RegexViewModel ExcludeRegexViewModel { get; } = new RegexViewModel(negateFilter: true);
+        public LevelFilterViewModel LevelFilterViewModel { get; } = new LevelFilterViewModel();
 
         public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
-        public ObservableProperty<bool> ShowErrors { get; } = new ObservableProperty<bool>(true);
-        public ObservableProperty<bool> ShowWarnings { get; } = new ObservableProperty<bool>(true);
-        public ObservableProperty<bool> ShowNotices { get; } = new ObservableProperty<bool>(true);
-        public ObservableProperty<bool> ShowInfos { get; } = new ObservableProperty<bool>(true);
 
         public ObservableProperty<string> SearchRegex { get; } = new ObservableProperty<string>(string.Empty);
 
@@ -91,10 +88,7 @@ namespace LogMergeRx
                 (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Date, y.Date));
 
             var anyFilterChanged = Observable.Merge(
-                ShowErrors.ToObject(),
-                ShowWarnings.ToObject(),
-                ShowNotices.ToObject(),
-                ShowInfos.ToObject(),
+                LevelFilterViewModel.FilterChanges.ToObject(),
                 IncludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 ExcludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 DateFilterViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
@@ -129,29 +123,16 @@ namespace LogMergeRx
             ClearFilter.UpdateCanExecuteOn(anyFilterChanged);
         }
 
-        private string GetFiltersText()
-        {
-            return string.Join(", ",
-                GetFilterValues()
+        private string GetFiltersText() =>
+            string.Join(", ", Enumerable.Empty<string>()
+                    .Union(LevelFilterViewModel.GetFilterValues())
                     .Union(DateFilterViewModel.GetFilterValues())
                     .Union(ExcludeRegexViewModel.GetFilterValues())
                     .Union(IncludeRegexViewModel.GetFilterValues()));
 
-            IEnumerable<string> GetFilterValues()
-            {
-                if (!ShowErrors.Value) yield return "no errors";
-                if (!ShowWarnings.Value) yield return "no warnings";
-                if (!ShowInfos.Value) yield return "no infos";
-                if (!ShowNotices.Value) yield return "no notices";
-            }
-        }
-
         private void ClearFilters(object _)
         {
-            ShowErrors.Reset();
-            ShowWarnings.Reset();
-            ShowInfos.Reset();
-            ShowNotices.Reset();
+            LevelFilterViewModel.Clear();
             IncludeRegexViewModel.Clear();
             ExcludeRegexViewModel.Clear();
             DateFilterViewModel.Clear();
@@ -159,14 +140,11 @@ namespace LogMergeRx
         }
 
         private bool HasFilters(object _) =>
-            !(ShowErrors.IsInitial &&
-            ShowWarnings.IsInitial &&
-            ShowInfos.IsInitial &&
-            ShowNotices.IsInitial &&
-            !IncludeRegexViewModel.IsFiltered() &&
-            !ExcludeRegexViewModel.IsFiltered() &&
-            !DateFilterViewModel.IsFiltered() &&
-            AllFiles.Count == _fileFilter.Count);
+            LevelFilterViewModel.IsFiltered() ||
+            IncludeRegexViewModel.IsFiltered() ||
+            ExcludeRegexViewModel.IsFiltered() ||
+            DateFilterViewModel.IsFiltered() ||
+            AllFiles.Count != _fileFilter.Count;
 
         private void ScrollToEnd()
         {
@@ -213,18 +191,12 @@ namespace LogMergeRx
         private bool Filter(object o)
         {
             return o is LogEntry log
-                && FilterByLevel(log)
+                && LevelFilterViewModel.Filter(log)
                 && IncludeRegexViewModel.Filter(log)
                 && ExcludeRegexViewModel.Filter(log)
                 && FilterByFile(log)
                 && DateFilterViewModel.Filter(log)
                 ;
-
-            bool FilterByLevel(LogEntry log) =>
-                ShowErrors.Value && log.Level == LogLevel.ERROR ||
-                ShowWarnings.Value && log.Level == LogLevel.WARN ||
-                ShowInfos.Value && log.Level == LogLevel.INFO ||
-                ShowNotices.Value && log.Level == LogLevel.NOTICE;
 
             bool FilterByFile(LogEntry log) =>
                 AllFiles.Count == 0 || _fileFilter.Contains(log.FileId.Id);

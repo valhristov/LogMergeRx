@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reactive;
 using LogMergeRx.Model;
 
 namespace LogMergeRx
@@ -9,5 +11,6 @@ namespace LogMergeRx
         bool IsFiltered();
         void Clear();
         IEnumerable<string> GetFilterValues();
+        IObservable<Unit> FilterChanges { get; }
     }
 }
