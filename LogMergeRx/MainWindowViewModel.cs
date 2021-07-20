@@ -17,6 +17,8 @@ namespace LogMergeRx
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
 
+        public DateFilterViewModel DateFilterViewModel { get; }
+
         public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
         public ObservableProperty<bool> ShowErrors { get; } = new ObservableProperty<bool>(true);
         public ObservableProperty<bool> ShowWarnings { get; } = new ObservableProperty<bool>(true);
@@ -30,20 +32,17 @@ namespace LogMergeRx
         public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
         public ObservableProperty<LogEntry> ScrollToItem { get; } = new ObservableProperty<LogEntry>(null);
 
-        public ObservableProperty<double> Minimum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
-        public ObservableProperty<double> Start { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
-        public ObservableProperty<double> End { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
-        public ObservableProperty<double> Maximum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
-
-        public ReadOnlyObservableProperty<DateTime> StartDate { get; }
-        public ReadOnlyObservableProperty<DateTime> EndDate { get; }
+        public void AddItems(ImmutableList<LogEntry> items)
+        {
+            DateFilterViewModel.ItemsAdded(items, ItemsSource.Count == 0);
+            ItemsSource.AddRange(items);
+        }
 
         public ReadOnlyObservableProperty<string> FiltersText { get; }
 
         public ActionCommand Find { get; }
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
-        public ActionCommand ShowNewerThanNow { get; }
         public ActionCommand ClearFilter { get; }
         public ActionCommand RefreshItemsSource { get; }
         public ActionCommand ScrollToLast { get; }
@@ -54,38 +53,6 @@ namespace LogMergeRx
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
-
-        public void AddItems(ImmutableList<LogEntry> items)
-        {
-            if (items.Count == 0)
-            {
-                return;
-            }
-
-            if (ItemsSource.Count == 0)
-            {
-                Minimum.Value = Start.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date));
-                Maximum.Value = End.Value = DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date));
-            }
-            else
-            {
-                var newFirstItem = Math.Min(Minimum.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)));
-                var newLastItem = Math.Max(Maximum.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)));
-                if (Start.Value == Minimum.Value)
-                { // Move start with minimum when displaying the full range
-                    Start.Value = newFirstItem;
-                }
-                if (End.Value == Maximum.Value)
-                { // Move end with maximum when displaying the full range
-                    End.Value = newLastItem;
-                }
-
-                Minimum.Value = newFirstItem;
-                Maximum.Value = newLastItem;
-            }
-
-            ItemsSource.AddRange(items);
-        }
 
         private ListCollectionView AllFilesView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(AllFiles);
@@ -110,13 +77,13 @@ namespace LogMergeRx
 
         public MainWindowViewModel(IScheduler scheduler)
         {
+            DateFilterViewModel = new DateFilterViewModel();
+
             Find = new ActionCommand(_ => FindNext(SearchRegex.Value, -1));
             Find.ExecuteOn(SearchRegex.Throttle(TimeSpan.FromMilliseconds(500), scheduler));
 
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
-
-            ShowNewerThanNow = new ActionCommand(_ => Start.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
 
             // Order loaded files alphabetically
             AllFilesView.CustomSort = new FunctionComparer<FileViewModel>(
@@ -133,8 +100,7 @@ namespace LogMergeRx
                 ShowInfos.ToObject(),
                 IncludeRegex.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 ExcludeRegex.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                Start.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                End.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
+                DateFilterViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 SelectedFiles.ToObservable().ToObject());
 
             RefreshItemsSource = new ActionCommand(_ => ItemsSourceView.Refresh());
@@ -147,8 +113,6 @@ namespace LogMergeRx
                     .Where(_ => FollowTail.Value) // only when follow tail is checked
                     .ObserveOn(scheduler));
 
-            StartDate = new ReadOnlyObservableProperty<DateTime>(Start.Select(DateTimeHelper.FromSecondsToDate), DateTime.MinValue);
-            EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);
             FiltersText = new ReadOnlyObservableProperty<string>(anyFilterChanged.Select(_ => GetFiltersText()));
 
             UpdateFileFilter = new ActionCommand(
@@ -184,8 +148,8 @@ namespace LogMergeRx
                 if (!ShowWarnings.Value) yield return "no warnings";
                 if (!ShowInfos.Value) yield return "no infos";
                 if (!ShowNotices.Value) yield return "no notices";
-                if (Start.Value != Minimum.Value) yield return $"older than {StartDate.Value:f}";
-                if (End.Value != Maximum.Value) yield return $"newer than {EndDate.Value:f}";
+                if (DateFilterViewModel.Start.Value != DateFilterViewModel.Minimum.Value) yield return $"older than {DateFilterViewModel.StartDate.Value:f}";
+                if (DateFilterViewModel.End.Value != DateFilterViewModel.Maximum.Value) yield return $"newer than {DateFilterViewModel.EndDate.Value:f}";
                 if (!string.IsNullOrEmpty(IncludeRegex.Value)) yield return $"matching '{IncludeRegex.Value}'";
                 if (!string.IsNullOrEmpty(ExcludeRegex.Value)) yield return $"not matching '{ExcludeRegex.Value}'";
             }
@@ -199,8 +163,7 @@ namespace LogMergeRx
             ShowNotices.Reset();
             IncludeRegex.Reset();
             ExcludeRegex.Reset();
-            Start.Value = Minimum.Value;
-            End.Value = Maximum.Value;
+            DateFilterViewModel.Clear();
             _fileFilter.UnionWith(AllFiles.Select(x => x.FileId.Id));
         }
 
@@ -211,8 +174,7 @@ namespace LogMergeRx
             ShowNotices.IsInitial &&
             IncludeRegex.IsInitial &&
             ExcludeRegex.IsInitial &&
-            Start.IsInitial &&
-            End.IsInitial &&
+            !DateFilterViewModel.IsFiltered() &&
             AllFiles.Count == _fileFilter.Count);
 
         private void ScrollToEnd()
@@ -264,7 +226,7 @@ namespace LogMergeRx
                 && FilterByInclude(log)
                 && FilterByExclude(log)
                 && FilterByFile(log)
-                && FilterByDate(log)
+                && DateFilterViewModel.Filter(log)
                 ;
 
             bool FilterByLevel(LogEntry log) =>
@@ -281,9 +243,6 @@ namespace LogMergeRx
 
             bool FilterByFile(LogEntry log) =>
                 AllFiles.Count == 0 || _fileFilter.Contains(log.FileId.Id);
-
-            bool FilterByDate(LogEntry log) =>
-                log.Date >= StartDate.Value && log.Date <= EndDate.Value;
         }
     }
 }

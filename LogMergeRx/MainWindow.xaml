@@ -51,7 +51,7 @@
                 <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
                     <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
                 </GroupBox>
-                <GroupBox Header="Date Filter" Style="{StaticResource H1}">
+                <GroupBox Header="Date Filter" Style="{StaticResource H1}" DataContext="{Binding DateFilterViewModel}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="Start: " FontWeight="Bold" />
@@ -70,7 +70,7 @@
                                 Value="{Binding End.Value}"
                                 Maximum="{Binding Maximum.Value}" />
                         <Button Content="Show only newer than now"
-                              Command="{Binding ShowNewerThanNow}" />
+                              Command="{Binding ShowNewerThanNowCommand}" />
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Level" Style="{StaticResource H1}">
