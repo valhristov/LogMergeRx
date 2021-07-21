@@ -33,11 +33,11 @@ namespace LogMergeRx
             _viewModel.AddItems(ImmutableList.Create(first, second));
 
             // Assert
-            _viewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
-            _viewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
+            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
+            _viewModel.DateFilterViewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
 
-            _viewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date));
-            _viewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date));
+            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date));
+            _viewModel.DateFilterViewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date));
         }
 
         [TestMethod]
@@ -56,11 +56,11 @@ namespace LogMergeRx
             _viewModel.AddItems(ImmutableList.Create(earlier, later));
 
             // Assert
-            _viewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
-            _viewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
+            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
+            _viewModel.DateFilterViewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
 
-            _viewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
-            _viewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
+            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
+            _viewModel.DateFilterViewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
         }
 
         [TestMethod]
@@ -73,9 +73,9 @@ namespace LogMergeRx
 
             // Change VisibleRangeStart/End
             var newVisibleRangeStart = DateTimeHelper.FromDateToSeconds(GetDate(TimeSpan.FromSeconds(101)));
-            _viewModel.Start.Value = newVisibleRangeStart;
+            _viewModel.DateFilterViewModel.Start.Value = newVisibleRangeStart;
             var newVisibleRangeEnd = DateTimeHelper.FromDateToSeconds(GetDate(TimeSpan.FromSeconds(120)));
-            _viewModel.End.Value = newVisibleRangeEnd;
+            _viewModel.DateFilterViewModel.End.Value = newVisibleRangeEnd;
 
             // Act
             var earlier = GetLogEntry(TimeSpan.FromSeconds(50));
@@ -83,11 +83,11 @@ namespace LogMergeRx
             _viewModel.AddItems(ImmutableList.Create(earlier, later));
 
             // Assert
-            _viewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
-            _viewModel.Start.Value.Should().Be(newVisibleRangeStart);
+            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
+            _viewModel.DateFilterViewModel.Start.Value.Should().Be(newVisibleRangeStart);
 
-            _viewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
-            _viewModel.End.Value.Should().Be(newVisibleRangeEnd);
+            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
+            _viewModel.DateFilterViewModel.End.Value.Should().Be(newVisibleRangeEnd);
         }
 
         private static DateTime GetDate(TimeSpan offset) =>

@@ -117,7 +117,7 @@ namespace LogMergeRx
         [TestMethod]
         public void Searching_with_filter()
         {
-            _viewModel.ShowErrors.Value = false; // remove errors, the indexes will shift
+            _viewModel.LevelFilterViewModel.ShowErrors.Value = false; // remove errors, the indexes will shift
             DispatcherUtil.DoEvents();
 
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
