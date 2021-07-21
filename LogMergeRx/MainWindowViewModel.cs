@@ -13,8 +13,6 @@ namespace LogMergeRx
 {
     public class MainWindowViewModel
     {
-        private readonly HashSet<int> _fileFilter = new HashSet<int>();
-
         public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
             new WpfObservableRangeCollection<LogEntry>();
 
@@ -22,6 +20,7 @@ namespace LogMergeRx
         public RegexViewModel IncludeRegexViewModel { get; } = new RegexViewModel(negateFilter: false);
         public RegexViewModel ExcludeRegexViewModel { get; } = new RegexViewModel(negateFilter: true);
         public LevelFilterViewModel LevelFilterViewModel { get; } = new LevelFilterViewModel();
+        public FileFilterViewModel FileFilterViewModel { get; } = new FileFilterViewModel();
 
         public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
 
@@ -42,46 +41,33 @@ namespace LogMergeRx
         public ActionCommand NextIndex { get; }
         public ActionCommand PrevIndex { get; }
         public ActionCommand ClearFilter { get; }
-        public ActionCommand RefreshItemsSource { get; }
         public ActionCommand ScrollToLast { get; }
-        public ActionCommand UpdateFileFilter { get; }
         public ActionCommand ClearSearchRegex { get; }
 
         private ListCollectionView ItemsSourceView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
 
-        private ListCollectionView AllFilesView =>
-            (ListCollectionView)CollectionViewSource.GetDefaultView(AllFiles);
-
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
-        public void UpdateFileName(LogFile logFile)
-        {
-            var fileViewModel = AllFiles.FirstOrDefault(vm => vm.FileId == logFile.Id);
-            if (fileViewModel != null)
-            {
-                fileViewModel.RelativePath.Value = logFile.Path;
-            }
-        }
+        public void UpdateFileName(LogFile logFile) => FileFilterViewModel.UpdateFileName(logFile);
 
-        public WpfObservableRangeCollection<FileViewModel> AllFiles { get; } =
-            new WpfObservableRangeCollection<FileViewModel>();
-
-        public WpfObservableRangeCollection<FileViewModel> SelectedFiles { get; } =
-            new WpfObservableRangeCollection<FileViewModel>();
+        private IEnumerable<IFilterViewModel> Filters { get; }
 
         public MainWindowViewModel(IScheduler scheduler)
         {
+            Filters = ImmutableArray.Create<IFilterViewModel>(
+            LevelFilterViewModel,
+            IncludeRegexViewModel,
+            ExcludeRegexViewModel,
+            DateFilterViewModel,
+            FileFilterViewModel);
+
             Find = new ActionCommand(_ => FindNext(SearchRegex.Value, -1));
             Find.ExecuteOn(SearchRegex.Throttle(TimeSpan.FromMilliseconds(500), scheduler));
 
             NextIndex = new ActionCommand(_ => FindNext(SearchRegex.Value, ScrollToIndex.Value));
             PrevIndex = new ActionCommand(_ => FindPrev(SearchRegex.Value, ScrollToIndex.Value));
-
-            // Order loaded files alphabetically
-            AllFilesView.CustomSort = new FunctionComparer<FileViewModel>(
-                (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.RelativePath.Value, y.RelativePath.Value));
 
             ItemsSourceView.Filter = Filter;
             ItemsSourceView.CustomSort = new FunctionComparer<LogEntry>(
@@ -92,29 +78,18 @@ namespace LogMergeRx
                 IncludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 ExcludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 DateFilterViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                SelectedFiles.ToObservable().ToObject());
+                FileFilterViewModel.FilterChanges.ToObject());
 
-            RefreshItemsSource = new ActionCommand(_ => ItemsSourceView.Refresh());
-            RefreshItemsSource.ExecuteOn(anyFilterChanged);
+            anyFilterChanged.Subscribe(_ => ItemsSourceView.Refresh());
 
-            ScrollToLast = new ActionCommand(_ => ScrollToEnd());
-            ScrollToLast.ExecuteOn(
-                Observable
-                    .Merge(FollowTail.ToObject(), ItemsSourceView.ToObservable())
-                    .Where(_ => FollowTail.Value) // only when follow tail is checked
-                    .ObserveOn(scheduler));
+            Observable
+                .Merge(FollowTail.ToObject(), ItemsSourceView.ToObservable())
+                .Where(_ => FollowTail.Value) // only when follow tail is checked
+                .ObserveOn(scheduler)
+                .Subscribe(_ => ScrollToEnd());
 
             FiltersText = new ReadOnlyObservableProperty<string>(anyFilterChanged.Select(_ => GetFiltersText()));
 
-            UpdateFileFilter = new ActionCommand(
-                _ =>
-                {
-                    _fileFilter.Clear();
-                    _fileFilter.UnionWith(SelectedFiles.Select(p => p.FileId.Id));
-
-                    ItemsSourceView.Refresh(); // HACK we need to update the items source view after we update the file filter
-                });
-            UpdateFileFilter.ExecuteOn(SelectedFiles.ToObservable());
 
             ClearSearchRegex = new ActionCommand(_ => SearchRegex.Reset(), _ => !SearchRegex.IsInitial);
             ClearSearchRegex.UpdateCanExecuteOn(SearchRegex);
@@ -124,27 +99,18 @@ namespace LogMergeRx
         }
 
         private string GetFiltersText() =>
-            string.Join(", ", Enumerable.Empty<string>()
-                    .Union(LevelFilterViewModel.GetFilterValues())
-                    .Union(DateFilterViewModel.GetFilterValues())
-                    .Union(ExcludeRegexViewModel.GetFilterValues())
-                    .Union(IncludeRegexViewModel.GetFilterValues()));
+            string.Join(", ", Filters.SelectMany(f => f.GetFilterValues()));
 
         private void ClearFilters(object _)
         {
-            LevelFilterViewModel.Clear();
-            IncludeRegexViewModel.Clear();
-            ExcludeRegexViewModel.Clear();
-            DateFilterViewModel.Clear();
-            _fileFilter.UnionWith(AllFiles.Select(x => x.FileId.Id));
+            foreach (var filter in Filters)
+	        {
+                filter.Clear();
+	        }
         }
 
         private bool HasFilters(object _) =>
-            LevelFilterViewModel.IsFiltered() ||
-            IncludeRegexViewModel.IsFiltered() ||
-            ExcludeRegexViewModel.IsFiltered() ||
-            DateFilterViewModel.IsFiltered() ||
-            AllFiles.Count != _fileFilter.Count;
+            Filters.Any(f => f.IsFiltered());
 
         private void ScrollToEnd()
         {
@@ -155,15 +121,8 @@ namespace LogMergeRx
             }
         }
 
-        public void AddFileToFilter(LogFile logFile)
-        {
-            if (!AllFiles.Any(x => x.FileId == logFile.Id))
-            {
-                var viewModel = new FileViewModel(logFile.Id, logFile.Path);
-                AllFiles.Add(viewModel);
-                SelectedFiles.Add(viewModel);
-            }
-        }
+        public void AddFileToFilter(LogFile logFile) =>
+            FileFilterViewModel.AddFileToFilter(logFile);
 
         private void FindNext(string pattern, int startIndex) =>
             ScrollIntoView(pattern, startIndex, ListSortDirection.Ascending);
@@ -188,18 +147,8 @@ namespace LogMergeRx
             }
         }
 
-        private bool Filter(object o)
-        {
-            return o is LogEntry log
-                && LevelFilterViewModel.Filter(log)
-                && IncludeRegexViewModel.Filter(log)
-                && ExcludeRegexViewModel.Filter(log)
-                && FilterByFile(log)
-                && DateFilterViewModel.Filter(log)
-                ;
-
-            bool FilterByFile(LogEntry log) =>
-                AllFiles.Count == 0 || _fileFilter.Contains(log.FileId.Id);
-        }
+        private bool Filter(object o) =>
+            o is LogEntry log
+            && Filters.All(f => f.Filter(log));
     }
 }

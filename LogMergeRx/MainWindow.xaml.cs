@@ -38,12 +38,12 @@ namespace LogMergeRx
             var command = new ActionCommand(_ => SearchTextBox.Focus());
             InputBindings.Add(new KeyBinding(command, Key.F, ModifierKeys.Control));
 
-            ViewModel.SelectedFiles
+            ViewModel.FileFilterViewModel.SelectedFiles
                 .ToObservable()
                 .Subscribe(args => AllFiles.SelectedItems.Sync(args)); // synchronize VM selection with listbox
         }
 
         private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
-            ViewModel.SelectedFiles.Sync(e); // synchronize listbox selection with VM
+            ViewModel.FileFilterViewModel.SelectedFiles.Sync(e); // synchronize listbox selection with VM
     }
 }
