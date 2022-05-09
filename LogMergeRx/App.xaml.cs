@@ -33,17 +33,17 @@ namespace LogMergeRx
                     _monitor = new LogMonitor(path);
 
                     _monitor.ChangedFiles
-                        .ObserveOnDispatcher()
+                        .ObserveOn(DispatcherScheduler.Current)
                         // Add changed files to the filter
                         .Subscribe(viewModel.AddFileToFilter);
 
                     _monitor.RenamedFiles
-                        .ObserveOnDispatcher()
+                        .ObserveOn(DispatcherScheduler.Current)
                         // Update renamed file names. File ID remains the same
                         .Subscribe(viewModel.UpdateFileName);
 
                     _monitor.ReadEntries
-                        .ObserveOnDispatcher()
+                        .ObserveOn(DispatcherScheduler.Current)
                         // Add new entries
                         .Subscribe(viewModel.AddItems);
 
