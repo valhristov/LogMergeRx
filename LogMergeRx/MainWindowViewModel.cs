@@ -21,6 +21,7 @@ namespace LogMergeRx
         public RegexViewModel ExcludeRegexViewModel { get; } = new RegexViewModel(negateFilter: true);
         public LevelFilterViewModel LevelFilterViewModel { get; } = new LevelFilterViewModel();
         public FileFilterViewModel FileFilterViewModel { get; } = new FileFilterViewModel();
+        public SourceFilterViewModel SourceFilterViewModel { get; } = new SourceFilterViewModel();
 
         public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
 
@@ -33,6 +34,7 @@ namespace LogMergeRx
         {
             DateFilterViewModel.ItemsAdded(items, ItemsSource.Count == 0);
             ItemsSource.AddRange(items);
+            SourceFilterViewModel.AddSourcesToFilter(items.Select(x => x.Source));
         }
 
         public ReadOnlyObservableProperty<string> FiltersText { get; }
@@ -57,11 +59,12 @@ namespace LogMergeRx
         public MainWindowViewModel(IScheduler scheduler)
         {
             Filters = ImmutableArray.Create<IFilterViewModel>(
-            LevelFilterViewModel,
-            IncludeRegexViewModel,
-            ExcludeRegexViewModel,
-            DateFilterViewModel,
-            FileFilterViewModel);
+                LevelFilterViewModel,
+                IncludeRegexViewModel,
+                ExcludeRegexViewModel,
+                DateFilterViewModel,
+                FileFilterViewModel,
+                SourceFilterViewModel);
 
             Find = new ActionCommand(_ => FindNext(SearchRegex.Value, -1));
             Find.ExecuteOn(SearchRegex.Throttle(TimeSpan.FromMilliseconds(500), scheduler));
@@ -78,7 +81,8 @@ namespace LogMergeRx
                 IncludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 ExcludeRegexViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
                 DateFilterViewModel.FilterChanges.ToObject().Throttle(TimeSpan.FromMilliseconds(500), scheduler),
-                FileFilterViewModel.FilterChanges.ToObject());
+                FileFilterViewModel.FilterChanges.ToObject(),
+                SourceFilterViewModel.FilterChanges.ToObject());
 
             anyFilterChanged.Subscribe(_ => ItemsSourceView.Refresh());
 
@@ -89,7 +93,6 @@ namespace LogMergeRx
                 .Subscribe(_ => ScrollToEnd());
 
             FiltersText = new ReadOnlyObservableProperty<string>(anyFilterChanged.Select(_ => GetFiltersText()));
-
 
             ClearSearchRegex = new ActionCommand(_ => SearchRegex.Reset(), _ => !SearchRegex.IsInitial);
             ClearSearchRegex.UpdateCanExecuteOn(SearchRegex);

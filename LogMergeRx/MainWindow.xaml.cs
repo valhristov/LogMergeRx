@@ -41,9 +41,16 @@ namespace LogMergeRx
             ViewModel.FileFilterViewModel.SelectedFiles
                 .ToObservable()
                 .Subscribe(args => AllFiles.SelectedItems.Sync(args)); // synchronize VM selection with listbox
+
+            ViewModel.SourceFilterViewModel.SelectedSources
+                .ToObservable()
+                .Subscribe(args => AllSources.SelectedItems.Sync(args)); // synchronize VM selection with listbox
         }
 
         private void AllFiles_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             ViewModel.FileFilterViewModel.SelectedFiles.Sync(e); // synchronize listbox selection with VM
+
+        private void AllSources_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            ViewModel.SourceFilterViewModel.SelectedSources.Sync(e); // synchronize listbox selection with VM
     }
 }

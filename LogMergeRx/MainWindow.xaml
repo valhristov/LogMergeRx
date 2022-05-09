@@ -125,6 +125,13 @@
                         <TextBlock Text="Contains text, case insensitive" Style="{StaticResource ExplanationText}" />
                     </StackPanel>
                 </GroupBox>
+                <GroupBox Header="Sources" Style="{StaticResource H1}" DataContext="{Binding SourceFilterViewModel}">
+                    <StackPanel>
+                        <ListBox x:Name="AllSources" ItemsSource="{Binding AllSources}" SelectionMode="Extended" DisplayMemberPath="Name"
+                            SelectionChanged="AllSources_SelectionChanged" HorizontalContentAlignment="Stretch" MaxHeight="300" />
+                        <TextBlock Text="Ctrl+Click to select multiple sources" Style="{StaticResource ExplanationText}" />
+                    </StackPanel>
+                </GroupBox>
                 <GroupBox Header="Loaded files" Style="{StaticResource H1}" DataContext="{Binding FileFilterViewModel}">
                     <StackPanel>
                         <ListBox x:Name="AllFiles" ItemsSource="{Binding AllFiles}" SelectionMode="Extended"
