@@ -54,7 +54,7 @@ namespace LogMergeRx.ViewModels
         }
 
         public void Clear() =>
-            SelectedSources.Clear();
+            AllSources.Except(SelectedSources).ToList().ForEach(SelectedSources.Add);
 
         public bool Filter(LogEntry log) =>
             _selectedSources.Contains(log.Source);

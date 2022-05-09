@@ -2,7 +2,7 @@
 
 namespace LogMergeRx
 {
-    public class FileViewModel
+    public record FileViewModel
     {
         public FileId FileId { get; }
         public ObservableProperty<RelativePath> RelativePath { get; } = new ObservableProperty<RelativePath>();

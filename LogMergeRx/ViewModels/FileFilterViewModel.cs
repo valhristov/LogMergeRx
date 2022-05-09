@@ -12,7 +12,6 @@ namespace LogMergeRx.ViewModels
     {
         private readonly HashSet<int> _fileFilter = new HashSet<int>();
 
-
         public WpfObservableRangeCollection<FileViewModel> AllFiles { get; } =
             new WpfObservableRangeCollection<FileViewModel>();
 
@@ -40,10 +39,8 @@ namespace LogMergeRx.ViewModels
                 (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.RelativePath.Value, y.RelativePath.Value));
         }
 
-        public void Clear()
-        {
-            _fileFilter.UnionWith(AllFiles.Select(x => x.FileId.Id));
-        }
+        public void Clear() =>
+            AllFiles.Except(SelectedFiles).ToList().ForEach(SelectedFiles.Add);
 
         public bool Filter(LogEntry log) =>
             AllFiles.Count == 0 || _fileFilter.Contains(log.FileId.Id);
