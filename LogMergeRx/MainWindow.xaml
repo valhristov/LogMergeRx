@@ -165,8 +165,7 @@
         greatly reduces the scroll performance -->
         <ItemsControl Grid.Column="2" ItemsSource="{Binding ItemsSource}"
                       VirtualizingPanel.VirtualizationMode="Recycling"
-                      VirtualizingPanel.ScrollUnit="Pixel"
-                      Background="#111111">
+                      VirtualizingPanel.ScrollUnit="Pixel">
             <ItemsControl.Template>
                 <ControlTemplate>
                     <Grid>
@@ -174,6 +173,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
+                        <!-- Header -->
                         <Grid Background="#343434">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="8" />
@@ -187,7 +187,7 @@
                             <TextBlock Grid.Column="3" Text="Source" Margin="5,2"/>
                             <TextBlock Grid.Column="4" Text="Message" Margin="5,2"/>
                         </Grid>
-                        <ScrollViewer Grid.Row="1" CanContentScroll="True" Focusable="False"
+                        <ScrollViewer Grid.Row="1" CanContentScroll="True" Focusable="False" Background="#050505"
                                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                             <ItemsPresenter />
                         </ScrollViewer>
