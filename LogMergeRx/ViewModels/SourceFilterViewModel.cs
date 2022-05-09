@@ -7,8 +7,6 @@ using System.Windows.Data;
 
 namespace LogMergeRx.ViewModels
 {
-    public record SourceViewModel(string Name);
-
     public class SourceFilterViewModel : IFilterViewModel
     {
         private HashSet<string> _selectedSources = new HashSet<string>();
@@ -21,7 +19,6 @@ namespace LogMergeRx.ViewModels
 
         private ListCollectionView AllSourcesView =>
             (ListCollectionView)CollectionViewSource.GetDefaultView(AllSources);
-
 
         public IObservable<Unit> FilterChanges { get; }
 
