@@ -13,8 +13,10 @@ namespace LogMergeRx
 {
     public class MainWindowViewModel
     {
-        public WpfObservableRangeCollection<LogEntry> ItemsSource { get; } =
+        public WpfObservableRangeCollection<LogEntry> _itemsSource =
             new WpfObservableRangeCollection<LogEntry>();
+
+        public IReadOnlyCollection<LogEntry> ItemsSource => _itemsSource;
 
         public DateFilterViewModel DateFilterViewModel { get; } = new DateFilterViewModel();
         public RegexViewModel IncludeRegexViewModel { get; } = new RegexViewModel(negateFilter: false);
@@ -33,8 +35,8 @@ namespace LogMergeRx
         public void AddItems(ImmutableList<LogEntry> items)
         {
             DateFilterViewModel.ItemsAdded(items, ItemsSource.Count == 0);
-            ItemsSource.AddRange(items);
             SourceFilterViewModel.AddSourcesToFilter(items.Select(x => x.Source));
+            _itemsSource.AddRange(items);
         }
 
         public ReadOnlyObservableProperty<string> FiltersText { get; }

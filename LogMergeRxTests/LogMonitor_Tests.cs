@@ -1,12 +1,11 @@
-﻿using System;
+﻿using FluentAssertions;
+using LogMergeRx.Model;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LogMergeRx
 {
@@ -42,7 +41,6 @@ namespace LogMergeRx
 
             await Task.Delay(100);
 
-            Files.Count.Should().Be(6); //2 headers and 4 entries
             Files.Select(x => x.Id).Distinct().Should().Equal(1, 2);
             Entries.Count.Should().Be(4);
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
@@ -62,7 +60,6 @@ namespace LogMergeRx
 
             await Task.Delay(500);
 
-            Files.Count.Should().Be(2); // We start after the file was last modified
             Files.Select(x => x.Id).Distinct().Should().Equal(1, 2);
 
             Entries.Count.Should().Be(4);
@@ -88,7 +85,6 @@ namespace LogMergeRx
 
             await Task.Delay(500);
 
-            Files.Count.Should().Be(8);
             Files.Select(x => x.Id).Distinct().Should().Equal(1, 2);
 
             Entries.Count.Should().Be(4);

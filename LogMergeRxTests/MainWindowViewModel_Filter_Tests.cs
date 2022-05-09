@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Windows.Data;
@@ -20,12 +21,13 @@ namespace LogMergeRx
         {
             _scheduler = new TestScheduler();
             _viewModel = new MainWindowViewModel(_scheduler);
-            _viewModel.ItemsSource.Add(LogHelper.Create("message error 1", LogLevel.ERROR, fileId: 0));
-            _viewModel.ItemsSource.Add(LogHelper.Create("message error 2", LogLevel.ERROR, fileId: 1));
-            _viewModel.ItemsSource.Add(LogHelper.Create("message warning 1", LogLevel.WARN, fileId: 2));
-            _viewModel.ItemsSource.Add(LogHelper.Create("message warning 2", LogLevel.WARN, fileId: 0));
-            _viewModel.ItemsSource.Add(LogHelper.Create("message notice 1", LogLevel.NOTICE, fileId: 1));
-            _viewModel.ItemsSource.Add(LogHelper.Create("message info 1", LogLevel.INFO, fileId: 2));
+            _viewModel.AddItems(ImmutableList.Create(
+                LogHelper.Create("message error 1", LogLevel.ERROR, fileId: 0),
+                LogHelper.Create("message error 2", LogLevel.ERROR, fileId: 1),
+                LogHelper.Create("message warning 1", LogLevel.WARN, fileId: 2),
+                LogHelper.Create("message warning 2", LogLevel.WARN, fileId: 0),
+                LogHelper.Create("message notice 1", LogLevel.NOTICE, fileId: 1),
+                LogHelper.Create("message info 1", LogLevel.INFO, fileId: 2)));
         }
 
         private IEnumerable<LogEntry> View =>
