@@ -71,6 +71,15 @@ namespace LogMergeRx
             ShowNewerThanNowCommand = new ActionCommand(_ => Start.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
         }
 
+        public void SetStartEnd(LogEntry entry, object parameter)
+        {
+            if (entry == null || parameter is not TimeSpan ts) return;
+
+            var entrySeconds = DateTimeHelper.FromDateToSeconds(entry.Date);
+            Start.Value = Math.Max(Minimum.Value, entrySeconds - ts.TotalSeconds);
+            End.Value = Math.Min(Maximum.Value, entrySeconds + ts.TotalSeconds);
+        }
+
         public bool IsFiltered() =>
             !Start.IsInitial || !End.IsInitial;
 

@@ -202,7 +202,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Background="Transparent">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="8" />
                             <ColumnDefinition Width="140" />
@@ -236,6 +236,13 @@
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
+            <ItemsControl.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Filter +/- 1 second" Command="{x:Static local:MainWindow.SetTimeFilterCommand}" CommandParameter="{x:Static local:MainWindow.OneSecond}" />
+                    <MenuItem Header="Filter +/- 5 seconds" Command="{x:Static local:MainWindow.SetTimeFilterCommand}" CommandParameter="{x:Static local:MainWindow.FiveSeconds}" />
+                    <MenuItem Header="Filter +/- 1 minute" Command="{x:Static local:MainWindow.SetTimeFilterCommand}" CommandParameter="{x:Static local:MainWindow.OneMinute}" />
+                </ContextMenu>
+            </ItemsControl.ContextMenu>
         </ItemsControl>
         <DockPanel Grid.Row="1" Grid.ColumnSpan="3" LastChildFill="True" HorizontalAlignment="Left"
                    Visibility="{Binding IsEnabled, ElementName=ClearFilterButton, Converter={StaticResource BooleanToVisibilityConverter}}">

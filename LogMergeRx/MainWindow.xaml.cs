@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogMergeRx.Model;
+using System;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,11 +9,18 @@ namespace LogMergeRx
 {
     public partial class MainWindow : Window
     {
+        public static TimeSpan OneSecond { get; } = TimeSpan.FromSeconds(1);
+        public static TimeSpan FiveSeconds { get; } = TimeSpan.FromSeconds(5);
+        public static TimeSpan OneMinute { get; } = TimeSpan.FromMinutes(1);
+
         private MainWindowViewModel ViewModel
         {
             get => (MainWindowViewModel)DataContext;
             set => DataContext = value;
         }
+
+        public static RoutedUICommand SetTimeFilterCommand { get; } =
+            new RoutedUICommand("Set filter", "SetTimeFilter", typeof(MainWindow));
 
         public MainWindow(MainWindowViewModel viewModel)
         {
@@ -34,6 +42,11 @@ namespace LogMergeRx
             CommandBindings.Add(new CommandBinding(
                 SystemCommands.MinimizeWindowCommand,
                 (s, e) => SystemCommands.MinimizeWindow(this)));
+
+            CommandBindings.Add(new CommandBinding(
+                SetTimeFilterCommand,
+                (s, e) => ViewModel.DateFilterViewModel.SetStartEnd((e.OriginalSource as FrameworkElement)?.DataContext as LogEntry, e.Parameter),
+                (s, e) => e.CanExecute = true));
 
             var command = new ActionCommand(_ => SearchTextBox.Focus());
             InputBindings.Add(new KeyBinding(command, Key.F, ModifierKeys.Control));
