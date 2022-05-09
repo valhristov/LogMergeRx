@@ -45,8 +45,18 @@ namespace LogMergeRx.ViewModels
         private bool ApplyNegation(bool filterResult) =>
             negateFilter ? !filterResult : filterResult;
 
-        public bool Filter(LogEntry log) =>
-            string.IsNullOrWhiteSpace(lastValidRegex) || ApplyNegation(RegexCache.GetRegex(lastValidRegex).IsMatch(log.Message));
+        public bool Filter(LogEntry log)
+        {
+            return string.IsNullOrWhiteSpace(lastValidRegex)
+                || ApplyNegation(IsMatch(log));
+
+            bool IsMatch(LogEntry log)
+            {
+                var regex = RegexCache.GetRegex(lastValidRegex);
+                return regex.IsMatch(log.Message) || regex.IsMatch(log.Source);
+            }
+        }
+
 
         private bool IsValidRegex(string value)
         {
