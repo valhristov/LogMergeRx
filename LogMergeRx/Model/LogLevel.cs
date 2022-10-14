@@ -5,6 +5,8 @@
         ERROR,
         WARN,
         INFO,
-        NOTICE
+        NOTICE,
+        DEBUG,
+        UNKNOWN,
     }
 }

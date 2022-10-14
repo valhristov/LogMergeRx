@@ -38,12 +38,17 @@ namespace LogMergeRx
                 LogEntry entry = null;
                 try
                 {
+                    var level = ParseLevel(csv.GetField<string>(2)?.Trim());
+                    // a new column ThreadId was added on index 2 at some point. We use this hacky way
+                    // to detect if it is present and offset the reset of the columns.
+                    var threadOffset = level == LogLevel.UNKNOWN ? 1 : 0;
+
                     entry = LogEntry.Create(
                         fileId: fileId,
                         date: csv.GetField<string>(0),
-                        level: ParseLevel(csv.GetField<string>(2)?.Trim()),
-                        source: csv.GetField<string>(3)?.Trim(),
-                        message: csv.GetField<string>(4) + (csv.TryGetField<string>(5, out var exceptionMessage) && exceptionMessage.Length > 0 ? $"\r\n{exceptionMessage}" : string.Empty));
+                        level: ParseLevel(csv.GetField<string>(2 + threadOffset)?.Trim()),
+                        source: csv.GetField<string>(3 + threadOffset)?.Trim(),
+                        message: csv.GetField<string>(4 + threadOffset) + (csv.TryGetField<string>(5 + threadOffset, out var exceptionMessage) && exceptionMessage.Length > 0 ? $"\r\n{exceptionMessage}" : string.Empty));
                 }
                 catch
                 {
@@ -60,7 +65,8 @@ namespace LogMergeRx
                     "WARN" => LogLevel.WARN,
                     "INFO" => LogLevel.INFO,
                     "NOTICE" => LogLevel.NOTICE,
-                    _ => LogLevel.ERROR
+                    "DEBUG" => LogLevel.DEBUG,
+                    _ => LogLevel.UNKNOWN
                 };
         }
     }
