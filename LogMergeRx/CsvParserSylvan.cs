@@ -42,15 +42,16 @@ namespace LogMergeRx
                         threadOffset = level == LogLevel.UNKNOWN ? 1 : 0;
                     }
 
+                    var stackTraceSpan = csv.GetFieldSpan(5 + threadOffset.Value);
                     entry = LogEntry.Create(
                         fileId: fileId,
                         date: StringPool.Shared.GetOrAdd(csv.GetFieldSpan(0)),
                         level: ParseLevel(StringPool.Shared.GetOrAdd(csv.GetFieldSpan(2 + threadOffset.Value))),
                         source: StringPool.Shared.GetOrAdd(csv.GetFieldSpan(3 + threadOffset.Value)),
-                        message: StringPool.Shared.GetOrAdd(string.Concat(
-                            csv.GetFieldSpan(4 + threadOffset.Value),
-                            NewLine.Span,
-                            csv.GetFieldSpan(5 + threadOffset.Value)))
+                        message: StringPool.Shared.GetOrAdd(
+                            stackTraceSpan.Length > 0
+                                ? string.Concat(csv.GetFieldSpan(4 + threadOffset.Value), NewLine.Span, stackTraceSpan)
+                                : csv.GetFieldSpan(4 + threadOffset.Value))
                         );
                 }
                 catch
@@ -64,11 +65,11 @@ namespace LogMergeRx
             static LogLevel ParseLevel(string level) =>
                 level.ToUpperInvariant() switch
                 {
-                    "ERROR " => LogLevel.ERROR,
-                    "WARN  " => LogLevel.WARN,
-                    "INFO  " => LogLevel.INFO,
-                    "NOTICE" => LogLevel.NOTICE,
-                    "DEBUG " => LogLevel.DEBUG,
+                    "ERROR " or "ERR" => LogLevel.ERROR,
+                    "WARN  " or "WRN" => LogLevel.WARN,
+                    "INFO  " or "INF" => LogLevel.INFO,
+                    "NOTICE" or "NOT" => LogLevel.NOTICE,
+                    "DEBUG " or "DBG" => LogLevel.DEBUG,
                     _ => LogLevel.UNKNOWN
                 };
         }

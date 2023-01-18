@@ -178,8 +178,8 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="140" />
-                                <ColumnDefinition Width="60" />
-                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="180" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="1" Text="Date" Margin="5,2" />
@@ -206,8 +206,8 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="8" />
                             <ColumnDefinition Width="140" />
-                            <ColumnDefinition Width="60" />
-                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="180" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Border VerticalAlignment="Stretch"
@@ -221,13 +221,13 @@
                             </Border.ToolTip>
                         </Border>
 
-                        <mvvm:SelectableTextBlock Grid.Column="1" Text="{Binding Date}" Margin="3" />
+                        <mvvm:SelectableTextBlock Grid.Column="1" Text="{Binding Date, StringFormat='yyyy-MM-dd HH:mm:ss,fff'}" Margin="3" />
 
                         <TextBlock Grid.Column="2" FontWeight="Bold" Margin="3"
                                    Text="{Binding Level}"
                                    Foreground="{Binding Level, Converter={StaticResource LevelToForegroundConverter}}" />
 
-                        <TextBlock Grid.Column="3" Text="{Binding Source}" Margin="3"/>
+                        <TextBlock Grid.Column="3" Text="{Binding Source}" Margin="3" />
 
                         <mvvm:SelectableTextBlock Grid.Column="4" Margin="3"
                                    local:HighlightHelper.Text="{Binding Message}"
