@@ -30,7 +30,7 @@ namespace LogMergeRx
             var second = LogHelper.Create("second");
 
             // Act
-            _viewModel.AddItems(ImmutableList.Create(first, second));
+            _viewModel.AddItems(ImmutableArray.Create(first, second));
 
             // Assert
             _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
@@ -46,14 +46,14 @@ namespace LogMergeRx
             // Arrange
             var first = GetLogEntry(TimeSpan.FromSeconds(100));
             var second = GetLogEntry(TimeSpan.FromSeconds(101));
-            _viewModel.AddItems(ImmutableList.Create(first, second));
+            _viewModel.AddItems(ImmutableArray.Create(first, second));
 
             // We didn't touch VisibleRangeStart/End and they should change
 
             // Act
             var earlier = GetLogEntry(TimeSpan.FromSeconds(50));
             var later = GetLogEntry(TimeSpan.FromSeconds(150));
-            _viewModel.AddItems(ImmutableList.Create(earlier, later));
+            _viewModel.AddItems(ImmutableArray.Create(earlier, later));
 
             // Assert
             _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
@@ -69,7 +69,7 @@ namespace LogMergeRx
             // Arrange
             var first = GetLogEntry(TimeSpan.FromSeconds(100));
             var second = GetLogEntry(TimeSpan.FromSeconds(110));
-            _viewModel.AddItems(ImmutableList.Create(first, second));
+            _viewModel.AddItems(ImmutableArray.Create(first, second));
 
             // Change VisibleRangeStart/End
             var newVisibleRangeStart = DateTimeHelper.FromDateToSeconds(GetDate(TimeSpan.FromSeconds(101)));
@@ -80,7 +80,7 @@ namespace LogMergeRx
             // Act
             var earlier = GetLogEntry(TimeSpan.FromSeconds(50));
             var later = GetLogEntry(TimeSpan.FromSeconds(150));
-            _viewModel.AddItems(ImmutableList.Create(earlier, later));
+            _viewModel.AddItems(ImmutableArray.Create(earlier, later));
 
             // Assert
             _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));

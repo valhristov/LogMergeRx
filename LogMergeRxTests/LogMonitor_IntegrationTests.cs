@@ -23,7 +23,7 @@ namespace LogMergeRx
 
             LogMonitor = new LogMonitor(LogsPath);
             LogMonitor.ChangedFiles.Subscribe(x => Files.Add(x.Id));
-            LogMonitor.ReadEntries.Subscribe(Entries.AddRange);
+            LogMonitor.ReadEntries.Subscribe(x => Entries.AddRange(x));
 
             LogMonitor.Start();
         }

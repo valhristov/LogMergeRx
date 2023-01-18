@@ -20,7 +20,7 @@ namespace LogMergeRx
         {
             _scheduler = new TestScheduler();
             _viewModel = new MainWindowViewModel(_scheduler);
-            _viewModel.AddItems(ImmutableList.Create(
+            _viewModel.AddItems(ImmutableArray.Create(
                 LogHelper.Create("message error 1", LogLevel.ERROR),
                 LogHelper.Create("message error 2", LogLevel.ERROR),
                 LogHelper.Create("message warning 1", LogLevel.WARN),
@@ -54,7 +54,7 @@ namespace LogMergeRx
             _viewModel.FollowTail.Value = true;
 
             var newEntry = LogHelper.Create("new message 1", LogLevel.ERROR);
-            _viewModel.AddItems(ImmutableList.Create(newEntry));
+            _viewModel.AddItems(ImmutableArray.Create(newEntry));
 
             _scheduler.AdvanceBy(10);
 
@@ -62,7 +62,7 @@ namespace LogMergeRx
             _viewModel.ScrollToIndex.Value.Should().Be(_viewModel.ItemsSource.Count - 1);
 
             newEntry = LogHelper.Create("new message 2", LogLevel.ERROR);
-            _viewModel.AddItems(ImmutableList.Create(newEntry));
+            _viewModel.AddItems(ImmutableArray.Create(newEntry));
 
             _scheduler.AdvanceBy(10);
 

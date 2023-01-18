@@ -17,9 +17,9 @@ namespace LogMergeRx
                 //    MissingFieldFound = null,
             };
 
-        public static ImmutableList<LogEntry> Parse(Stream stream, FileId fileId) =>
+        public static ImmutableArray<LogEntry> Parse(Stream stream, FileId fileId) =>
             ReadToEnd(stream, fileId)
-                .ToImmutableList();
+                .ToImmutableArray();
 
         private static IEnumerable<LogEntry> ReadToEnd(Stream stream, FileId fileId)
         {

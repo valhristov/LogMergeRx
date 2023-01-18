@@ -25,9 +25,9 @@ namespace LogMergeRx
             log.Date >= StartDate.Value &&
             log.Date <= EndDate.Value;
 
-        public void ItemsAdded(ImmutableList<LogEntry> items, bool theseAreTheFirstItems)
+        public void ItemsAdded(ImmutableArray<LogEntry> items, bool theseAreTheFirstItems)
         {
-            if (items.Count == 0)
+            if (items.Length == 0)
             {
                 return;
             }

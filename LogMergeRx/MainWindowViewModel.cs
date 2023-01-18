@@ -32,7 +32,7 @@ namespace LogMergeRx
         public ObservableProperty<int> ScrollToIndex { get; } = new ObservableProperty<int>(0);
         public ObservableProperty<LogEntry> ScrollToItem { get; } = new ObservableProperty<LogEntry>(null);
 
-        public void AddItems(ImmutableList<LogEntry> items)
+        public void AddItems(ImmutableArray<LogEntry> items)
         {
             DateFilterViewModel.ItemsAdded(items, ItemsSource.Count == 0);
             SourceFilterViewModel.AddSourcesToFilter(items.Select(x => x.Source));

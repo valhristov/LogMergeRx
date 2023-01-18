@@ -20,7 +20,7 @@ namespace LogMergeRx
             _viewModel = new MainWindowViewModel(_scheduler);
             _viewModel.FollowTail.Value = false;
             _viewModel.AddItems(
-                ImmutableList.Create(
+                ImmutableArray.Create(
                 // only errors are enabled by default
                 LogHelper.Create("1", LogLevel.ERROR), // index:0
                 LogHelper.Create("1", LogLevel.ERROR), // index:1

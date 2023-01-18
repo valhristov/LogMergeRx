@@ -22,7 +22,7 @@ namespace LogMergeRx
 
         public IObservable<LogFile> RenamedFiles { get; }
 
-        public IObservable<ImmutableList<LogEntry>> ReadEntries { get; }
+        public IObservable<ImmutableArray<LogEntry>> ReadEntries { get; }
 
         public LogMonitor(AbsolutePath root, string filter = "*.csv")
         {
@@ -53,13 +53,13 @@ namespace LogMergeRx
                 .Rename(oldPath, newPath)
                 .Select(fileId => Result.Success(new LogFile(fileId, newPath)));
 
-        private ImmutableList<LogEntry> ReadToEnd(LogFile logFile)
+        private ImmutableArray<LogEntry> ReadToEnd(LogFile logFile)
         {
             try
             {
                 using var stream = File.Open(logFile.Path.ToAbsolute(_watcher.Root), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-                var entries = ImmutableList<LogEntry>.Empty;
+                var entries = ImmutableArray<LogEntry>.Empty;
 
                 _offsets.AddOrUpdate(logFile.Id,
                     fileId => ReadAndGetNewOffset(stream, 0, fileId, out entries),
@@ -69,15 +69,15 @@ namespace LogMergeRx
             }
             catch (Exception)
             {
-                return ImmutableList<LogEntry>.Empty; // TODO log
+                return ImmutableArray<LogEntry>.Empty; // TODO log
             }
 
-            static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableList<LogEntry> entries)
+            static long ReadAndGetNewOffset(Stream stream, long offset, FileId fileId, out ImmutableArray<LogEntry> entries)
             {
                 // The file was probably renamed, don't read anything
                 if (stream.Length <= offset)
                 {
-                    entries = ImmutableList<LogEntry>.Empty; // TODO log
+                    entries = ImmutableArray<LogEntry>.Empty; // TODO log
                     return offset;
                 }
                 stream.Seek(offset, SeekOrigin.Begin);

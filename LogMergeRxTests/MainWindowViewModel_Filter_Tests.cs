@@ -21,7 +21,7 @@ namespace LogMergeRx
         {
             _scheduler = new TestScheduler();
             _viewModel = new MainWindowViewModel(_scheduler);
-            _viewModel.AddItems(ImmutableList.Create(
+            _viewModel.AddItems(ImmutableArray.Create(
                 LogHelper.Create("message error 1", LogLevel.ERROR, fileId: 0),
                 LogHelper.Create("message error 2", LogLevel.ERROR, fileId: 1),
                 LogHelper.Create("message warning 1", LogLevel.WARN, fileId: 2),
