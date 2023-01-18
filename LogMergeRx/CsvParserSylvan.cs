@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using CommunityToolkit.HighPerformance.Buffers;
 using LogMergeRx.Model;
 using Sylvan.Data.Csv;
 
 namespace LogMergeRx
 {
-    public static class CsvParserSylvan
+    public static class CsvParser
     {
+        private static readonly ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>(new[] { '\r', '\n' });
+
         public static ImmutableArray<LogEntry> Parse(Stream stream, FileId fileId) =>
             ReadToEnd(stream, fileId)
                 .ToImmutableArray();
@@ -31,7 +35,8 @@ namespace LogMergeRx
                 {
                     if (threadOffset == null)
                     {
-                        var level = ParseLevel(csv.GetString(2)?.Trim());
+                        var rawLevel = StringPool.Shared.GetOrAdd(csv.GetFieldSpan(2));
+                        var level = ParseLevel(rawLevel);
                         // a new column ThreadId was added on index 2 at some point. We use this hacky way
                         // to detect if it is present and offset the reset of the columns.
                         threadOffset = level == LogLevel.UNKNOWN ? 1 : 0;
@@ -39,10 +44,13 @@ namespace LogMergeRx
 
                     entry = LogEntry.Create(
                         fileId: fileId,
-                        date: csv.GetString(0),
-                        level: ParseLevel(csv.GetString(2 + threadOffset.Value)?.Trim()),
-                        source: csv.GetString(3 + threadOffset.Value)?.Trim(),
-                        message: csv.GetString(4 + threadOffset.Value) // + (csv.GetString(5 + threadOffset.Value, out var exceptionMessage) && exceptionMessage.Length > 0 ? $"\r\n{exceptionMessage}" : string.Empty)
+                        date: StringPool.Shared.GetOrAdd(csv.GetFieldSpan(0)),
+                        level: ParseLevel(StringPool.Shared.GetOrAdd(csv.GetFieldSpan(2 + threadOffset.Value))),
+                        source: StringPool.Shared.GetOrAdd(csv.GetFieldSpan(3 + threadOffset.Value)),
+                        message: StringPool.Shared.GetOrAdd(string.Concat(
+                            csv.GetFieldSpan(4 + threadOffset.Value),
+                            NewLine.Span,
+                            csv.GetFieldSpan(5 + threadOffset.Value)))
                         );
                 }
                 catch
@@ -56,11 +64,11 @@ namespace LogMergeRx
             static LogLevel ParseLevel(string level) =>
                 level.ToUpperInvariant() switch
                 {
-                    "ERROR" => LogLevel.ERROR,
-                    "WARN" => LogLevel.WARN,
-                    "INFO" => LogLevel.INFO,
+                    "ERROR " => LogLevel.ERROR,
+                    "WARN  " => LogLevel.WARN,
+                    "INFO  " => LogLevel.INFO,
                     "NOTICE" => LogLevel.NOTICE,
-                    "DEBUG" => LogLevel.DEBUG,
+                    "DEBUG " => LogLevel.DEBUG,
                     _ => LogLevel.UNKNOWN
                 };
         }

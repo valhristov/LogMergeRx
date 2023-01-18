@@ -7,7 +7,7 @@ using LogMergeRx.Model;
 
 namespace LogMergeRx
 {
-    public static class CsvParser
+    public static class CsvParser1
     {
         private static readonly CsvConfiguration _configuration =
             new CsvConfiguration(CultureInfo.InvariantCulture)
