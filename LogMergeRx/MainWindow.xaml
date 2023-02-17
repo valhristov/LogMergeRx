@@ -18,6 +18,10 @@
         <local:FileIdMapper x:Key="FileIdMapper" />
         <local:PathToBrushConverter x:Key="PathToBrushConverter" />
         <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local:BooleanToScrollBarVisibilityConverter x:Key="BooleanToScrollBarVisibilityConverter"
+                                                     TrueValue="Disabled"
+                                                     FalseValue="Visible" />
+        <local:BooleanToTextWrappingConverter x:Key="BooleanToTextWrappingConverter" />
         <Style x:Key="Explanation" TargetType="Label">
             <Setter Property="FontSize" Value="10"/>
         </Style>
@@ -48,8 +52,13 @@
         </Grid.RowDefinitions>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <StackPanel Background="#343434">
-                <GroupBox Header="Follow Tail" Style="{StaticResource H1}">
-                    <CheckBox Content="Enabled" IsChecked="{Binding FollowTail.Value}" />
+                <GroupBox Header="Options" Style="{StaticResource H1}">
+                    <StackPanel>
+                        <CheckBox Content="Follow Tail" IsChecked="{Binding FollowTail.Value}"
+                                  ToolTip="When checked, the list will automatically scroll to the end to display new log entries." />
+                        <CheckBox Content="Wrap Long messages" IsChecked="{Binding WrapLongMessages.Value}"
+                                  ToolTip="When checked, the text of the log entries will be wrapped." />
+                    </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Date Filter" Style="{StaticResource H1}" DataContext="{Binding DateFilterViewModel}">
                     <StackPanel>
@@ -188,7 +197,8 @@
                             <TextBlock Grid.Column="4" Text="Message" Margin="5,2"/>
                         </Grid>
                         <ScrollViewer Grid.Row="1" CanContentScroll="True" Focusable="False" Background="#050505"
-                                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                                      HorizontalScrollBarVisibility="{Binding DataContext.WrapLongMessages.Value, Converter={StaticResource BooleanToScrollBarVisibilityConverter}}"
+                                      VerticalScrollBarVisibility="Visible">
                             <ItemsPresenter />
                         </ScrollViewer>
                     </Grid>
@@ -232,7 +242,7 @@
                         <mvvm:SelectableTextBlock Grid.Column="4" Margin="3"
                                    local:HighlightHelper.Text="{Binding Message}"
                                    local:HighlightHelper.Highlight="{Binding DataContext.SearchRegex.Value, ElementName=Root}"
-                                   TextWrapping="Wrap" />
+                                   TextWrapping="{Binding DataContext.WrapLongMessages.Value, Converter={StaticResource BooleanToTextWrappingConverter}, ElementName=Root}" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

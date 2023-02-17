@@ -42,7 +42,7 @@ namespace LogMergeRx
                         threadOffset = level == LogLevel.UNKNOWN ? 1 : 0;
                     }
 
-                    var stackTraceSpan = csv.GetFieldSpan(5 + threadOffset.Value);
+                    var stackTraceSpan = csv.GetFieldSpan(5 + threadOffset.Value).Trim();
                     entry = LogEntry.Create(
                         fileId: fileId,
                         date: StringPool.Shared.GetOrAdd(csv.GetFieldSpan(0)),

@@ -26,6 +26,7 @@ namespace LogMergeRx
         public SourceFilterViewModel SourceFilterViewModel { get; } = new SourceFilterViewModel();
 
         public ObservableProperty<bool> FollowTail { get; } = new ObservableProperty<bool>(true);
+        public ObservableProperty<bool> WrapLongMessages { get; } = new ObservableProperty<bool>(true);
 
         public ObservableProperty<string> SearchRegex { get; } = new ObservableProperty<string>(string.Empty);
 
