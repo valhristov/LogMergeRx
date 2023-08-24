@@ -8,7 +8,7 @@ using Sylvan.Data.Csv;
 
 namespace LogMergeRx
 {
-    public static class CsvParser
+    public static class CsvParser2
     {
         private static readonly ReadOnlyMemory<char> NewLine = new ReadOnlyMemory<char>(new[] { '\r', '\n' });
 

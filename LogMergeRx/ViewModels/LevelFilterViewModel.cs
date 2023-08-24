@@ -32,7 +32,8 @@ namespace LogMergeRx.ViewModels
             ShowErrors.Value && log.Level == LogLevel.ERROR ||
             ShowWarnings.Value && log.Level == LogLevel.WARN ||
             ShowInfos.Value && log.Level == LogLevel.INFO ||
-            ShowNotices.Value && log.Level == LogLevel.NOTICE;
+            ShowNotices.Value && log.Level == LogLevel.NOTICE||
+            log.Level == LogLevel.UNKNOWN;
 
         public IEnumerable<string> GetFilterValues()
         {
