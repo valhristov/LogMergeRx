@@ -5,11 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class LogMonitor_IntegrationTests : IntegrationTestBase
     {
         private List<FileId> Files { get; set; }
@@ -28,10 +27,10 @@ namespace LogMergeRx
             LogMonitor.Start();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ParallelMonitoring()
         {
-            Task.WaitAll(
+            await Task.WhenAll(
                 Task.Run(async () => await WriteLogsAsync("a.csv", 'A')),
                 Task.Run(async () => await WriteLogsAsync("b.csv", 'B')),
                 Task.Run(async () => await WriteLogsAsync("c.csv", 'C')),

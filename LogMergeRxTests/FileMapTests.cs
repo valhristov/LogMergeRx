@@ -1,14 +1,12 @@
 ﻿using FluentAssertions;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-
-    [TestClass]
     public class FileMapTests
     {
-        [TestMethod]
+        [Fact]
         public void Different_Paths_Mapped_To_Different_Id()
         {
             var map = new FileMap();
@@ -23,7 +21,7 @@ namespace LogMergeRx
             map.GetRelativePath(new FileId(3)).ValueOrThrow().ToString().Should().Be("pathC");
         }
 
-        [TestMethod]
+        [Fact]
         public void Same_Path_Always_Mapps_To_Same_Id()
         {
             var map = new FileMap();
@@ -38,7 +36,7 @@ namespace LogMergeRx
             map.GetRelativePath(new FileId(1)).ValueOrThrow().ToString().Should().Be("pathA");
         }
 
-        [TestMethod]
+        [Fact]
         public void Rename_Fails_When_From_Does_Not_Exist()
         {
             var map = new FileMap();
@@ -54,7 +52,7 @@ namespace LogMergeRx
             map.GetRelativePath(new FileId(2)).ErrorsOrEmpty().Should().NotBeEmpty();
         }
 
-        [TestMethod]
+        [Fact]
         public void Rename_Existing_Path()
         {
             // Arrange

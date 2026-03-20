@@ -6,11 +6,10 @@ using FluentAssertions;
 using LogMergeRx;
 using LogMergeRx.Model;
 using Microsoft.Reactive.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class MainWindowViewModel_FollowTail_Tests
     {
         private readonly MainWindowViewModel _viewModel;
@@ -38,7 +37,7 @@ namespace LogMergeRx
             DispatcherUtil.DoEvents();
         }
 
-        [TestMethod]
+        [Fact]
         public void Setting_SearchRegex_Disables_Follow_Tail()
         {
             _viewModel.FollowTail.Value = true;
@@ -48,7 +47,7 @@ namespace LogMergeRx
             _viewModel.FollowTail.Value.Should().BeFalse();
         }
 
-        [TestMethod]
+        [Fact]
         public void FollowTail_True_Adding_New_Item_Scrolls_To_End()
         {
             _viewModel.FollowTail.Value = true;

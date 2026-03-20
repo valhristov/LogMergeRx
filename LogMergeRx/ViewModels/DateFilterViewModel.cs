@@ -34,13 +34,17 @@ namespace LogMergeRx
 
             if (theseAreTheFirstItems)
             {
-                Minimum.Value = Start.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date));
-                Maximum.Value = End.Value = DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date));
+                // +/-1 to compensate for rounding errors. We convert the DateTime to double (TODO: why? perf?)
+                // and back, and it seems that sometimes the Start/End values become slightly smaller/larger than
+                // the first/last item in the source.
+                Minimum.Value = Start.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)) - 1;
+                Maximum.Value = End.Value = DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)) + 1;
             }
             else
             {
-                var newFirstItem = Math.Min(Minimum.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)));
-                var newLastItem = Math.Max(Maximum.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)));
+                // +/-1 to compensate for rounding errors. See comment above.
+                var newFirstItem = Math.Min(Minimum.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)) - 1);
+                var newLastItem = Math.Max(Maximum.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)) + 1);
 
                 if (Start.Value == Minimum.Value)
                 { // Move start with minimum when displaying the full range

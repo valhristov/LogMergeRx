@@ -1,14 +1,13 @@
 ﻿using System.IO;
 using FluentAssertions;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class CsvParser_Tests
     {
-        [TestMethod]
+        [Fact]
         public void ReadTest()
         {
             using var stream = new MemoryStream();
@@ -29,7 +28,7 @@ namespace LogMergeRx
             CsvParser.Parse(stream, new FileId(1)).Should().Equal(entries, LogEntryEqualityComparer.Default.Equals);
         }
 
-        [TestMethod]
+        [Fact]
         public void Read_Empty_File()
         {
             using var stream = new MemoryStream();

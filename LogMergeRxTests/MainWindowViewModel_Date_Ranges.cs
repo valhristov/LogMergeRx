@@ -7,11 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class MainWindowViewModel_Date_Ranges
     {
         private readonly MainWindowViewModel _viewModel;
@@ -21,7 +20,7 @@ namespace LogMergeRx
             _viewModel = new MainWindowViewModel(Scheduler.Default);
         }
 
-        [TestMethod]
+        [Fact]
         public void Adding_Items_For_The_First_Time()
         {
             // Arrange
@@ -33,14 +32,14 @@ namespace LogMergeRx
             _viewModel.AddItems(ImmutableArray.Create(first, second));
 
             // Assert
-            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
-            _viewModel.DateFilterViewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date));
+            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date) - 1);
+            _viewModel.DateFilterViewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(first.Date) - 1);
 
-            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date));
-            _viewModel.DateFilterViewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date));
+            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date) + 1);
+            _viewModel.DateFilterViewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(second.Date) + 1);
         }
 
-        [TestMethod]
+        [Fact]
         public void Adding_Items_For_Second_Time_1()
         {
             // Arrange
@@ -56,14 +55,14 @@ namespace LogMergeRx
             _viewModel.AddItems(ImmutableArray.Create(earlier, later));
 
             // Assert
-            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
-            _viewModel.DateFilterViewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
+            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date) - 1);
+            _viewModel.DateFilterViewModel.Start.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date) - 1);
 
-            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
-            _viewModel.DateFilterViewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
+            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date) + 1);
+            _viewModel.DateFilterViewModel.End.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date) + 1);
         }
 
-        [TestMethod]
+        [Fact]
         public void Adding_Items_For_Second_Time_2()
         {
             // Arrange
@@ -83,10 +82,10 @@ namespace LogMergeRx
             _viewModel.AddItems(ImmutableArray.Create(earlier, later));
 
             // Assert
-            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date));
+            _viewModel.DateFilterViewModel.Minimum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(earlier.Date) - 1);
             _viewModel.DateFilterViewModel.Start.Value.Should().Be(newVisibleRangeStart);
 
-            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date));
+            _viewModel.DateFilterViewModel.Maximum.Value.Should().Be(DateTimeHelper.FromDateToSeconds(later.Date) + 1);
             _viewModel.DateFilterViewModel.End.Value.Should().Be(newVisibleRangeEnd);
         }
 

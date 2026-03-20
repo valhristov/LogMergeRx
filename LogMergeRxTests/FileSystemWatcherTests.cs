@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class FileSystemWatcherTests : IntegrationTestBase
     {
         private FileSystemWatcher _fsw;
@@ -35,7 +34,7 @@ namespace LogMergeRx
             _fsw.Deleted += (sender, e) => Events.Add(new FswEvent { ChangeType = e.ChangeType, OldPath = RelativePath.FromPathAndRoot(LogsPath, e.FullPath), });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MyTestMethod()
         {
             LogHelper.Append(GetPath("test.csv"), LogHelper.Create("1"));

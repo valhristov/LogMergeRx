@@ -2,25 +2,38 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reactive.Concurrency;
-using System.Windows.Data;
 using FluentAssertions;
 using LogMergeRx.Model;
 using Microsoft.Reactive.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class MainWindowViewModel_Filter_Tests
     {
         private readonly MainWindowViewModel _viewModel;
         private readonly TestScheduler _scheduler;
 
-        public MainWindowViewModel_Filter_Tests()
+        public MainWindowViewModel_Filter_Tests(ITestOutputHelper output)
         {
+            _output = output;
             _scheduler = new TestScheduler();
             _viewModel = new MainWindowViewModel(_scheduler);
+
+            // Use reflection to get the test name from ITestOutputHelper
+            var testField = output.GetType()
+                .GetField("test", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var test = testField?.GetValue(output);
+            var testName = test?.GetType().GetProperty("TestCase")?.GetValue(test)
+                ?.GetType().GetProperty("TestMethod")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test))
+                ?.GetType().GetProperty("Method")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test)?.GetType().GetProperty("TestMethod")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test)))
+                ?.GetType().GetProperty("Name")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test)?.GetType().GetProperty("TestMethod")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test))?.GetType().GetProperty("Method")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test)?.GetType().GetProperty("TestMethod")?.GetValue(test?.GetType().GetProperty("TestCase")?.GetValue(test))));
+
+            _output.WriteLine($"=== CONSTRUCTOR for: {testName ?? "Unknown"} ===");
+
+            _output.WriteLine($"view:{View.Count()}; filters:{string.Join(",", _viewModel.Filters.Where(x => x.IsFiltered()).SelectMany(x => x.GetFilterValues()))};");
+
             _viewModel.AddItems(ImmutableArray.Create(
                 LogHelper.Create("message error 1", LogLevel.ERROR, fileId: 0),
                 LogHelper.Create("message error 2", LogLevel.ERROR, fileId: 1),
@@ -28,12 +41,18 @@ namespace LogMergeRx
                 LogHelper.Create("message warning 2", LogLevel.WARN, fileId: 0),
                 LogHelper.Create("message notice 1", LogLevel.NOTICE, fileId: 1),
                 LogHelper.Create("message info 1", LogLevel.INFO, fileId: 2)));
+
+            _scheduler.AdvanceBy(DefaultThrottle.Ticks);
+            _scheduler.AdvanceBy(DefaultThrottle.Ticks);
+
+            _output.WriteLine($"view:{View.Count()}; filters:{string.Join(",", _viewModel.Filters.Where(x => x.IsFiltered()).SelectMany(x => x.GetFilterValues()))};");
         }
 
         private IEnumerable<LogEntry> View =>
-            CollectionViewSource.GetDefaultView(_viewModel.ItemsSource).OfType<LogEntry>();
+            _viewModel.ItemsSourceView.OfType<LogEntry>();
 
         private static readonly TimeSpan DefaultThrottle = TimeSpan.FromMilliseconds(510);
+        private readonly ITestOutputHelper _output;
 
         private void DoAndWait(Action action)
         {
@@ -41,7 +60,7 @@ namespace LogMergeRx
             _scheduler.AdvanceBy(DefaultThrottle.Ticks);
         }
 
-        [TestMethod]
+        [Fact]
         public void Include_errors()
         {
             _viewModel.LevelFilterViewModel.ShowWarnings.Value = false;
@@ -56,7 +75,7 @@ namespace LogMergeRx
             View.Should().BeEmpty();
         }
 
-        [TestMethod]
+        [Fact]
         public void Include_warnings()
         {
             _viewModel.LevelFilterViewModel.ShowErrors.Value = false;
@@ -67,7 +86,7 @@ namespace LogMergeRx
             View.Select(x => x.Message).Should().Equal("message warning 1", "message warning 2");
         }
 
-        [TestMethod]
+        [Fact]
         public void Include_notice()
         {
             _viewModel.LevelFilterViewModel.ShowErrors.Value = false;
@@ -78,7 +97,7 @@ namespace LogMergeRx
             View.Select(x => x.Message).Should().Equal("message notice 1");
         }
 
-        [TestMethod]
+        [Fact]
         public void Include_info()
         {
             _viewModel.LevelFilterViewModel.ShowErrors.Value = false;
@@ -91,14 +110,14 @@ namespace LogMergeRx
             View.Select(x => x.Message).Should().Equal("message info 1");
         }
 
-        [TestMethod]
+        [Fact]
         public void Include_all()
         {
             View.Should().HaveCount(6);
             View.Select(x => x.Message).Should().Equal("message error 1", "message error 2", "message warning 1", "message warning 2", "message notice 1", "message info 1");
         }
 
-        [TestMethod]
+        [Fact]
         public void Remove_all()
         {
             _viewModel.LevelFilterViewModel.ShowErrors.Value = false; // default
@@ -109,7 +128,7 @@ namespace LogMergeRx
             View.Should().BeEmpty();
         }
 
-        [TestMethod]
+        [Fact]
         public void Include_regex()
         {
             DoAndWait(() => _viewModel.IncludeRegexViewModel.RegexString.Value = string.Empty); // default
@@ -127,7 +146,7 @@ namespace LogMergeRx
             View.Select(x => x.Message).Should().Equal("message error 1", "message warning 1", "message notice 1", "message info 1");
         }
 
-        [TestMethod]
+        [Fact]
         public void Exclude_regex()
         {
             DoAndWait(() => _viewModel.ExcludeRegexViewModel.RegexString.Value = string.Empty); // default

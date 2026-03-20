@@ -4,11 +4,10 @@ using System.Reactive.Concurrency;
 using FluentAssertions;
 using LogMergeRx.Model;
 using Microsoft.Reactive.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class MainWindowViewModel_Search_tests
     {
         private readonly TestScheduler _scheduler;
@@ -45,7 +44,7 @@ namespace LogMergeRx
             DispatcherUtil.DoEvents();
         }
 
-        [TestMethod]
+        [Fact]
         public void SearchRegex_always_searches_from_start()
         {
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
@@ -63,7 +62,7 @@ namespace LogMergeRx
             _viewModel.ScrollToIndex.Value.Should().Be(0);
         }
 
-        [TestMethod]
+        [Fact]
         public void NextIndex_goes_forward()
         {
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
@@ -87,7 +86,7 @@ namespace LogMergeRx
             _viewModel.ScrollToIndex.Value.Should().Be(9);
         }
 
-        [TestMethod]
+        [Fact]
         public void PrevIndex_goes_backward()
         {
             _viewModel.ScrollToIndex.Value.Should().Be(0); // default
@@ -114,7 +113,7 @@ namespace LogMergeRx
             _viewModel.ScrollToIndex.Value.Should().Be(3);
         }
 
-        [TestMethod]
+        [Fact]
         public void Searching_with_filter()
         {
             _viewModel.LevelFilterViewModel.ShowErrors.Value = false; // remove errors, the indexes will shift

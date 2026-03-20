@@ -49,18 +49,20 @@ namespace LogMergeRx
         public ActionCommand ScrollToLast { get; }
         public ActionCommand ClearSearchRegex { get; }
 
-        private ListCollectionView ItemsSourceView =>
-            (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
+        public /*for testing*/ ListCollectionView ItemsSourceView { get; }
 
         private IEnumerable<(int Index, LogEntry Item)> ItemsAndIndexes =>
             ItemsSourceView.Cast<LogEntry>().Select((item, index) => (index, item));
 
         public void UpdateFileName(LogFile logFile) => FileFilterViewModel.UpdateFileName(logFile);
 
-        private IEnumerable<IFilterViewModel> Filters { get; }
+        public IEnumerable<IFilterViewModel> Filters { get; }
 
         public MainWindowViewModel(IScheduler scheduler)
         {
+            // Initialize the view ONCE
+            ItemsSourceView = (ListCollectionView)CollectionViewSource.GetDefaultView(ItemsSource);
+
             Filters = ImmutableArray.Create<IFilterViewModel>(
                 LevelFilterViewModel,
                 IncludeRegexViewModel,

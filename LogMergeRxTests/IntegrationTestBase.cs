@@ -1,20 +1,19 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LogMergeRx
 {
-    [TestClass]
-    public abstract class IntegrationTestBase
+    public abstract class IntegrationTestBase : IDisposable
     {
-        public TestContext TestContext { get; set; }
-
         protected AbsolutePath LogsPath { get; private set; }
 
-        [TestInitialize]
-        public void TestInitialize()
+        protected IntegrationTestBase()
         {
-            LogsPath = (AbsolutePath)Path.Combine(TestContext.TestRunDirectory, "logs", TestContext.TestName);
+            var testName = GetType().Name;
+            var tempPath = Path.Combine(Path.GetTempPath(), "LogMergeRxTests", testName, Guid.NewGuid().ToString());
+            LogsPath = (AbsolutePath)Path.Combine(tempPath, "logs");
             Directory.CreateDirectory(LogsPath);
 
             OnTestInitialize();
@@ -27,5 +26,9 @@ namespace LogMergeRx
         protected AbsolutePath GetPath(string fileName) =>
             (AbsolutePath)Path.Combine(LogsPath, fileName);
 
+        public virtual void Dispose()
+        {
+            // Cleanup if needed
+        }
     }
 }

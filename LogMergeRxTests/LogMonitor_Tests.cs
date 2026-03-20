@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using LogMergeRx.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace LogMergeRx
 {
-    [TestClass]
     public class LogMonitor_Tests : IntegrationTestBase
     {
         private List<FileId> Files { get; set; }
@@ -26,7 +25,7 @@ namespace LogMergeRx
             LogMonitor.ReadEntries.Subscribe(x => Entries.AddRange(x));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Read_Modified_Files()
         {
             LogHelper.AppendHeaders(GetPath("log1.csv"));
@@ -46,7 +45,7 @@ namespace LogMergeRx
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Read_Existing_Files()
         {
             LogHelper.AppendHeaders(GetPath("log1.csv"));
@@ -66,7 +65,7 @@ namespace LogMergeRx
             Entries.Select(x => x.Message).Should().Equal("1", "2", "3", "4");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Read_Overflown_Files()
         {
             LogMonitor.Start();
