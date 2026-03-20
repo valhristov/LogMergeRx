@@ -51,7 +51,8 @@ public static class CsvParser
                     date: csv.GetField<string>(0),
                     level: ParseLevel(csv.GetField<string>(2 + threadOffset.Value)?.Trim()),
                     source: csv.GetField<string>(3 + threadOffset.Value)?.Trim(),
-                    message: csv.GetField<string>(4 + threadOffset.Value) + (csv.TryGetField<string>(5 + threadOffset.Value, out var exceptionMessage) && exceptionMessage.Length > 0 ? $"\r\n{exceptionMessage}" : string.Empty));
+                    message: csv.GetField<string>(4 + threadOffset.Value) + (csv.TryGetField<string>(5 + threadOffset.Value, out var exceptionMessage) && exceptionMessage.Length > 0 ? $"\r\n{exceptionMessage}" : string.Empty),
+                    "");
             }
             catch
             {

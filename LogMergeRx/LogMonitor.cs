@@ -81,7 +81,7 @@ public class LogMonitor
                 return offset;
             }
             stream.Seek(offset, SeekOrigin.Begin);
-            entries = CsvParser.Parse(stream, fileId);
+            entries = CsvParser3.Parse(stream, fileId);
             return stream.Position == 0 ? 0 : stream.Position - Environment.NewLine.Length;
         }
     }

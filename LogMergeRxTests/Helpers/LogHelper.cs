@@ -13,7 +13,7 @@ public static class LogHelper
     private static int counter;
 
     public static LogEntry Create(string message, LogLevel level = LogLevel.ERROR, string source = "source", int fileId = default) =>
-        new LogEntry(new FileId(fileId), start.AddMilliseconds(counter++), level, source, message);
+        new LogEntry(new FileId(fileId), start.AddMilliseconds(counter++), level, source, message, "");
 
     public static void Append(AbsolutePath path, params LogEntry[] entries) =>
         File.AppendAllLines(path, entries.Select(ToCsv));
@@ -23,7 +23,7 @@ public static class LogHelper
 
     private static IEnumerable<string> Headers()
     {
-        yield return $"\"Date\";\"\";\"Level\";\"Source\";\"Message\"";
+        yield return """Date;Thread;ThreadId;Level;Logger;Message;ExceptionString;""";
     }
 
     public static void AppendHeaders(Stream stream) =>
@@ -51,7 +51,7 @@ public static class LogHelper
     }
 
     private static string ToCsv(LogEntry entry) =>
-        $"\"{entry.Date:yyyy-MM-dd HH:mm:ss,fff}\";\"\";\"{entry.Level}\";\"{entry.Source}\";\"{entry.Message}\"";
+        $"\"{entry.Date:yyyy-MM-dd HH:mm:ss,fff}\";\"\";\"4\";\"{entry.Level}\";\"{entry.Source}\";\"{entry.Message}\";\"{entry.Message}\"";
 
     public static async Task Rename(AbsolutePath from, AbsolutePath to)
     {

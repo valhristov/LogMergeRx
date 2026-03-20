@@ -1,0 +1,97 @@
+Date;Thread;ThreadId;Level;Logger;Message;ExceptionString;
+"2026-03-15 00:03:52,076";"        ";"122";"INF";"odes.ExternalCodesManager";"Liz 26419 asked to download 336 codes for ECR ; 10,000 codes were reserved, 177,696,659 codes remain";""
+"2026-03-15 00:03:52,112";"        ";"122";"ERR";"r.Gate.LinkUpSetupManager";"Could get Liz Autonomy Target. Linkup for manufacturing center: MD and machine: B2 is unknown.";""
+"2026-03-15 00:03:52,489";"        ";"122";"WRN";"Inexto.S3r.DbContextScope";"DbContext.SaveChanges caused a System.Data.Entity.Infrastructure.DbUpdateException; called by:    at Inexto.S3r.Foundation.DbContextScope.Implementations.DbContextScope.SaveChanges(Action onCommit)
+   at Inexto.S3r.Gate.LinkUpSetups.LinkUpSetupManager.SynchronizeDeviceSetups(List`1 deviceSynchronizations)
+   at Inexto.S3r.Gate.Communication.GatewayService.SendPendingDeviceSetups(List`1 deviceSetups)
+   at DynamicAssembly.BaseWcfServiceNoFault_1_Inexto.S3r.MC.Communication.IGatewayService.SendPendingDeviceSetups(List`1 )
+   at SyncInvokeSendPendingDeviceSetups(Object , Object[] , Object[] )
+   at System.ServiceModel.Dispatcher.SyncMethodInvoker.Invoke(Object instance, Object[] inputs, Object[]& outputs)
+   at Inexto.S3r.DataAccess.FirstDbScopeOperationsInvoker.Invoke(Object instance, Object[] inputs, Object[]& outputs)
+   at System.ServiceModel.Dispatcher.DispatchOperationRuntime.InvokeBegin(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage5(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage11(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.MessageRpc.Process(Boolean isOperationContextSet)
+   at System.ServiceModel.Dispatcher.ChannelHandler.DispatchAndReleasePump(RequestContext request, Boolean cleanThread, OperationContext currentOperationContext)
+   at System.ServiceModel.Dispatcher.ChannelHandler.HandleRequest(RequestContext request, OperationContext currentOperationContext)
+   at System.ServiceModel.Dispatcher.ChannelHandler.AsyncMessagePump(IAsyncResult result)
+   at System.ServiceModel.Dispatcher.ChannelHandler.OnAsyncReceiveComplete(IAsyncResult result)
+   at System.Runtime.Fx.AsyncThunk.UnhandledExceptionFrame(IAsyncResult result)
+   at System.Runtime.AsyncResult.Complete(Boolean completedSynchronously)
+   at System.ServiceModel.Channels.TransportDuplexSessionChannel.TryReceiveAsyncResult.OnReceive(IAsyncResult result)
+   at System.Runtime.Fx.AsyncThunk.UnhandledExceptionFrame(IAsyncResult result)
+   at System.Runtime.AsyncResult.Complete(Boolean completedSynchronously)
+   at System.ServiceModel.Channels.SynchronizedMessageSource.ReceiveAsyncResult.OnReceiveComplete(Object state)
+   at System.ServiceModel.Channels.SessionConnectionReader.OnAsyncReadComplete(Object state)
+   at System.Net.Sockets.SocketAsyncEventArgs.OnCompleted(SocketAsyncEventArgs e)
+   at System.Net.Sockets.SocketAsyncEventArgs.FinishOperationSuccess(SocketError socketError, Int32 bytesTransferred, SocketFlags flags)
+   at System.Net.Sockets.SocketAsyncEventArgs.CompletionPortCallback(UInt32 errorCode, UInt32 numBytes, NativeOverlapped* nativeOverlapped)
+   at System.Threading._IOCompletionCallback.PerformIOCompletionCallback(UInt32 errorCode, UInt32 numBytes, NativeOverlapped* pOVERLAP)
+
+Involved entities: ";""
+"2026-03-15 00:03:52,497";"        ";"122";"ERR";"eptionToFaultErrorHandler";"System.Data.Entity.Infrastructure.DbUpdateException: The INSERT statement conflicted with the FOREIGN KEY constraint "FK_DeviceSetups_LineSetups". The conflict occurred in database "MDGate_PRD", table "dbo.LineSetups".
+The statement has been terminated. ---> System.Data.Entity.Infrastructure.DbUpdateException: An error occurred while updating the entries. See the inner exception for details. ---> System.Data.Entity.Core.UpdateException: An error occurred while updating the entries. See the inner exception for details. ---> System.Data.SqlClient.SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint "FK_DeviceSetups_LineSetups". The conflict occurred in database "MDGate_PRD", table "dbo.LineSetups".
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.Entity.Infrastructure.Interception.InternalDispatcher`1.Dispatch[TTarget,TInterceptionContext,TResult](TTarget target, Func`3 operation, TInterceptionContext interceptionContext, Action`3 executing, Action`3 executed)
+   at System.Data.Entity.Infrastructure.Interception.DbCommandDispatcher.Reader(DbCommand command, DbCommandInterceptionContext interceptionContext)
+   at System.Data.Entity.Core.Mapping.Update.Internal.DynamicUpdateCommand.Execute(Dictionary`2 identifierValues, List`1 generatedValues)
+   at System.Data.Entity.Core.Mapping.Update.Internal.UpdateTranslator.Update()
+   --- End of inner exception stack trace ---
+   at System.Data.Entity.Core.Mapping.Update.Internal.UpdateTranslator.Update()
+   at System.Data.Entity.Core.Objects.ObjectContext.ExecuteInTransaction[T](Func`1 func, IDbExecutionStrategy executionStrategy, Boolean startLocalTransaction, Boolean releaseConnectionOnSuccess)
+   at System.Data.Entity.Core.Objects.ObjectContext.SaveChangesToStore(SaveOptions options, IDbExecutionStrategy executionStrategy, Boolean startLocalTransaction)
+   at System.Data.Entity.Infrastructure.DbExecutionStrategy.Execute[TResult](Func`1 operation)
+   at System.Data.Entity.Core.Objects.ObjectContext.SaveChangesInternal(SaveOptions options, Boolean executeInExistingTransaction)
+   at System.Data.Entity.Internal.InternalContext.SaveChanges()
+   --- End of inner exception stack trace ---
+   at System.Data.Entity.Internal.InternalContext.SaveChanges()
+   at Inexto.S3r.Gate.DataAccess.EntityModel.FisContext.SaveChanges() in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Entities\DataAccess\EntityModel\FisContext.cs:line 135
+   --- End of inner exception stack trace ---
+
+Server stack trace: 
+   at Inexto.S3r.Gate.DataAccess.EntityModel.FisContext.SaveChanges() in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Entities\DataAccess\EntityModel\FisContext.cs:line 153
+   at Inexto.S3r.Foundation.DbContextScope.Implementations.DbContextCollection.SaveChanges() in D:\a\1\s\Src\Foundation\Inexto.S3r.Foundation.Data\DbContextScope\Implementations\DbContextCollection.cs:line 244
+   at Inexto.S3r.Foundation.DbContextScope.Implementations.DbContextScope.SaveChanges(Action onCommit) in D:\a\1\s\Src\Foundation\Inexto.S3r.Foundation.Data\DbContextScope\Implementations\DbContextScope.cs:line 239
+   at Inexto.S3r.Gate.LinkUpSetups.LinkUpSetupManager.SynchronizeDeviceSetups(List`1 deviceSynchronizations) in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Business\LinkUpSetups\LinkUpSetupManager.cs:line 1274
+   at Inexto.S3r.Gate.Communication.GatewayService.SendPendingDeviceSetups(List`1 deviceSetups) in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Business\Communication\GatewayService.cs:line 967
+   at DynamicAssembly.BaseWcfServiceNoFault_1_Inexto.S3r.MC.Communication.IGatewayService.SendPendingDeviceSetups(List`1 )
+   at SyncInvokeSendPendingDeviceSetups(Object , Object[] , Object[] )
+   at System.ServiceModel.Dispatcher.SyncMethodInvoker.Invoke(Object instance, Object[] inputs, Object[]& outputs)
+   at Inexto.S3r.DataAccess.FirstDbScopeOperationsInvoker.Invoke(Object instance, Object[] inputs, Object[]& outputs) in D:\a\1\s\Src\Core\Inexto.S3r.Common\DataAccess\FirstDbScopeOperationsInvoker.cs:line 84
+   at System.ServiceModel.Dispatcher.DispatchOperationRuntime.InvokeBegin(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage5(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage11(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.MessageRpc.Process(Boolean isOperationContextSet)
+
+Exception rethrown at [0]: 
+   at Inexto.S3r.Gate.DataAccess.EntityModel.FisContext.SaveChanges() in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Entities\DataAccess\EntityModel\FisContext.cs:line 153
+   at Inexto.S3r.Foundation.DbContextScope.Implementations.DbContextCollection.SaveChanges() in D:\a\1\s\Src\Foundation\Inexto.S3r.Foundation.Data\DbContextScope\Implementations\DbContextCollection.cs:line 244
+   at Inexto.S3r.Foundation.DbContextScope.Implementations.DbContextScope.SaveChanges(Action onCommit) in D:\a\1\s\Src\Foundation\Inexto.S3r.Foundation.Data\DbContextScope\Implementations\DbContextScope.cs:line 239
+   at Inexto.S3r.Gate.LinkUpSetups.LinkUpSetupManager.SynchronizeDeviceSetups(List`1 deviceSynchronizations) in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Business\LinkUpSetups\LinkUpSetupManager.cs:line 1274
+   at Inexto.S3r.Gate.Communication.GatewayService.SendPendingDeviceSetups(List`1 deviceSetups) in D:\a\1\s\Src\Gate\Inexto.S3r.Gate.Business\Communication\GatewayService.cs:line 967
+   at DynamicAssembly.BaseWcfServiceNoFault_1_Inexto.S3r.MC.Communication.IGatewayService.SendPendingDeviceSetups(List`1 )
+   at SyncInvokeSendPendingDeviceSetups(Object , Object[] , Object[] )
+   at System.ServiceModel.Dispatcher.SyncMethodInvoker.Invoke(Object instance, Object[] inputs, Object[]& outputs)
+   at Inexto.S3r.DataAccess.FirstDbScopeOperationsInvoker.Invoke(Object instance, Object[] inputs, Object[]& outputs) in D:\a\1\s\Src\Core\Inexto.S3r.Common\DataAccess\FirstDbScopeOperationsInvoker.cs:line 84
+   at System.ServiceModel.Dispatcher.DispatchOperationRuntime.InvokeBegin(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage5(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.ImmutableDispatchRuntime.ProcessMessage11(MessageRpc& rpc)
+   at System.ServiceModel.Dispatcher.MessageRpc.Process(Boolean isOperationContextSet)";""
+"2026-03-15 00:03:53,696";"        ";"22 ";"INF";"odes.ExternalCodesManager";"Liz 26415 asked to download 5,985 codes for ECR ; 10,000 codes were reserved, 177,696,659 codes remain";""
+"2026-03-15 00:03:55,555";"        ";"126";"INF";"odes.ExternalCodesManager";"Liz 26409 asked to download 8,690 codes for ECR ; 10,000 codes were reserved, 177,696,659 codes remain";""
+"2026-03-15 00:03:57,257";"        ";"155";"INF";"odes.ExternalCodesManager";"Liz 26418 asked to download 11,636 codes for ECR ; 20,000 codes were reserved, 177,706,659 codes remain";""
+"2026-03-15 00:03:58,872";"        ";"3  ";"INF";"odes.ExternalCodesManager";"Liz 26397 asked to download 3,744 codes for ECR ; 30,000 codes were reserved, 177,716,659 codes remain";""
+"2026-03-15 00:04:00,509";"        ";"42 ";"INF";"odes.ExternalCodesManager";"Liz 26421 asked to download 9,275 codes for ECR ; 10,000 codes were reserved, 177,696,659 codes remain";""
+"2026-03-15 00:04:02,267";"        ";"67 ";"INF";"odes.ExternalCodesManager";"Liz 26400 asked to download 19,672 codes for ECR ; 20,000 codes were reserved, 177,706,659 codes remain";""
+"2026-03-15 00:04:04,029";"        ";"120";"INF";"odes.ExternalCodesManager";"Liz 26427 asked to download 12,214 codes for ECR ; 20,000 codes were reserved, 177,706,659 codes remain";""
+"2026-03-15 00:04:05,759";"        ";"106";"INF";"odes.ExternalCodesManager";"Liz 26406 asked to download 2,615 codes for ECR ; 10,000 codes were reserved, 177,696,659 codes remain";""

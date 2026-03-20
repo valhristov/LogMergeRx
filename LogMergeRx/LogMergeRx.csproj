@@ -8,6 +8,7 @@
     <StartupObject>LogMergeRx.App</StartupObject>
     <ApplicationIcon>LogMerge.ico</ApplicationIcon>
     <UseWindowsForms>True</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

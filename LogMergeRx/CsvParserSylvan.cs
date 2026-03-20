@@ -51,7 +51,8 @@ public static class CsvParser2
                     message: StringPool.Shared.GetOrAdd(
                         stackTraceSpan.Length > 0
                             ? string.Concat(csv.GetFieldSpan(4 + threadOffset.Value), NewLine.Span, stackTraceSpan)
-                            : csv.GetFieldSpan(4 + threadOffset.Value))
+                            : csv.GetFieldSpan(4 + threadOffset.Value)),
+                    exception: ""
                     );
             }
             catch

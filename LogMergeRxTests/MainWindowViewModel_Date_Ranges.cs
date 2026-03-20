@@ -89,5 +89,5 @@ public class MainWindowViewModel_Date_Ranges
         new DateTime(2021, 3, 25).Add(offset);
 
     private static LogEntry GetLogEntry(TimeSpan offset) =>
-        new LogEntry(new FileId(0), GetDate(offset), LogLevel.ERROR, "", "some");
+        new LogEntry(new FileId(0), GetDate(offset), LogLevel.ERROR, "", "some", "exception");
 }
