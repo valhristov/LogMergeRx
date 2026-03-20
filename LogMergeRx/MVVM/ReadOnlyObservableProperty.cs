@@ -3,37 +3,36 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
 
-namespace LogMergeRx
+namespace LogMergeRx;
+
+public class ReadOnlyObservableProperty<T> : IObservable<T>, INotifyPropertyChanged
 {
-    public class ReadOnlyObservableProperty<T> : IObservable<T>, INotifyPropertyChanged
+    private T _value;
+    private readonly IEqualityComparer<T> _comparer;
+    private readonly IObservable<T> _source;
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public ReadOnlyObservableProperty(IObservable<T> source, T initialValue = default, IEqualityComparer<T> comparer = null)
     {
-        private T _value;
-        private readonly IEqualityComparer<T> _comparer;
-        private readonly IObservable<T> _source;
+        _value = initialValue;
+        _comparer = comparer ?? EqualityComparer<T>.Default;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        _source = source.Where(x => !_comparer.Equals(_value, x));
 
-        public ReadOnlyObservableProperty(IObservable<T> source, T initialValue = default, IEqualityComparer<T> comparer = null)
-        {
-            _value = initialValue;
-            _comparer = comparer ?? EqualityComparer<T>.Default;
-
-            _source = source.Where(x => !_comparer.Equals(_value, x));
-
-            _source.Subscribe(x => Value = x);
-        }
-
-        public T Value
-        {
-            get => _value;
-            private set
-            {
-                _value = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
-            }
-        }
-
-        public IDisposable Subscribe(IObserver<T> observer) =>
-            _source.Subscribe(observer);
+        _source.Subscribe(x => Value = x);
     }
+
+    public T Value
+    {
+        get => _value;
+        private set
+        {
+            _value = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+        }
+    }
+
+    public IDisposable Subscribe(IObserver<T> observer) =>
+        _source.Subscribe(observer);
 }

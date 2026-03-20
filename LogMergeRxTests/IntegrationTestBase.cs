@@ -1,34 +1,32 @@
 ﻿using System;
 using System.IO;
 using LogMergeRx.Model;
-using Xunit;
 
-namespace LogMergeRx
+namespace LogMergeRx;
+
+public abstract class IntegrationTestBase : IDisposable
 {
-    public abstract class IntegrationTestBase : IDisposable
+    protected AbsolutePath LogsPath { get; private set; }
+
+    protected IntegrationTestBase()
     {
-        protected AbsolutePath LogsPath { get; private set; }
+        var testName = GetType().Name;
+        var tempPath = Path.Combine(Path.GetTempPath(), "LogMergeRxTests", testName, Guid.NewGuid().ToString());
+        LogsPath = (AbsolutePath)Path.Combine(tempPath, "logs");
+        Directory.CreateDirectory(LogsPath);
 
-        protected IntegrationTestBase()
-        {
-            var testName = GetType().Name;
-            var tempPath = Path.Combine(Path.GetTempPath(), "LogMergeRxTests", testName, Guid.NewGuid().ToString());
-            LogsPath = (AbsolutePath)Path.Combine(tempPath, "logs");
-            Directory.CreateDirectory(LogsPath);
+        OnTestInitialize();
+    }
 
-            OnTestInitialize();
-        }
+    protected virtual void OnTestInitialize()
+    {
+    }
 
-        protected virtual void OnTestInitialize()
-        {
-        }
+    protected AbsolutePath GetPath(string fileName) =>
+        (AbsolutePath)Path.Combine(LogsPath, fileName);
 
-        protected AbsolutePath GetPath(string fileName) =>
-            (AbsolutePath)Path.Combine(LogsPath, fileName);
-
-        public virtual void Dispose()
-        {
-            // Cleanup if needed
-        }
+    public virtual void Dispose()
+    {
+        // Cleanup if needed
     }
 }

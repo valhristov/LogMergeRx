@@ -1,12 +1,11 @@
-﻿namespace LogMergeRx.Model
+﻿namespace LogMergeRx.Model;
+
+public enum LogLevel
 {
-    public enum LogLevel
-    {
-        ERROR,
-        WARN,
-        INFO,
-        NOTICE,
-        DEBUG,
-        UNKNOWN,
-    }
+    ERROR,
+    WARN,
+    INFO,
+    NOTICE,
+    DEBUG,
+    UNKNOWN,
 }

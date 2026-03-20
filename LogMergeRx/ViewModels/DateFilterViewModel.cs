@@ -6,97 +6,96 @@ using System.Reactive;
 using System.Reactive.Linq;
 using LogMergeRx.Model;
 
-namespace LogMergeRx
+namespace LogMergeRx;
+
+public class DateFilterViewModel : IFilterViewModel
 {
-    public class DateFilterViewModel : IFilterViewModel
+    public ObservableProperty<double> Minimum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
+    public ObservableProperty<double> Start { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
+    public ObservableProperty<double> End { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
+    public ObservableProperty<double> Maximum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
+
+    public ReadOnlyObservableProperty<DateTime> StartDate { get; }
+    public ReadOnlyObservableProperty<DateTime> EndDate { get; }
+
+    public ActionCommand ClearCommand { get; }
+    public ActionCommand ShowNewerThanNowCommand { get; }
+
+    public bool Filter(LogEntry log) =>
+        log.Date >= StartDate.Value &&
+        log.Date <= EndDate.Value;
+
+    public void ItemsAdded(ImmutableArray<LogEntry> items, bool theseAreTheFirstItems)
     {
-        public ObservableProperty<double> Minimum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
-        public ObservableProperty<double> Start { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MinValue));
-        public ObservableProperty<double> End { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
-        public ObservableProperty<double> Maximum { get; } = new ObservableProperty<double>(DateTimeHelper.FromDateToSeconds(DateTime.MaxValue));
-
-        public ReadOnlyObservableProperty<DateTime> StartDate { get; }
-        public ReadOnlyObservableProperty<DateTime> EndDate { get; }
-
-        public ActionCommand ClearCommand { get; }
-        public ActionCommand ShowNewerThanNowCommand { get; }
-
-        public bool Filter(LogEntry log) =>
-            log.Date >= StartDate.Value &&
-            log.Date <= EndDate.Value;
-
-        public void ItemsAdded(ImmutableArray<LogEntry> items, bool theseAreTheFirstItems)
+        if (items.Length == 0)
         {
-            if (items.Length == 0)
-            {
-                return;
+            return;
+        }
+
+        if (theseAreTheFirstItems)
+        {
+            // +/-1 to compensate for rounding errors. We convert the DateTime to double (TODO: why? perf?)
+            // and back, and it seems that sometimes the Start/End values become slightly smaller/larger than
+            // the first/last item in the source.
+            Minimum.Value = Start.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)) - 1;
+            Maximum.Value = End.Value = DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)) + 1;
+        }
+        else
+        {
+            // +/-1 to compensate for rounding errors. See comment above.
+            var newFirstItem = Math.Min(Minimum.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)) - 1);
+            var newLastItem = Math.Max(Maximum.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)) + 1);
+
+            if (Start.Value == Minimum.Value)
+            { // Move start with minimum when displaying the full range
+                Start.Value = newFirstItem;
+            }
+            if (End.Value == Maximum.Value)
+            { // Move end with maximum when displaying the full range
+                End.Value = newLastItem;
             }
 
-            if (theseAreTheFirstItems)
-            {
-                // +/-1 to compensate for rounding errors. We convert the DateTime to double (TODO: why? perf?)
-                // and back, and it seems that sometimes the Start/End values become slightly smaller/larger than
-                // the first/last item in the source.
-                Minimum.Value = Start.Value = DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)) - 1;
-                Maximum.Value = End.Value = DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)) + 1;
-            }
-            else
-            {
-                // +/-1 to compensate for rounding errors. See comment above.
-                var newFirstItem = Math.Min(Minimum.Value, DateTimeHelper.FromDateToSeconds(items.Min(x => x.Date)) - 1);
-                var newLastItem = Math.Max(Maximum.Value, DateTimeHelper.FromDateToSeconds(items.Max(x => x.Date)) + 1);
-
-                if (Start.Value == Minimum.Value)
-                { // Move start with minimum when displaying the full range
-                    Start.Value = newFirstItem;
-                }
-                if (End.Value == Maximum.Value)
-                { // Move end with maximum when displaying the full range
-                    End.Value = newLastItem;
-                }
-
-                Minimum.Value = newFirstItem;
-                Maximum.Value = newLastItem;
-            }
+            Minimum.Value = newFirstItem;
+            Maximum.Value = newLastItem;
         }
+    }
 
-        public IObservable<Unit> FilterChanges { get; }
+    public IObservable<Unit> FilterChanges { get; }
 
-        public DateFilterViewModel()
-        {
-            StartDate = new ReadOnlyObservableProperty<DateTime>(Start.Select(DateTimeHelper.FromSecondsToDate), DateTime.MinValue);
-            EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);
+    public DateFilterViewModel()
+    {
+        StartDate = new ReadOnlyObservableProperty<DateTime>(Start.Select(DateTimeHelper.FromSecondsToDate), DateTime.MinValue);
+        EndDate = new ReadOnlyObservableProperty<DateTime>(End.Select(DateTimeHelper.FromSecondsToDate), DateTime.MaxValue);
 
-            FilterChanges = Start.Merge(End).ToUnit();
+        FilterChanges = Start.Merge(End).ToUnit();
 
-            ClearCommand = new ActionCommand(_ => Clear(), _ => IsFiltered());
-            ClearCommand.UpdateCanExecuteOn(FilterChanges.ToObject());
+        ClearCommand = new ActionCommand(_ => Clear(), _ => IsFiltered());
+        ClearCommand.UpdateCanExecuteOn(FilterChanges.ToObject());
 
-            ShowNewerThanNowCommand = new ActionCommand(_ => Start.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
-        }
+        ShowNewerThanNowCommand = new ActionCommand(_ => Start.Value = DateTimeHelper.FromDateToSeconds(DateTime.Now));
+    }
 
-        public void SetStartEnd(LogEntry entry, object parameter)
-        {
-            if (entry == null || parameter is not TimeSpan ts) return;
+    public void SetStartEnd(LogEntry entry, object parameter)
+    {
+        if (entry == null || parameter is not TimeSpan ts) return;
 
-            var entrySeconds = DateTimeHelper.FromDateToSeconds(entry.Date);
-            Start.Value = Math.Max(Minimum.Value, entrySeconds - ts.TotalSeconds);
-            End.Value = Math.Min(Maximum.Value, entrySeconds + ts.TotalSeconds);
-        }
+        var entrySeconds = DateTimeHelper.FromDateToSeconds(entry.Date);
+        Start.Value = Math.Max(Minimum.Value, entrySeconds - ts.TotalSeconds);
+        End.Value = Math.Min(Maximum.Value, entrySeconds + ts.TotalSeconds);
+    }
 
-        public bool IsFiltered() =>
-            !Start.IsInitial || !End.IsInitial;
+    public bool IsFiltered() =>
+        !Start.IsInitial || !End.IsInitial;
 
-        public void Clear()
-        {
-            Start.Value = Minimum.Value;
-            End.Value = Maximum.Value;
-        }
+    public void Clear()
+    {
+        Start.Value = Minimum.Value;
+        End.Value = Maximum.Value;
+    }
 
-        public IEnumerable<string> GetFilterValues()
-        {
-            if (Start.Value != Minimum.Value) yield return $"older than {StartDate.Value:f}";
-            if (End.Value != Maximum.Value) yield return $"newer than {EndDate.Value:f}";
-        }
+    public IEnumerable<string> GetFilterValues()
+    {
+        if (Start.Value != Minimum.Value) yield return $"older than {StartDate.Value:f}";
+        if (End.Value != Maximum.Value) yield return $"newer than {EndDate.Value:f}";
     }
 }

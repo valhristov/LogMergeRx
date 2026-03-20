@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Reactive;
 using LogMergeRx.Model;
 
-namespace LogMergeRx
+namespace LogMergeRx;
+
+public interface IFilterViewModel
 {
-    public interface IFilterViewModel
-    {
-        bool Filter(LogEntry log);
-        bool IsFiltered();
-        void Clear();
-        IEnumerable<string> GetFilterValues();
-        IObservable<Unit> FilterChanges { get; }
-    }
+    bool Filter(LogEntry log);
+    bool IsFiltered();
+    void Clear();
+    IEnumerable<string> GetFilterValues();
+    IObservable<Unit> FilterChanges { get; }
 }

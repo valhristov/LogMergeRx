@@ -1,16 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace LogMergeRx
+namespace LogMergeRx;
+
+public static class RegexCache
 {
-    public static class RegexCache
-    {
-        private static readonly Cache<string, Regex> _regexCache =
-            new Cache<string, Regex>(CreateRegex);
+    private static readonly Cache<string, Regex> _regexCache =
+        new Cache<string, Regex>(CreateRegex);
 
-        public static Regex GetRegex(string pattern) =>
-            _regexCache.Get(pattern);
+    public static Regex GetRegex(string pattern) =>
+        _regexCache.Get(pattern);
 
-        private static Regex CreateRegex(string pattern) =>
-            new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    }
+    private static Regex CreateRegex(string pattern) =>
+        new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 }

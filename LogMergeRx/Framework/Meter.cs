@@ -2,32 +2,31 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace LogMergeRx
+namespace LogMergeRx;
+
+public static class Meter
 {
-    public static class Meter
+    public static IDisposable Start([CallerMemberName] string callerMemberName = null) =>
+        new MeterResult(callerMemberName);
+
+    private class MeterResult : IDisposable
     {
-        public static IDisposable Start([CallerMemberName] string callerMemberName = null) =>
-            new MeterResult(callerMemberName);
+        private readonly string _memberName;
+        private readonly string _argument;
+        private readonly Stopwatch _stopwatch;
 
-        private class MeterResult : IDisposable
+        public MeterResult(string memberName, string argument = null)
         {
-            private readonly string _memberName;
-            private readonly string _argument;
-            private readonly Stopwatch _stopwatch;
+            _stopwatch = new Stopwatch();
+            _stopwatch.Start();
+            _memberName = memberName;
+            _argument = argument;
+        }
 
-            public MeterResult(string memberName, string argument = null)
-            {
-                _stopwatch = new Stopwatch();
-                _stopwatch.Start();
-                _memberName = memberName;
-                _argument = argument;
-            }
-
-            public void Dispose()
-            {
-                _stopwatch.Stop();
-                Debug.WriteLine($"{_memberName} {_argument} took {_stopwatch.ElapsedMilliseconds}ms.");
-            }
+        public void Dispose()
+        {
+            _stopwatch.Stop();
+            Debug.WriteLine($"{_memberName} {_argument} took {_stopwatch.ElapsedMilliseconds}ms.");
         }
     }
 }
