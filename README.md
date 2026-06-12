@@ -21,4 +21,4 @@ There is rudimentary search and highlight.
 - The main window is not brought into view after you select a directory. I need to fix that, it is annoying.
 
 
-
+test
